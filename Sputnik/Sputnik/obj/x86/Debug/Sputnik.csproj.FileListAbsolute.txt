@@ -1,0 +1,7 @@
+c:\users\matthew\documents\visual studio 2010\Projects\Sputnik\Sputnik\Sputnik\bin\x86\Debug\Sputnik.exe
+c:\users\matthew\documents\visual studio 2010\Projects\Sputnik\Sputnik\Sputnik\bin\x86\Debug\Sputnik.pdb
+c:\users\matthew\documents\visual studio 2010\Projects\Sputnik\Sputnik\Sputnik\obj\x86\Debug\ResolveAssemblyReference.cache
+c:\users\matthew\documents\visual studio 2010\Projects\Sputnik\Sputnik\Sputnik\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
+c:\users\matthew\documents\visual studio 2010\Projects\Sputnik\Sputnik\Sputnik\obj\x86\Debug\Sputnik.exe
+c:\users\matthew\documents\visual studio 2010\Projects\Sputnik\Sputnik\Sputnik\obj\x86\Debug\Sputnik.pdb
+c:\users\matthew\documents\visual studio 2010\Projects\Sputnik\Sputnik\Sputnik\bin\x86\Debug\Content\Pawn.xnb
