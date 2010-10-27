@@ -16,8 +16,11 @@ namespace TeamQ
 {
     struct State
     {
-        public Vector2 position, velocity;
-        public float rotation;
-        float maxSpeed;
+        public Vector2 position;
+        public Vector2 velocity;  //Needs to be enforced that direction and velocity point in the same direction
+        //Setting direction to be the arcTangent does not work since ship can be not moving.  You can't tell me the direction of <0,0>
+        public float direction;  //is required to tell me the direction when ship isnt moving ie velocity = <0,0>
+        public float maxSpeed;
+        public float maxTurn;
     }
 }
