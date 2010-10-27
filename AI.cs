@@ -11,71 +11,66 @@ using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Storage;
 
-namespace TeamQ
-{
-
     class AI
     {
-        float maxSpeed = 5f;
-        float maxTurn = 0.1f;
-        bool goingStart;
+        Boolean goingStart;
         Vector2 start, finish;
-        Environment environment;
-        
-        public AI(Vector2 s, Vector2 f, Environment e){
+        Environment env;
+
+        /// <summary>
+        ///  Creates a new AI with given start and finish positions of patrol path and given environment
+        /// </summary>
+        public AI(Vector2 s,Vector2 f, Environment e){
             start = s;
             finish = f;
-            environment = e;
+            env = e;
         }
 
-        public State update(State s)
-        {
+        /// <summary>
+        ///  Updates the State of a ship
+        /// </summary>
 
+        public State update(State ship)
+        {
             Vector2 destination;
             if (goingStart)
                 destination = start;
             else
                 destination = finish;
-            float wantedDirection = (float)Math.Atan2(destination.Y - s.position.Y, destination.X - s.position.X);
+            float wantedDirection = (float)Math.Atan2(destination.Y - ship.position.Y, destination.X - ship.position.X);
             if (wantedDirection < 0)
-                wantedDirection += 2 * MathHelper.Pi;
-            float currentDirection = s.direction % (MathHelper.Pi * 2);
-            if (Vector2.Distance(s.position, destination) < maxSpeed)
-            {
-                s.velocity = Vector2.Subtract(destination,s.position);
-            }
-            else if (Vector2.Distance(s.position, destination) == 0)
+                wantedDirection += MathHelper.Pi * 2f;
+            if (Vector2.Distance(ship.position, destination) < ship.maxSpeed)
             {
                 goingStart = !goingStart;
-                s.velocity = Vector2.Zero;
+                ship.velocity = Vector2.Zero;
             }
-            else if (Math.Abs(currentDirection - wantedDirection) < maxTurn)
+            else if (wantedDirection == ship.direction)
             {
                 //(Math.Abs(wantedDirection - ship.theta) <0.001)
-                s.velocity = new Vector2((float)(maxSpeed*Math.Cos(currentDirection)),(float)(maxSpeed*Math.Sin(currentDirection)));
+                ship.velocity = new Vector2((float)(Math.Cos(ship.direction*ship.maxSpeed),(float)(Math.Sin(ship.direction*ship.maxSpeed));
             }
             else
             {
                 //I gave up trying to find a good value for tweaking if wantedDirection and theta are equal
                 //I hate floats now.
-                s.velocity = Vector2.Zero;
-               if (currentDirection < wantedDirection)
+                ship.velocity = Vector2.Zero;
+                if (ship.direction < wantedDirection)
                 {
-                    if (s.direction + maxTurn > wantedDirection)
-                        s.direction = wantedDirection;
+                    if (ship.direction + ship.maxTurn > wantedDirection)
+                        ship.direction = wantedDirection;
                     else
-                        s.direction += maxTurn;
+                        ship.direction += ship.maxTurn;
                 }
                 else
                 {
-                    if (s.direction - maxTurn < wantedDirection)
-                        s.direction = wantedDirection;
+                    if (ship.direction - ship.maxTurn < wantedDirection)
+                        ship.direction = wantedDirection;
                     else
-                        s.direction -= maxTurn;
+                        ship.direction -= ship.maxTurn;
                 }
             }
-            return s;
+            return ship;
         }
 
     }
-}

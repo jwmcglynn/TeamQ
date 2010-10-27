@@ -12,8 +12,6 @@ using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Storage;
 
-namespace TeamQ
-{
     struct State
     {
         public Vector2 position;
@@ -23,4 +21,3 @@ namespace TeamQ
         public float maxSpeed;
         public float maxTurn;
     }
-}

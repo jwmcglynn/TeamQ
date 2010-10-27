@@ -14,5 +14,6 @@ class GymEnvironment : Environment {
         Entity test2 = new Entity(this);
         test2.LoadTexture("redball");
         test2.velocity = new Vector2(15.0f, 15.0f);
+
 	}
 }
