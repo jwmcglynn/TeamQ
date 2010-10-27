@@ -6,43 +6,45 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
-class Environment {
-	private List<Entity> m_entities = new List<Entity>();
-	private Controller m_controller;
+namespace Sputnik {
+	class Environment {
+		protected List<Entity> m_entities = new List<Entity>();
+		protected Controller m_controller;
 
-	public Environment(Controller ctrl) {
-		m_controller = ctrl;
-	}
-
-	public ContentManager contentManager {
-		get {
-			return m_controller.contentManager;
+		public Environment(Controller ctrl) {
+			m_controller = ctrl;
 		}
-	}
 
-	/*************************************************************************/
-	// Game loop.
-
-	public void Update(float elapsedTime) {
-		foreach (Entity ent in m_entities) {
-			ent.Update(elapsedTime);
+		public ContentManager contentManager {
+			get {
+				return m_controller.Content;
+			}
 		}
-	}
 
-	public void Draw(SpriteBatch spriteBatch) {
-		foreach (Entity ent in m_entities) {
-			ent.Draw(spriteBatch);
+		/*************************************************************************/
+		// Game loop.
+
+		public virtual void Update(float elapsedTime) {
+			foreach (Entity ent in m_entities) {
+				ent.Update(elapsedTime);
+			}
 		}
-	}
 
-	/*************************************************************************/
-	// For use internally by Entities.
+		public virtual void Draw(SpriteBatch spriteBatch) {
+			foreach (Entity ent in m_entities) {
+				ent.Draw(spriteBatch);
+			}
+		}
 
-	public void RegisterEntity(Entity ent) {
-		m_entities.Add(ent);
-	}
+		/*************************************************************************/
+		// For use internally by Entities.
 
-	public void UnregisterEntity(Entity ent) {
-		m_entities.Remove(ent);
+		public void RegisterEntity(Entity ent) {
+			m_entities.Add(ent);
+		}
+
+		public void UnregisterEntity(Entity ent) {
+			m_entities.Remove(ent);
+		}
 	}
 }

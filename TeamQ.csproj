@@ -7,7 +7,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TeamQ</RootNamespace>
+    <RootNamespace>Sputnik</RootNamespace>
     <AssemblyName>TeamQ</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -108,8 +108,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI.cs" />
+    <Compile Include="DebugViewXNA.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Environment.cs" />
+    <Compile Include="GameEnvironment.cs" />
     <Compile Include="GymEnvironment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
@@ -152,6 +154,10 @@
       <Project>{B4137D84-9787-4A7E-9A56-72349C2CC119}</Project>
       <Name>TeamQContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+    </ProjectReference>
+    <ProjectReference Include="vendor\farseer\Farseer Physics 3.0 XNA.csproj">
+      <Project>{0A850700-1ABB-4288-A391-6726B90EBEB9}</Project>
+      <Name>Farseer Physics 3.0 XNA</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

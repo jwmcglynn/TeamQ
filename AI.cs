@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Storage;
 
+namespace Sputnik {
     class AI
     {
         Boolean goingStart;
@@ -48,7 +49,7 @@ using Microsoft.Xna.Framework.Storage;
             else if (wantedDirection == ship.direction)
             {
                 //(Math.Abs(wantedDirection - ship.theta) <0.001)
-                ship.velocity = new Vector2((float)(Math.Cos(ship.direction*ship.maxSpeed),(float)(Math.Sin(ship.direction*ship.maxSpeed));
+                ship.velocity = new Vector2((float) Math.Cos(ship.direction*ship.maxSpeed), (float) Math.Sin(ship.direction*ship.maxSpeed));
             }
             else
             {
@@ -74,3 +75,4 @@ using Microsoft.Xna.Framework.Storage;
         }
 
     }
+}

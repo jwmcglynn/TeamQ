@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.Storage;
 
+namespace Sputnik {
     struct State
     {
         public Vector2 position;
@@ -21,3 +22,4 @@ using Microsoft.Xna.Framework.Storage;
         public float maxSpeed;
         public float maxTurn;
     }
+}
