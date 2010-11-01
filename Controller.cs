@@ -14,9 +14,8 @@ namespace Sputnik {
 	/// This is the main type for your game
 	/// </summary>
 	public class Controller : Microsoft.Xna.Framework.Game {
-		GraphicsDeviceManager m_graphics;
-		SpriteBatch m_spriteBatch;
-		Environment m_env;
+		private GraphicsDeviceManager m_graphics;
+		private Environment m_env;
 
 		public Controller() {
 			m_graphics = new GraphicsDeviceManager(this);
@@ -40,9 +39,6 @@ namespace Sputnik {
 		/// all of your content.
 		/// </summary>
 		protected override void LoadContent() {
-			// Create a new SpriteBatch, which can be used to draw textures.
-			m_spriteBatch = new SpriteBatch(GraphicsDevice);
-
 			// Prepare DebugView.
 			FarseerPhysics.DebugViewXNA.LoadContent(GraphicsDevice, Content);
 
@@ -64,13 +60,13 @@ namespace Sputnik {
 		/// </summary>
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime) {
-			// Allows the game to exit
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+			// Allows the game to exit.
+			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
+					|| Keyboard.GetState().IsKeyDown(Keys.Escape)) {
 				this.Exit();
+			}
 
-			// TODO: Add your update logic here
 			m_env.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
-
 			base.Update(gameTime);
 		}
 
@@ -80,9 +76,7 @@ namespace Sputnik {
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw(GameTime gameTime) {
 			GraphicsDevice.Clear(Color.Black);
-			m_spriteBatch.Begin();
-			m_env.Draw(m_spriteBatch);
-			m_spriteBatch.End();
+			m_env.Draw();
 			base.Draw(gameTime);
 		}
 	}

@@ -7,50 +7,43 @@ using FarseerPhysics.Dynamics;
 using FarseerPhysics.Collision.Shapes;
 
 namespace Sputnik {
-    class GymEnvironment : GameEnvironment
-    {
-        FarseerPhysics.Dynamics.Body m_testBody;
+	class GymEnvironment : GameEnvironment {
+		public GymEnvironment(Controller ctrl)
+				: base(ctrl) {
 
-        public GymEnvironment(Controller ctrl)
-            : base(ctrl)
-        {
-            Entity test = new Entity(this);
-            test.LoadTexture("redball");
-            test.velocity = new Vector2(5.0f, 5.0f);
+			Entity[] testBalls = new Entity[3];
 
-            Entity test2 = new Entity(this);
-            test2.LoadTexture("redball");
-            test2.velocity = new Vector2(15.0f, 15.0f);
+			for (int i = 0; i < 3; ++i) {
+				Entity test = new Entity();
+				test.LoadTexture(contentManager, "redball");
+				test.Registration = new Vector2(test.Texture.Width, test.Texture.Height) * 0.5f;
 
+				test.CreateCollisionBody(CollisionWorld, BodyType.Dynamic, CollisionFlags.DisableSleep);
+				test.AddCollisionCircle(test.Texture.Width * 0.5f, Vector2.Zero);
+				AddChild(test);
 
+				testBalls[i] = test;
+			}
 
-            Entity target = new Entity(this);
-            target.LoadTexture("redball");
-            target.velocity = new Vector2(0.0f, 0.0f);
+			testBalls[0].Position = new Vector2(50.0f, 200.0f);
+			testBalls[0].SetPhysicsVelocityOnce(new Vector2(50.0f, 0.0f));
 
-            Bullet bulletTest = new Bullet(this);
-            bulletTest.LoadTexture("bullet");
-            bulletTest.position = new Vector2(300.0f, 0.0f);
-            bulletTest.velocity = new Vector2(-50.0f, 0.0f);
+			testBalls[1].Position = new Vector2(200.0f, 200.0f);
 
-            SpecialAbility special = new SpecialAbility(this);
-            special.LoadTexture("bullet");
-            special.position = new Vector2(300.0f, 100.0f);
-            special.velocity = new Vector2(0.0f, 0.0f);
+			testBalls[2].Position = new Vector2(200.0f, 50.0f);
+			testBalls[2].SetPhysicsVelocityOnce(new Vector2(0.0f, 75.0f));
 
-            ///// Collision testing.
-            m_testBody = collisionWorld.CreateBody();
-            m_testBody.BodyType = FarseerPhysics.Dynamics.BodyType.Dynamic;
-            m_testBody.Position = new Vector2(5.0f, 5.0f);
+			Bullet bulletTest = new Bullet();
+			bulletTest.LoadTexture(contentManager, "bullet");
+			bulletTest.Position = new Vector2(300.0f, 0.0f);
+			bulletTest.DesiredVelocity = new Vector2(-50.0f, 0.0f);
+			AddChild(bulletTest);
 
-            //We create a circle shape with a radius of 0.5 meters
-            CircleShape circleShape = new CircleShape(0.5f);
-
-            //We fix the body and shape together using a Fixture object
-            Fixture fixture = m_testBody.CreateFixture(circleShape);
-
-            m_testBody.ApplyForce(new Vector2(10.0f, 5.0f));
-            m_testBody.ApplyTorque(50.0f);
-        }
-    }
+			SpecialAbility special = new SpecialAbility();
+			special.LoadTexture(contentManager, "bullet");
+			special.Position = new Vector2(300.0f, 100.0f);
+			special.DesiredVelocity = new Vector2(0.0f, 0.0f);
+			AddChild(special);
+		}
+	}
 }

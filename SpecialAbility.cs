@@ -9,7 +9,7 @@ namespace Sputnik
     {
         private int typeOfAbility; // 1 = Black Hole, 2 = Force Field, 3 = Tractor Beam
 
-        public SpecialAbility(Environment env) : base(env)
+        public SpecialAbility()
         {
         }
         

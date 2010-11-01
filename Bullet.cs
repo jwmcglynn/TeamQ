@@ -9,8 +9,9 @@ namespace Sputnik
     {
         private int bulletStrength;
 
-        public Bullet(Environment env) : base(env)
+        public Bullet()
         {
+			Zindex = 0.0f;
         }
 
         // 1 is for weak bullet, 3 is for strong bullet.
