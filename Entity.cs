@@ -213,9 +213,8 @@ namespace Sputnik {
 				}
 			}
 
-			foreach (Entity ent in Children) {
-				ent.Update(elapsedTime);
-			}
+			// Use "RemoveAll" function to iterate over a list and handle removals.
+			Children.ForEach((Entity ent) => { ent.Update(elapsedTime); });
 		}
 
 		/// <summary>
