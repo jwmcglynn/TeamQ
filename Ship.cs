@@ -8,13 +8,16 @@ namespace Sputnik
 {
     class Ship : Entity
     {
-        private ShipController ai = null;
+        private ShipController ai;
         private ShipController previousAI = null;
         private int health = 10;
         public float maxSpeed;
         public float maxTurn;
 
-        public Ship() : base() { }
+        public Ship(AIController ai) : base() 
+        {
+            this.ai = ai;
+        }
 
         new public void Update(float elapsedTime)
         {
