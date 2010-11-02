@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="Foreground" tilewidth="32" tileheight="32">
+  <image source="tiles.png"/>
+ </tileset>
+ <layer name="Foreground" width="100" height="100">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3ZywrCMBCGUW/v/8y6UUqxJC2mnb+eA1kYXMzwoRR6uVDR/XUeRw/Bx2NyON68xzX0nMW3HmkSZ16iRz161JW4W+LMvRJ3S5y5V89ut87P8/tRztqj99lRj33oUYsetWztMb27Nb43gh7Ld3r8zpoe7zO/7/ner525R6LUuVtS90qduyV1r9S5W1L3Sp27JXWv1LlbUvdKnbtl7V5Hv6M94/vaqS09GEePWvSoRY9a9Khjy3OKHmPpUYffRz161KJHLXrUokctetSy9hlLj/H0qEWPWtb8Z+mxj29Nlu7Yz7++JwUAAAAAAAAAAAAAAAAAAAAAAAAAAACA0Z6qA5u/QJwAAA==
+  </data>
+ </layer>
+ <objectgroup name="Objects" width="100" height="100">
+  <object name="" type="spawn" x="361" y="602"/>
+  <object name="" type="triangulus" x="235" y="143" width="248" height="135"/>
+ </objectgroup>
+</map>

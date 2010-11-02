@@ -5,10 +5,15 @@ using System.Text;
 using Physics = FarseerPhysics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Storage;
+using Tiled = Squared.Tiled;
+using System.IO;
 
 namespace Sputnik {
 	class GameEnvironment : Environment {
 		private SpriteBatch m_spriteBatch;
+		private Tiled.Map m_map;
+		protected Vector2 m_viewportPosition = Vector2.Zero;
 
 		private Physics.DebugViewXNA m_debugView;
 		public Physics.Dynamics.World CollisionWorld;
@@ -33,12 +38,13 @@ namespace Sputnik {
 
 			// Create collision notification callbacks.
 			CollisionWorld.ContactManager.PreSolve += PreSolve;
-			CollisionWorld.ContactManager.PostSolve += PostSolve;
-			CollisionWorld.ContactManager.BeginContact += BeginContact;
-			CollisionWorld.ContactManager.EndContact += EndContact;
 
 			// TODO: Scale to physics world.
 			m_debugPhysicsMatrix = Matrix.CreateOrthographicOffCenter(0.0f, m_controller.GraphicsDevice.Viewport.Width * k_physicsScale, m_controller.GraphicsDevice.Viewport.Height * k_physicsScale, 0.0f, -1.0f, 1.0f);
+		}
+
+		public void LoadMap(string filename) {
+			m_map = Tiled.Map.Load(Path.Combine(m_controller.Content.RootDirectory, filename), m_controller.Content);
 		}
 
 		public override void Update(float elapsedTime) {
@@ -55,24 +61,39 @@ namespace Sputnik {
 			}
 		}
 
+		/// <summary>
+		/// Draw the world.
+		/// </summary>
 		public override void Draw() {
 			m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
+			if (m_map != null) m_map.Draw(m_spriteBatch, new Rectangle(0, 0, m_controller.GraphicsDevice.Viewport.Width, m_controller.GraphicsDevice.Viewport.Height), m_viewportPosition);
 			Draw(m_spriteBatch);
 			m_spriteBatch.End();
 			m_debugView.RenderDebugData(ref m_debugPhysicsMatrix);
 		}
 
-		// Callbacks for derived classes.
-		protected void BeginContact(Physics.Dynamics.Contacts.Contact contact) {
-		}
-
-		protected void EndContact(Physics.Dynamics.Contacts.Contact contact) {
-		}
-
+		/// <summary>
+		/// Farseer Physics callback.  Handles the case where two objects collide.
+		/// </summary>
+		/// <param name="contact">Contact point.</param>
+		/// <param name="oldManifold">Manifold from last update.</param>
 		protected void PreSolve(Physics.Dynamics.Contacts.Contact contact, ref Physics.Collision.Manifold oldManifold) {
-		}
+			if (!contact.IsTouching()) return;
 
-		protected void PostSolve(Physics.Dynamics.Contacts.Contact contact, ref Physics.Dynamics.ContactImpulse impulse) {
+			// Attempt to get Entities from both shapes.
+			Entity entA = (Entity) contact.FixtureA.Body.UserData;
+			Entity entB = (Entity) contact.FixtureB.Body.UserData;
+
+			// Determine if shapes agree to collide.
+			bool shouldCollide = entA.ShouldCollide(entB);
+			shouldCollide &= entB.ShouldCollide(entA);
+
+			contact.Enabled = shouldCollide;
+
+			if (shouldCollide && contact.IsTouching()) {
+				entA.OnCollide(entB, contact);
+				entB.OnCollide(entA, contact);
+			}
 		}
 	}
 }

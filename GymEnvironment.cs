@@ -50,11 +50,20 @@ namespace Sputnik {
 			emit.Position = new Vector2(210.0f, 300.0f);
 			emit.Rotation = (float)3.14 * 3 / 2;
 			AddChild(emit);
+
+			LoadMap("gym.tmx");
 		}
 
-		public override void Update(float elapsedTime)
-		{
-			emit.IsShooting = Keyboard.GetState().IsKeyDown(Keys.Space);
+		public override void Update(float elapsedTime) {
+			KeyboardState kb = Keyboard.GetState();
+			emit.IsShooting = kb.IsKeyDown(Keys.Space);
+
+			const float k_cameraVel = 150.0f;
+			if (kb.IsKeyDown(Keys.W)) m_viewportPosition.Y -= k_cameraVel * elapsedTime;
+			if (kb.IsKeyDown(Keys.A)) m_viewportPosition.X -= k_cameraVel * elapsedTime;
+			if (kb.IsKeyDown(Keys.S)) m_viewportPosition.Y += k_cameraVel * elapsedTime;
+			if (kb.IsKeyDown(Keys.D)) m_viewportPosition.X += k_cameraVel * elapsedTime;
+
 			base.Update(elapsedTime);
 		}
 	}

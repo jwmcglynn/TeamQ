@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 using Physics = FarseerPhysics;
+using System.IO;
 
 namespace Sputnik {
 	class Entity {
@@ -24,6 +25,7 @@ namespace Sputnik {
 		public List<Entity> Children = new List<Entity>();
 
 		// Collision.
+		protected Physics.Dynamics.World m_collisionWorld;
 		public Physics.Dynamics.Body CollisionBody;
 		private bool m_applyVelocity = false;
 		public bool VisualRotationOnly = false;
@@ -68,6 +70,18 @@ namespace Sputnik {
 		/// </summary>
 		public void Remove() {
 			if (Parent != null) Parent.RemoveChild(this);
+		}
+
+		/// <summary>
+		/// Remove current entity from world and destroy its associated collision body.
+		/// </summary>
+		public void Destroy() {
+			Remove();
+			DestroyCollisionBody();
+
+			Children.ForEach((Entity ent) => {
+				ent.Destroy();
+			});
 		}
 
 		/*************************************************************************/
@@ -159,7 +173,8 @@ namespace Sputnik {
 
 		public void CreateCollisionBody(Physics.Dynamics.World world, Physics.Dynamics.BodyType type, CollisionFlags flags = CollisionFlags.Default) {
 			if (CollisionBody != null) throw new ArgumentException("CreateCollisionBody called on Entity where collision body already exists.");
-			
+			m_collisionWorld = world;
+
 			Physics.Dynamics.Body body = world.CreateBody();
 			
 			body.BodyType = type;
@@ -173,29 +188,82 @@ namespace Sputnik {
 			CollisionBody = body;
 		}
 
+		public void DestroyCollisionBody() {
+			if (CollisionBody == null) return;
+
+			m_collisionWorld.RemoveBody(CollisionBody);
+			m_collisionWorld = null;
+			CollisionBody = null;
+		}
+
+		/*************************************************************************/
 		// Shape creators.
+
+		/// <summary>
+		/// Add an arbitrary Farseer collision shape to the body.
+		/// </summary>
+		/// <param name="shape">Shape.</param>
+		/// <param name="density">Density of the shape.  Mass will be computed automatically.</param>
 		public void AddCollisionShape(Physics.Collision.Shapes.Shape shape, float density = 1.0f) {
 			if (CollisionBody == null) throw new ArgumentException("Cannot add collision shape until collision body is created.");
-
 			CollisionBody.CreateFixture(shape, density);
 		}
 
+		/// <summary>
+		/// Add a circle collision shape to the body.
+		/// </summary>
+		/// <param name="radius">Radius of the circle in body space.</param>
+		/// <param name="center">Center of the circle in body space.</param>
+		/// <param name="density"></param>
 		public void AddCollisionCircle(float radius, Vector2 center, float density = 1.0f) {
 			Physics.Collision.Shapes.CircleShape circle = new Physics.Collision.Shapes.CircleShape(radius * GameEnvironment.k_physicsScale);
 			circle.Position = center * GameEnvironment.k_physicsScale;
 			AddCollisionShape(circle, density);
 		}
 
+		/// <summary>
+		/// Add a rectangle collision shape to the body.
+		/// </summary>
+		/// <param name="halfsize">A vector specifying half of the width and height of the rectangle in body space.</param>
+		/// <param name="center">The center point of the rectangle in body space.</param>
+		/// <param name="rotation">Rotation of the shape relative to the body in radians.</param>
+		/// <param name="density">Density of the shape.</param>
 		public void AddCollisionRectangle(Vector2 halfsize, Vector2 center, float rotation = 0.0f, float density = 1.0f) {
 			Physics.Collision.Shapes.PolygonShape poly = new Physics.Collision.Shapes.PolygonShape();
 			poly.SetAsBox(halfsize.X * GameEnvironment.k_physicsScale, halfsize.Y * GameEnvironment.k_physicsScale, center * GameEnvironment.k_physicsScale, rotation);
 			AddCollisionShape(poly, density);
 		}
 
+		/// <summary>
+		/// Add a line to this body's collision shape.
+		/// </summary>
+		/// <param name="start">Start point in body space.</param>
+		/// <param name="end">End point in body space.</param>
 		public void AddCollisionLine(Vector2 start, Vector2 end) {
 			Physics.Collision.Shapes.PolygonShape poly = new Physics.Collision.Shapes.PolygonShape();
 			poly.SetAsEdge(start * GameEnvironment.k_physicsScale, end * GameEnvironment.k_physicsScale);
 			AddCollisionShape(poly, 0.0f);
+		}
+
+		/*************************************************************************/
+		// Collision callbacks.
+
+		/// <summary>
+		/// Called when two entities collide.
+		/// </summary>
+		/// <param name="entB">Other entity.</param>
+		/// <param name="contact">Contact point.</param>
+		public virtual void OnCollide(Entity entB, Physics.Dynamics.Contacts.Contact contact) {
+		}
+
+		/// <summary>
+		/// Should this entity collide with another entity?  Used for filtering collisions.
+		/// Default: Returns false.
+		/// </summary>
+		/// <param name="entB">Entity that we are trying to collide with.</param>
+		/// <returns></returns>
+		public virtual bool ShouldCollide(Entity entB) {
+			return true;
 		}
 
 		/*************************************************************************/
