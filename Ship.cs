@@ -11,17 +11,15 @@ namespace Sputnik
         private ShipController ai = null;
         private ShipController previousAI = null;
         private int health = 10;
+        public float maxSpeed;
+        public float maxTurn;
 
         public Ship() : base() { }
 
         new public void Update(float elapsedTime)
         {
-            State current = new State();
-
-            State state = ai.Update(current);
-
+            ai.Update(this);
             base.Update(elapsedTime);
-
         }
 
         // Attach Sputnik to the ship
@@ -43,6 +41,12 @@ namespace Sputnik
                     this.KillShip();
                 }
             }
+        }
+
+        public void Shoot()
+        {
+            // Perform what ever actions are necessary to 
+            // make the ship shoot
         }
 
         public bool isSputnik()

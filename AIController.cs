@@ -33,32 +33,37 @@ namespace Sputnik {
         ///  Updates the State of a ship
         /// </summary>
 
-        public State Update(State s)
+        public void Update(Ship s)
         {
             Vector2 destination;
             if (goingStart)
                 destination = start;
             else
                 destination = finish;
-            float wantedDirection = (float)Math.Atan2(destination.Y - s.position.Y, destination.X - s.position.X);
+            // Changed from: float wantedDirection = (float)Math.Atan2(destination.Y - s.position.Y, destination.X - s.position.X);
+            float wantedDirection = (float)Math.Atan2(destination.Y - s.Position.Y, destination.X - s.Position.X);
             while (wantedDirection < 0)
                 wantedDirection += MathHelper.Pi * 2.0f;
+            // Changed from while (s.direction < 0)
             while (s.direction < 0)
                 s.direction += MathHelper.Pi * 2.0f;
             s.direction %= MathHelper.Pi * 2.0f;
             wantedDirection %= MathHelper.Pi * 2.0f;
-            if (Vector2.Distance(s.position, destination) < s.maxSpeed/env.FPS) //This number needs tweaking, 0 does not work
+            if (Vector2.Distance(s.Position, destination) < s.maxSpeed/env.FPS) //This number needs tweaking, 0 does not work
             {
                 goingStart = !goingStart;
-                s.velocity = Vector2.Zero;
+                // Changed from: s.velocity = Vector2.Zero;
+                s.DesiredVelocity = Vector2.Zero;
             }
             else if (Math.Abs(wantedDirection-s.direction) < s.maxTurn)
             {
-                s.velocity = new Vector2((float)Math.Cos(s.direction) * s.maxSpeed, (float)Math.Sin(s.direction) * s.maxSpeed);
+                // changed from: s.velocity = new Vector2((float)Math.Cos(s.direction) * s.maxSpeed, (float)Math.Sin(s.direction) * s.maxSpeed);
+                s.DesiredVelocity = new Vector2((float)Math.Cos(s.direction) * s.maxSpeed, (float)Math.Sin(s.direction) * s.maxSpeed);
             }
             else
             {
-                s.velocity = Vector2.Zero;
+                // Changed from: s.velocity = Vector2.Zero;
+                s.DesiredVelocity = Vector2.Zero;
                 float counterclockwiseDistance = Math.Abs(wantedDirection - (s.direction + s.maxTurn)%(MathHelper.Pi * 2));
                 float clockwiseDistance = Math.Abs(wantedDirection - (s.direction - s.maxTurn + MathHelper.Pi * 2) % (MathHelper.Pi * 2));
                 if (counterclockwiseDistance < clockwiseDistance)
@@ -86,8 +91,9 @@ namespace Sputnik {
             }
             //Theoretically I should shoot when player is in front, but this is funner
             Random r = new Random();
-            s.shoot = r.NextDouble() < 0.5;
-            return s;
+            // Changed from: s.shoot = r.NextDouble() < 0.5;
+            if (r.NextDouble() < 0.5)
+                s.Shoot();
         }
 
     }
