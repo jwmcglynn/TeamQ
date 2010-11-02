@@ -10,7 +10,7 @@ using FarseerPhysics.Collision.Shapes;
 namespace Sputnik
 {
     //Made to make 
-    class TestShip : Entity
+    class TestShip : Entity, TakesDamage
     {
         ShipController controller;
         public TestShip(float x, float y,float vx, float vy, float sx, float sy, float fx, float fy, GameEnvironment env)
@@ -21,7 +21,7 @@ namespace Sputnik
             AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
             Position = new Vector2(x, y);
             SetPhysicsVelocityOnce(new Vector2(vx, vy));
-            controller = new AIController(new Vector2(sx, sy), new Vector2(fx, fy), env);              
+            controller = new AIController(new Vector2(sx, sy), new Vector2(fx, fy), env);
         }
 
         public TestShip(float x, float y, float vx, float vy,GameEnvironment env)
@@ -34,6 +34,17 @@ namespace Sputnik
             SetPhysicsVelocityOnce(new Vector2(vx, vy));
             controller = new PlayerController(env);
         }
+
+		/// <summary>
+		/// Disable collisions with other ships.
+		/// </summary>
+		/// <param name="entB"></param>
+		/// <returns></returns>
+		public override bool ShouldCollide(Entity entB) {
+			if (entB is TestShip) return false;
+			return true;
+		}
+
 
         public override void Update(float elapsedTime)
         {
@@ -51,5 +62,14 @@ namespace Sputnik
             // Use "RemoveAll" function to iterate over a list and handle removals.
             Children.ForEach((Entity ent) => { ent.Update(elapsedTime); });
         }
-    }
+
+		// TakesDamage interface.
+		public bool IsFriendly() {
+			return false; // FIXME.
+		}
+
+		public void TakeHit(int damage) {
+			// Do nothing.  FIXME.
+		}
+	}
 }

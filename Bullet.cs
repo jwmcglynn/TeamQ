@@ -11,6 +11,9 @@ namespace Sputnik
 		private int bulletStrength;
 		const float k_speed = 300.0f; // pixels per second
 		public bool ShotByPlayer; // to figure out who will be the target of our bullet
+		
+		private bool m_shouldCull = false;
+		private float m_lifetime = 0.0f;
 
 		public Bullet(GameEnvironment env, Vector2 position, double angle, bool playerShotBullet)
 		{
@@ -53,8 +56,32 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
+			m_lifetime += elapsedTime;
+			if (m_shouldCull || m_lifetime > 15.0f) Destroy();
+
 			Rotation = (float) Math.Atan2((double) ActualVelocity.Y, (double) ActualVelocity.X);
 			base.Update(elapsedTime);
+		}
+
+		public override bool ShouldCollide(Entity entB) {
+			if (entB is Bullet) return false;
+			if (entB is TakesDamage) {
+				if (((TakesDamage) entB).IsFriendly() == ShotByPlayer) return false;
+			}
+
+			return true;
+		}
+
+		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact) {
+			m_shouldCull = true;
+			if (entB is TakesDamage) {
+				((TakesDamage) entB).TakeHit(bulletStrength);
+			}
+
+			// Disable collision response.
+			contact.Enabled = false;
+
+			base.OnCollide(entB, contact);
 		}
 	}
 }
