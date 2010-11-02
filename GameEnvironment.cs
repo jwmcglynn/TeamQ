@@ -24,9 +24,19 @@ namespace Sputnik {
 
 		public float m_updateAccum; // How much time has passed relative to the physics world.
 
+        //FPS Counters
+        private float frameTime;
+        protected int fps;
+        private int frameCounter;
+
 
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {
+
+            //Frame rate variables initialize
+            frameTime = 0;
+            fps = 30;
+            frameCounter = 0;
 
 			// Create a new SpriteBatch, which can be used to draw textures.
 			m_spriteBatch = new SpriteBatch(ctrl.GraphicsDevice);
@@ -59,12 +69,24 @@ namespace Sputnik {
 				// Update entities.
 				base.Update(elapsedTime);
 			}
+
+            //FPS counter
+            frameCounter++;
+            frameTime += elapsedTime;
+            if (frameTime >= 1.0f)
+            {
+                fps = frameCounter;
+                frameTime = 0;
+                frameCounter = 0;
+
+            }
 		}
 
 		/// <summary>
 		/// Draw the world.
 		/// </summary>
-		public override void Draw() {
+        public override void Draw()
+        {
 			m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
 			if (m_map != null) m_map.Draw(m_spriteBatch, new Rectangle(0, 0, m_controller.GraphicsDevice.Viewport.Width, m_controller.GraphicsDevice.Viewport.Height), m_viewportPosition);
 			Draw(m_spriteBatch);
@@ -95,5 +117,16 @@ namespace Sputnik {
 				entB.OnCollide(entA, contact);
 			}
 		}
+
+        /// <summary>
+        /// Current FPS.
+        /// </summary>
+        public int FPS
+        {
+            get
+            {
+                return fps;
+            }
+        }
 	}
 }

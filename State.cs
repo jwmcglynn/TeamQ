@@ -21,5 +21,6 @@ namespace Sputnik {
         public float direction;  //is required to tell me the direction when ship isnt moving ie velocity = <0,0>
         public float maxSpeed;
         public float maxTurn;
+        public bool shoot;
     }
 }

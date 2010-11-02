@@ -107,18 +107,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AI.cs" />
+    <Compile Include="AIController.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="BulletEmitter.cs" />
+    <Compile Include="Crosshair.cs" />
+    <Compile Include="PlayerController.cs" />
+    <Compile Include="ShipEnvironment.cs" />
     <Compile Include="DebugViewXNA.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="GameEnvironment.cs" />
     <Compile Include="GymEnvironment.cs" />
+    <Compile Include="TestShip.cs" />
     <Compile Include="Loaders\Tiled.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Controller.cs" />
+    <Compile Include="ShipController.cs" />
     <Compile Include="SpecialAbility.cs" />
     <Compile Include="State.cs" />
   </ItemGroup>

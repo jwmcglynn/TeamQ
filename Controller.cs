@@ -17,6 +17,17 @@ namespace Sputnik {
 		private GraphicsDeviceManager m_graphics;
 		private Environment m_env;
 
+        /// <summary>
+        /// Made this to play with random positions
+        /// </summary>
+        public GraphicsDeviceManager Graphics
+        {
+            get
+            {
+                return m_graphics;
+            }
+        }
+
 		public Controller() {
 			m_graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
