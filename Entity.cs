@@ -162,8 +162,8 @@ namespace Sputnik {
 			Physics.Dynamics.Body body = world.CreateBody();
 			
 			body.BodyType = type;
-			body.Position = Position * GameEnvironment.k_physicsScale;
-			body.LinearVelocity = ActualVelocity * GameEnvironment.k_physicsScale;
+			body.Position = m_position * GameEnvironment.k_physicsScale;
+			body.LinearVelocity = m_velocity * GameEnvironment.k_physicsScale;
 			body.FixedRotation = flags.HasFlag(CollisionFlags.FixedRotation);
 			body.SleepingAllowed = !flags.HasFlag(CollisionFlags.DisableSleep);
 			body.IsBullet = flags.HasFlag(CollisionFlags.IsBullet);
@@ -181,7 +181,7 @@ namespace Sputnik {
 
 		public void AddCollisionCircle(float radius, Vector2 center, float density = 1.0f) {
 			Physics.Collision.Shapes.CircleShape circle = new Physics.Collision.Shapes.CircleShape(radius * GameEnvironment.k_physicsScale);
-			circle.Position = center;
+			circle.Position = center * GameEnvironment.k_physicsScale;
 			AddCollisionShape(circle, density);
 		}
 
@@ -209,7 +209,7 @@ namespace Sputnik {
 				if (CollisionBody == null) {
 					m_position += m_velocity * elapsedTime;
 				} else {
-					CollisionBody.LinearVelocity = m_velocity;
+					CollisionBody.LinearVelocity = m_velocity * GameEnvironment.k_physicsScale;
 				}
 			}
 
