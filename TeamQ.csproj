@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="AI.cs" />
     <Compile Include="Bullet.cs" />
+    <Compile Include="BulletEmitter.cs" />
     <Compile Include="DebugViewXNA.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Environment.cs" />

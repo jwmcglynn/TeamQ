@@ -26,6 +26,7 @@ namespace Sputnik {
 		// Collision.
 		public Physics.Dynamics.Body CollisionBody;
 		private bool m_applyVelocity = false;
+		public bool VisualRotationOnly = false;
 
 		/*************************************************************************/
 		// Constructors/destructors.
@@ -126,12 +127,12 @@ namespace Sputnik {
 		/// </summary>
 		public float Rotation {
 			get {
-				if (CollisionBody != null && !CollisionBody.FixedRotation) return CollisionBody.Rotation;
+				if (CollisionBody != null && !VisualRotationOnly) return CollisionBody.Rotation;
 				else return m_rotation;
 			}
 
 			set {
-				if (CollisionBody != null && !CollisionBody.FixedRotation) CollisionBody.Rotation = value;
+				if (CollisionBody != null && !VisualRotationOnly) CollisionBody.Rotation = value;
 				else m_rotation = value;
 			}
 		}
