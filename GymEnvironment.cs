@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Collision.Shapes;
 
 namespace Sputnik {
 	class GymEnvironment : GameEnvironment {
+
+		BulletEmitter emit;
+
 		public GymEnvironment(Controller ctrl)
 				: base(ctrl) {
 
@@ -33,10 +37,7 @@ namespace Sputnik {
 			testBalls[2].Position = new Vector2(200.0f, 50.0f);
 			testBalls[2].SetPhysicsVelocityOnce(new Vector2(0.0f, 75.0f));
 
-			Bullet bulletTest = new Bullet();
-			bulletTest.LoadTexture(contentManager, "bullet");
-			bulletTest.Position = new Vector2(300.0f, 0.0f);
-			bulletTest.DesiredVelocity = new Vector2(-50.0f, 0.0f);
+			Bullet bulletTest = new Bullet(this, new Vector2(210.0f, 300.0f), 3.14 * 3 / 2, false);
 			AddChild(bulletTest);
 
 			SpecialAbility special = new SpecialAbility();
@@ -44,6 +45,17 @@ namespace Sputnik {
 			special.Position = new Vector2(300.0f, 100.0f);
 			special.DesiredVelocity = new Vector2(0.0f, 0.0f);
 			AddChild(special);
+
+			emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Weak, true);
+			emit.Position = new Vector2(210.0f, 300.0f);
+			emit.Rotation = (float)3.14 * 3 / 2;
+			AddChild(emit);
+		}
+
+		public override void Update(float elapsedTime)
+		{
+			emit.IsShooting = Keyboard.GetState().IsKeyDown(Keys.Space);
+			base.Update(elapsedTime);
 		}
 	}
 }

@@ -26,6 +26,7 @@ namespace Sputnik {
 		// Collision.
 		public Physics.Dynamics.Body CollisionBody;
 		private bool m_applyVelocity = false;
+		public bool VisualRotationOnly = false;
 
 		/*************************************************************************/
 		// Constructors/destructors.
@@ -126,12 +127,12 @@ namespace Sputnik {
 		/// </summary>
 		public float Rotation {
 			get {
-				if (CollisionBody != null && !CollisionBody.FixedRotation) return CollisionBody.Rotation;
+				if (CollisionBody != null && !VisualRotationOnly) return CollisionBody.Rotation;
 				else return m_rotation;
 			}
 
 			set {
-				if (CollisionBody != null && !CollisionBody.FixedRotation) CollisionBody.Rotation = value;
+				if (CollisionBody != null && !VisualRotationOnly) CollisionBody.Rotation = value;
 				else m_rotation = value;
 			}
 		}
@@ -181,7 +182,7 @@ namespace Sputnik {
 
 		public void AddCollisionCircle(float radius, Vector2 center, float density = 1.0f) {
 			Physics.Collision.Shapes.CircleShape circle = new Physics.Collision.Shapes.CircleShape(radius * GameEnvironment.k_physicsScale);
-			circle.Position = center;
+			circle.Position = center * GameEnvironment.k_physicsScale;
 			AddCollisionShape(circle, density);
 		}
 
@@ -209,7 +210,7 @@ namespace Sputnik {
 				if (CollisionBody == null) {
 					m_position += m_velocity * elapsedTime;
 				} else {
-					CollisionBody.LinearVelocity = m_velocity;
+					CollisionBody.LinearVelocity = m_velocity * GameEnvironment.k_physicsScale; 
 				}
 			}
 

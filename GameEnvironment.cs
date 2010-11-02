@@ -49,10 +49,10 @@ namespace Sputnik {
 			while (m_updateAccum > k_physicsStep) {
 				m_updateAccum -= k_physicsStep;
 				CollisionWorld.Step(k_physicsStep);
-			}
 
-			// Update entities.
-			base.Update(elapsedTime);
+				// Update entities.
+				base.Update(elapsedTime);
+			}
 		}
 
 		public override void Draw() {
