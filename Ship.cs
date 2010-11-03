@@ -68,7 +68,7 @@ namespace Sputnik
             // Destory a ship
         }
 
-        public bool isFriendly()
+        public bool IsFriendly()
         {
             return false;
         }
