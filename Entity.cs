@@ -11,8 +11,8 @@ using System.IO;
 namespace Sputnik {
 	class Entity {
 		// Position and motion.
-		protected Vector2 m_position = new Vector2(0, 0);
-		protected Vector2 m_velocity = new Vector2(0, 0);
+		private Vector2 m_position = new Vector2(0, 0); // Intentionally private.  Use Position.
+		private Vector2 m_velocity = new Vector2(0, 0); // Intentionally private.  Use DesiredVelocity.
 		private float m_rotation = 0.0f;
 
 		// Graphics.
@@ -164,13 +164,22 @@ namespace Sputnik {
 		/*************************************************************************/
 		// Collision.
 
+		/// <summary>
+		/// Collision flags to determine how object behaves in the physics engine.
+		/// </summary>
 		public enum CollisionFlags {
-			Default = 0
-			, FixedRotation = (1 << 0)
-			, IsBullet = (1 << 1)
-			, DisableSleep = (1 << 2)
+			Default = 0					// Default options.
+			, FixedRotation = (1 << 0)	// Object cannot rotate.
+			, IsBullet = (1 << 1)		// Object is small and moves at high velocity.  This enables continuous collision detection and prevents tunneling.
+			, DisableSleep = (1 << 2)	// Prevent the object from "sleeping" when not moving.  Warning: Only use this if the object will never stop moving.
 		};
 
+		/// <summary>
+		/// Create and attach a new collision body to this Entity.
+		/// </summary>
+		/// <param name="world">CollisionWorld instance.</param>
+		/// <param name="type">Type of collision body.  Dynamic bodies receive responses, kinematic bodies do not.  Static bodies cannot move.</param>
+		/// <param name="flags">Flags.</param>
 		public void CreateCollisionBody(Physics.Dynamics.World world, Physics.Dynamics.BodyType type, CollisionFlags flags = CollisionFlags.Default) {
 			if (CollisionBody != null) throw new ArgumentException("CreateCollisionBody called on Entity where collision body already exists.");
 			m_collisionWorld = world;
@@ -188,6 +197,9 @@ namespace Sputnik {
 			CollisionBody = body;
 		}
 
+		/// <summary>
+		/// Destroy the collision body attached to this body.
+		/// </summary>
 		public void DestroyCollisionBody() {
 			if (CollisionBody == null) return;
 
