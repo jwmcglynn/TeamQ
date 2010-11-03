@@ -55,7 +55,7 @@ namespace Sputnik
             s.maxSpeed = 100.0f;
             s.maxTurn = 0.025f;
             s.shoot = false;
-            State newState = controller.Update(s);
+            State newState = new State(); //controller.Update(s);
             DesiredVelocity = newState.velocity;
             Rotation = newState.direction;
             Position += DesiredVelocity * elapsedTime;
