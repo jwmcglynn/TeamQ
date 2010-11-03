@@ -21,14 +21,14 @@ namespace Sputnik
         public float maxSpeed;
         public float maxTurn;
 
-        public Ship(AIController ai) : base() 
+        public Ship(AIController ai, GameEnvironment env) : base() 
         {
             this.ai = ai;
             this.maxSpeed = 50.0f;
             this.maxTurn = 0.025f;
 
-            //shooter = new BulletEmitter(ai.env, BulletEmitter.BulletStrength.Medium, false);
-            //ai.env.AddChild(shooter);
+            shooter = new BulletEmitter(env, BulletEmitter.BulletStrength.Medium, true);
+            ai.env.AddChild(shooter);
         }
 
         public override void Update(float elapsedTime)
@@ -95,9 +95,6 @@ namespace Sputnik
             Position = new Vector2(x, y);
             SetPhysicsVelocityOnce(new Vector2(vx, vy));
             ai = new AIController(new Vector2(sx, sy), new Vector2(fx, fy), env);
-
-            shooter = new BulletEmitter(ai.env, BulletEmitter.BulletStrength.Medium, false);
-            ai.env.AddChild(shooter);
         }
 
         public void TestShip(float x, float y, float vx, float vy,GameEnvironment env)
