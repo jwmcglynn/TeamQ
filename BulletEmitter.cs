@@ -26,7 +26,7 @@ namespace Sputnik
 		private float mediumBulletInterval = 1.0f / 12.0f;
 		private float strongBulletInterval = 1.0f / 7.0f;
 
-		private float mediumBulletSpread = 45 * (float) Math.PI / 180;
+		private float mediumBulletSpread = 10 * (float) Math.PI / 180;
 
 		public BulletEmitter(GameEnvironment e, BulletStrength type, bool playerShotBullet) // type
 		{	

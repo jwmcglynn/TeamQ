@@ -24,7 +24,10 @@ namespace Sputnik
 			special.DesiredVelocity = new Vector2(0.0f, 0.0f);
 			AddChild(special);
 
-			emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Weak, true);
+		//	emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Weak, true);
+			emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Medium, true);
+		//	emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Strong, true);
+
 			emit.Position = new Vector2(210.0f, 300.0f);
 			emit.Rotation = (float)3.14 * 3 / 2;
 			AddChild(emit);
