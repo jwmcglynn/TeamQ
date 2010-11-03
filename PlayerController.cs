@@ -27,29 +27,30 @@ namespace Sputnik
         ///  Updates the State of a ship
         /// </summary>
 
-        public State Update(State s)
+        public void Update(Ship s)
         {
+            Vector2 temp = Vector2.Zero;
             KeyboardState kb = Keyboard.GetState();
             MouseState ms = Mouse.GetState();
-            s.direction = (float)Math.Atan2(ms.Y - s.position.Y, ms.X - s.position.X);
-            s.velocity = Vector2.Zero;
+            //s.direction = (float)Math.Atan2(ms.Y - s.Position.Y, ms.X - s.Position.X);
+            //s.velocity = Vector2.Zero;
             if (kb.IsKeyDown(Keys.W))
             {
-                s.velocity.Y = -s.maxSpeed;
+                temp.Y = -s.maxSpeed;
             }
             if (kb.IsKeyDown(Keys.A))
             {
-                s.velocity.X = -s.maxSpeed;
+                temp.X = -s.maxSpeed;
             }
             if (kb.IsKeyDown(Keys.S))
             {
-                s.velocity.Y = s.maxSpeed;
+                temp.Y = s.maxSpeed;
             }
             if (kb.IsKeyDown(Keys.D))
             {
-                s.velocity.X = s.maxSpeed;
+                temp.X = s.maxSpeed;
             }
-            return s;
+            s.DesiredVelocity = temp;
         }
     }
 }

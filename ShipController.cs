@@ -7,6 +7,6 @@ namespace Sputnik
 {
     interface ShipController
     {
-        State Update(State s);
+        void Update(Ship s);
     }
 }
