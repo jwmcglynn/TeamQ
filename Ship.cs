@@ -29,6 +29,7 @@ namespace Sputnik
         public override void Update(float elapsedTime)
         {
             ai.Update(this);
+            this.CollisionBody = null;
             base.Update(elapsedTime);
         }
 
