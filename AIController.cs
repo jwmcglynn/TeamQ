@@ -45,9 +45,9 @@ namespace Sputnik {
             while (wantedDirection < 0)
                 wantedDirection += MathHelper.Pi * 2.0f;
             // Changed from while (s.direction < 0)
-            while (s.direction < 0)
-                s.direction += MathHelper.Pi * 2.0f;
-            s.direction %= MathHelper.Pi * 2.0f;
+            while (s.Rotation < 0)
+                s.Rotation += MathHelper.Pi * 2.0f;
+            s.Rotation %= MathHelper.Pi * 2.0f;
             wantedDirection %= MathHelper.Pi * 2.0f;
             if (Vector2.Distance(s.Position, destination) < s.maxSpeed/env.FPS) //This number needs tweaking, 0 does not work
             {
@@ -55,37 +55,37 @@ namespace Sputnik {
                 // Changed from: s.velocity = Vector2.Zero;
                 s.DesiredVelocity = Vector2.Zero;
             }
-            else if (Math.Abs(wantedDirection-s.direction) < s.maxTurn)
+            else if (Math.Abs(wantedDirection-s.Rotation) < s.maxTurn)
             {
                 // changed from: s.velocity = new Vector2((float)Math.Cos(s.direction) * s.maxSpeed, (float)Math.Sin(s.direction) * s.maxSpeed);
-                s.DesiredVelocity = new Vector2((float)Math.Cos(s.direction) * s.maxSpeed, (float)Math.Sin(s.direction) * s.maxSpeed);
+                s.DesiredVelocity = new Vector2((float)Math.Cos(s.Rotation) * s.maxSpeed, (float)Math.Sin(s.Rotation) * s.maxSpeed);
             }
             else
             {
                 // Changed from: s.velocity = Vector2.Zero;
                 s.DesiredVelocity = Vector2.Zero;
-                float counterclockwiseDistance = Math.Abs(wantedDirection - (s.direction + s.maxTurn)%(MathHelper.Pi * 2));
-                float clockwiseDistance = Math.Abs(wantedDirection - (s.direction - s.maxTurn + MathHelper.Pi * 2) % (MathHelper.Pi * 2));
+                float counterclockwiseDistance = Math.Abs(wantedDirection - (s.Rotation + s.maxTurn)%(MathHelper.Pi * 2));
+                float clockwiseDistance = Math.Abs(wantedDirection - (s.Rotation - s.maxTurn + MathHelper.Pi * 2) % (MathHelper.Pi * 2));
                 if (counterclockwiseDistance < clockwiseDistance)
                 {
                     if (counterclockwiseDistance < s.maxTurn)
                     {
-                        s.direction = wantedDirection;
+                        s.Rotation = wantedDirection;
                     }
                     else
                     {
-                        s.direction += s.maxTurn;
+                        s.Rotation += s.maxTurn;
                     }
                 }
                 else
                 {
                     if (clockwiseDistance < s.maxTurn)
                     {
-                        s.direction = wantedDirection;
+                        s.Rotation = wantedDirection;
                     }
                     else
                     {
-                        s.direction -= s.maxTurn;
+                        s.Rotation -= s.maxTurn;
                     }
                 }
             }

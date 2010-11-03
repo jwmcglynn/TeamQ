@@ -16,14 +16,12 @@ namespace Sputnik
         private ShipController previousAI = null;
         private int health = 10;
 
-        public float direction;
         public float maxSpeed;
         public float maxTurn;
 
         public Ship(AIController ai) : base() 
         {
             this.ai = ai;
-            this.direction = 0.0f;
             this.maxSpeed = 50.0f;
             this.maxTurn = 0.025f;
         }
