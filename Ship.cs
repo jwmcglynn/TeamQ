@@ -28,7 +28,7 @@ namespace Sputnik
             this.maxTurn = 0.025f;
 
             shooter = new BulletEmitter(env, BulletEmitter.BulletStrength.Medium, true);
-            ai.env.AddChild(shooter);
+            env.AddChild(shooter);
         }
 
         public override void Update(float elapsedTime)
@@ -61,11 +61,11 @@ namespace Sputnik
 
         public void Shoot(float elapsedTime)
         {
-            // Perform what ever actions are necessary to 
-            // make the ship shoot
+            shooter.IsShooting = true;
             shooter.Rotation = this.Rotation;
             shooter.Position = this.Position;
             shooter.Update(elapsedTime);
+            shooter.IsShooting = false;
         }
 
         public bool isSputnik()
