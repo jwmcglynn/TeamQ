@@ -67,7 +67,7 @@ namespace Sputnik {
 				CollisionWorld.Step(k_physicsStep);
 
 				// Update entities.
-				base.Update(elapsedTime);
+				base.Update(k_physicsStep);
 			}
 
             //FPS counter

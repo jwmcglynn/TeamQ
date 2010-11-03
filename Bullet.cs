@@ -57,16 +57,19 @@ namespace Sputnik
 		public override void Update(float elapsedTime)
 		{
 			m_lifetime += elapsedTime;
-			if (m_shouldCull || m_lifetime > 15.0f) Destroy();
+			if (m_shouldCull || m_lifetime > 5.0f) Destroy();
 
 			Rotation = (float) Math.Atan2((double) ActualVelocity.Y, (double) ActualVelocity.X);
 			base.Update(elapsedTime);
 		}
 
 		public override bool ShouldCollide(Entity entB) {
-			if (entB is Bullet) return false;
+			if (entB is Bullet) return false; // Don't collide with other bullets.
 			if (entB is TakesDamage) {
-				if (((TakesDamage) entB).IsFriendly() == ShotByPlayer) return false;
+				// Enemy bullets only collide with player, player bullets only collide with enemies.
+				bool targetIsPlayer = ((TakesDamage) entB).IsFriendly();
+				if (targetIsPlayer && ShotByPlayer) return false;
+				else if (!targetIsPlayer && !ShotByPlayer) return false;
 			}
 
 			return true;
@@ -75,7 +78,7 @@ namespace Sputnik
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact) {
 			m_shouldCull = true;
 			if (entB is TakesDamage) {
-				((TakesDamage) entB).TakeHit(this);
+				((TakesDamage) entB).TakeHit(bulletStrength);
 			}
 
 			// Disable collision response.

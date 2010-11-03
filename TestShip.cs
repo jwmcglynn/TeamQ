@@ -68,7 +68,7 @@ namespace Sputnik
 			return false; // FIXME.
 		}
 
-		public void TakeHit(Entity damage) {
+		public void TakeHit(int damage) {
 			// Do nothing.  FIXME.
 		}
 	}

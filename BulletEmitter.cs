@@ -57,7 +57,7 @@ namespace Sputnik
 						updateAccum -= weakBulletInterval;
 						
 						// Spawn a bullet
-						Bullet bullet = new Bullet(env, Position, (double)Rotation, IsShooting);
+						Bullet bullet = new Bullet(env, Position, (double)Rotation, ShotByPlayer);
 						AddChild(bullet);
 					}
 					break;						
@@ -90,7 +90,7 @@ namespace Sputnik
 
 						Vector2 bulletPos = Position + horizontalDistance;
 
-						Bullet bullet = new Bullet(env, bulletPos, (double) randAngle, IsShooting);
+						Bullet bullet = new Bullet(env, bulletPos, (double)randAngle, ShotByPlayer);
 						AddChild(bullet);
 					}
 					break;
@@ -110,7 +110,7 @@ namespace Sputnik
 						Bullet rightBullet = new Bullet(env, rightBulletPos, (double)Rotation, IsShooting);
 						AddChild(rightBullet);
 
-						Bullet leftBullet = new Bullet(env, leftBulletPos, (double)Rotation, IsShooting);
+						Bullet leftBullet = new Bullet(env, leftBulletPos, (double)Rotation, ShotByPlayer);
 						AddChild(leftBullet);
 					}
 					break;

@@ -6,6 +6,6 @@ using System.Text;
 namespace Sputnik {
 	interface TakesDamage {
 		bool IsFriendly();
-		void TakeHit(Entity damage);
+		void TakeHit(int damage);
 	}
 }
