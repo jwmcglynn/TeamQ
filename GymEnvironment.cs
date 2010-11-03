@@ -25,8 +25,8 @@ namespace Sputnik
 			AddChild(special);
 
 		//	emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Weak, true);
-			emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Medium, true);
-		//	emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Strong, true);
+		//	emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Medium, true);
+			emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Strong, true);
 
 			emit.Position = new Vector2(210.0f, 300.0f);
 			emit.Rotation = (float)3.14 * 3 / 2;
@@ -48,7 +48,10 @@ namespace Sputnik
                     this);
                 AddChild(s);
 			}
-			AddChild(new TestShip(150, 150, 0, 0, this));
+            Ship s2 = new Ship(null);
+            s2.TestShip(150, 150, 0, 0, this);
+            AddChild(s2);
+			//AddChild(new TestShip(150, 150, 0, 0, this));
 			AddChild(new Crosshair(this));
 
 			LoadMap("gym.tmx");

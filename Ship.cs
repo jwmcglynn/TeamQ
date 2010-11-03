@@ -89,5 +89,16 @@ namespace Sputnik
             SetPhysicsVelocityOnce(new Vector2(vx, vy));
             ai = new AIController(new Vector2(sx, sy), new Vector2(fx, fy), env);
         }
+
+        public void TestShip(float x, float y, float vx, float vy,GameEnvironment env)
+        {
+            LoadTexture(env.contentManager, "Sputnik");
+            Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
+            CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.DisableSleep);
+            AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
+            Position = new Vector2(x, y);
+            SetPhysicsVelocityOnce(new Vector2(vx, vy));
+            ai = new PlayerController(env);
+        }
     }
 }
