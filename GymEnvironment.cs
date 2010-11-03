@@ -12,25 +12,27 @@ namespace Sputnik
 	class GymEnvironment : GameEnvironment
 	{
 
-		BulletEmitter emit;
+		//BulletEmitter emit;
 		Random r = new Random();
 
 		public GymEnvironment(Controller ctrl)
 			: base(ctrl)
 		{
+		/*
 			SpecialAbility special = new SpecialAbility();
 			special.LoadTexture(contentManager, "bullet");
 			special.Position = new Vector2(300.0f, 100.0f);
 			special.DesiredVelocity = new Vector2(0.0f, 0.0f);
 			AddChild(special);
+		 */
 
 		//	emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Weak, true);
 		//	emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Medium, true);
-			emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Strong, true);
+		//	emit = new BulletEmitter(this, BulletEmitter.BulletStrength.Strong, true);
 
-			emit.Position = new Vector2(210.0f, 300.0f);
-			emit.Rotation = (float)3.14 * 3 / 2;
-			AddChild(emit);
+		//	emit.Position = new Vector2(210.0f, 300.0f);
+		//	emit.Rotation = (float)3.14 * 3 / 2;
+		//	AddChild(emit);
 
 			for (int i = 0; i < 20; i++)
 			{
@@ -60,7 +62,7 @@ namespace Sputnik
 		public override void Update(float elapsedTime)
 		{
 			KeyboardState kb = Keyboard.GetState();
-			emit.IsShooting = kb.IsKeyDown(Keys.Space);
+			//emit.IsShooting = kb.IsKeyDown(Keys.Space);
 
 			const float k_cameraVel = 150.0f;
 			if (kb.IsKeyDown(Keys.Up)) m_viewportPosition.Y -= k_cameraVel * elapsedTime;
