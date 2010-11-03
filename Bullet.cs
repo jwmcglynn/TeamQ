@@ -75,7 +75,7 @@ namespace Sputnik
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact) {
 			m_shouldCull = true;
 			if (entB is TakesDamage) {
-				((TakesDamage) entB).TakeHit(bulletStrength);
+				((TakesDamage) entB).TakeHit(this);
 			}
 
 			// Disable collision response.
