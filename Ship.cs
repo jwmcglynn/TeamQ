@@ -6,17 +6,20 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Sputnik
 {
-    class Ship : Entity
+    class Ship : Entity, TakesDamage
     {
         private ShipController ai;
         private ShipController previousAI = null;
         private int health = 10;
+
+        public float direction;
         public float maxSpeed;
         public float maxTurn;
 
         public Ship(AIController ai) : base() 
         {
             this.ai = ai;
+            this.direction = 0.0f;
         }
 
         new public void Update(float elapsedTime)

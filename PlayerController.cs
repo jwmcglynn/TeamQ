@@ -32,8 +32,7 @@ namespace Sputnik
             Vector2 temp = Vector2.Zero;
             KeyboardState kb = Keyboard.GetState();
             MouseState ms = Mouse.GetState();
-            //s.direction = (float)Math.Atan2(ms.Y - s.Position.Y, ms.X - s.Position.X);
-            //s.velocity = Vector2.Zero;
+            s.direction = (float)Math.Atan2(ms.Y - s.Position.Y, ms.X - s.Position.X);
             if (kb.IsKeyDown(Keys.W))
             {
                 temp.Y = -s.maxSpeed;

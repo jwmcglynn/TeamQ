@@ -112,13 +112,14 @@
     <Compile Include="BulletEmitter.cs" />
     <Compile Include="Crosshair.cs" />
     <Compile Include="PlayerController.cs" />
+    <Compile Include="Ship.cs" />
     <Compile Include="ShipEnvironment.cs" />
     <Compile Include="DebugViewXNA.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="GameEnvironment.cs" />
     <Compile Include="GymEnvironment.cs" />
-    <Compile Include="TakesDamage.cs" />
+    <Compile Include="SputnikShip.cs" />
     <Compile Include="TestShip.cs" />
     <Compile Include="Loaders\Tiled.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
