@@ -67,5 +67,10 @@ namespace Sputnik
             // Perform what ever actions are necessary to 
             // Destory a ship
         }
+
+        public bool isFriendly()
+        {
+            return false;
+        }
     }
 }
