@@ -34,7 +34,6 @@ namespace Sputnik
 		public override void Update(float elapsedTime)
 		{
 			ai.Update(this, elapsedTime);
-			this.m_position += this.m_velocity * elapsedTime;
 			base.Update(elapsedTime);
 		}
 
