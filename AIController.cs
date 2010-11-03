@@ -16,7 +16,7 @@ namespace Sputnik {
     {
         bool goingStart;
         Vector2 start, finish;
-        GameEnvironment env;
+        public GameEnvironment env;
 
         /// <summary>
         ///  Creates a new AI with given start and finish positions of patrol path and given environment
@@ -33,7 +33,7 @@ namespace Sputnik {
         ///  Updates the State of a ship
         /// </summary>
 
-        public void Update(Ship s)
+        public void Update(Ship s, float elapsedTime)
         {
             Vector2 destination;
             if (goingStart)
@@ -94,7 +94,7 @@ namespace Sputnik {
             Random r = new Random();
             // Changed from: s.shoot = r.NextDouble() < 0.5;
             if (r.NextDouble() < 0.5)
-                s.Shoot();
+                s.Shoot(elapsedTime);
         }
 
     }

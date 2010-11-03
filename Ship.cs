@@ -16,6 +16,8 @@ namespace Sputnik
         private ShipController previousAI = null;
         private int health = 10;
 
+        private BulletEmitter shooter = null;
+
         public float maxSpeed;
         public float maxTurn;
 
@@ -23,13 +25,15 @@ namespace Sputnik
         {
             this.ai = ai;
             this.maxSpeed = 50.0f;
-            this.maxTurn = 0.25f;
+            this.maxTurn = 0.025f;
+
+            shooter = new BulletEmitter(ai.env, BulletEmitter.BulletStrength.Medium, false);
+            ai.env.AddChild(shooter);
         }
 
         public override void Update(float elapsedTime)
         {
-            ai.Update(this);
-            //SetPhysicsVelocityOnce(Vector2.Zero);
+            ai.Update(this, elapsedTime);
             this.m_position += this.m_velocity * elapsedTime;
             base.Update(elapsedTime);
         }
@@ -55,10 +59,13 @@ namespace Sputnik
             }
         }
 
-        public void Shoot()
+        public void Shoot(float elapsedTime)
         {
             // Perform what ever actions are necessary to 
             // make the ship shoot
+            shooter.Rotation = this.Rotation;
+            shooter.Position = this.Position;
+            shooter.Update(elapsedTime);
         }
 
         public bool isSputnik()

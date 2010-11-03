@@ -27,7 +27,7 @@ namespace Sputnik
         ///  Updates the State of a ship
         /// </summary>
 
-        public void Update(Ship s)
+        public void Update(Ship s, float elapsedTime)
         {
             Vector2 temp = Vector2.Zero;
             KeyboardState kb = Keyboard.GetState();
