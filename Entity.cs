@@ -11,8 +11,8 @@ using System.IO;
 namespace Sputnik {
 	class Entity {
 		// Position and motion.
-		private Vector2 m_position = new Vector2(0, 0);
-		private Vector2 m_velocity = new Vector2(0, 0);
+		protected Vector2 m_position = new Vector2(0, 0);
+		protected Vector2 m_velocity = new Vector2(0, 0);
 		private float m_rotation = 0.0f;
 
 		// Graphics.

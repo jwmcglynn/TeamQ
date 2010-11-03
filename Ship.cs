@@ -23,15 +23,15 @@ namespace Sputnik
         {
             this.ai = ai;
             this.maxSpeed = 50.0f;
-            this.maxTurn = 0.025f;
+            this.maxTurn = 0.25f;
         }
 
         public override void Update(float elapsedTime)
         {
             ai.Update(this);
-            DestroyCollisionBody();
+            //SetPhysicsVelocityOnce(Vector2.Zero);
+            this.m_position += this.m_velocity * elapsedTime;
             base.Update(elapsedTime);
-            CreateCollisionBody();
         }
 
         // Attach Sputnik to the ship
