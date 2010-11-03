@@ -26,7 +26,7 @@ namespace Sputnik
             this.maxTurn = 0.025f;
         }
 
-        new public void Update(float elapsedTime)
+        public override void Update(float elapsedTime)
         {
             ai.Update(this);
             base.Update(elapsedTime);

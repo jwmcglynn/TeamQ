@@ -58,7 +58,8 @@ namespace Sputnik {
             else if (Math.Abs(wantedDirection-s.Rotation) < s.maxTurn)
             {
                 // changed from: s.velocity = new Vector2((float)Math.Cos(s.direction) * s.maxSpeed, (float)Math.Sin(s.direction) * s.maxSpeed);
-                s.DesiredVelocity = new Vector2((float)Math.Cos(s.Rotation) * s.maxSpeed, (float)Math.Sin(s.Rotation) * s.maxSpeed);
+                //s.DesiredVelocity = new Vector2((float)Math.Cos(s.Rotation) * s.maxSpeed, (float)Math.Sin(s.Rotation) * s.maxSpeed);
+                s.SetPhysicsVelocityOnce(new Vector2((float)Math.Cos(s.Rotation) * s.maxSpeed, (float)Math.Sin(s.Rotation) * s.maxSpeed));
             }
             else
             {
