@@ -24,7 +24,7 @@ namespace Sputnik
 		public Ship(AIController ai, GameEnvironment env) : base() 
 		{
 			this.ai = ai;
-			this.maxSpeed = 50.0f;
+			this.maxSpeed = 100.0f;
 			this.maxTurn = 0.025f;
 
 			shooter = new BulletEmitter(env, BulletEmitter.BulletStrength.Medium, IsFriendly());
@@ -34,7 +34,9 @@ namespace Sputnik
 		public override void Update(float elapsedTime)
 		{
 			ai.Update(this, elapsedTime);
-			base.Update(elapsedTime);
+            Position += DesiredVelocity * elapsedTime;
+			//Stopped using momentum
+            //base.Update(elapsedTime);
 		}
 
 		// Attach Sputnik to the ship
