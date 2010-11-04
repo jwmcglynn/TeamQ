@@ -50,7 +50,7 @@ namespace Sputnik
                 temp.X = s.maxSpeed;
             }
             s.DesiredVelocity = temp;
-            if(kb.IsKeyDown(Keys.Space))
+            if(ms.LeftButton == ButtonState.Pressed)
                 s.Shoot(elapsedTime);
             
         }
