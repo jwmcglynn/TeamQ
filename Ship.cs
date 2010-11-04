@@ -33,6 +33,7 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
+            Registration = new Vector2((Texture.Width * 0.5f) + Position.X, (Texture.Height * 0.5f) + Position.Y);
 			ai.Update(this, elapsedTime);
             Position += DesiredVelocity * elapsedTime;
 			//Stopped using momentum
@@ -62,7 +63,7 @@ namespace Sputnik
 
 		public void Shoot(float elapsedTime)
 		{
-			shooter.Update(elapsedTime, this.Rotation, this.Center);
+			shooter.Update(elapsedTime, this.Rotation, this.Registration);
 		}
 
 		public bool isSputnik()

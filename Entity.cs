@@ -14,7 +14,6 @@ namespace Sputnik {
 		private Vector2 m_position = new Vector2(0, 0); // Intentionally private.  Use Position.
 		private Vector2 m_velocity = new Vector2(0, 0); // Intentionally private.  Use DesiredVelocity.
 		private float m_rotation = 0.0f;
-        public Vector2 Center = new Vector2(0, 0);
 
 		// Graphics.
 		public Texture2D Texture;
@@ -97,7 +96,6 @@ namespace Sputnik {
 		/// </param>
 		public void LoadTexture(ContentManager contentManager, string assetName) {
 			Texture = contentManager.Load<Texture2D>(assetName);
-            Center = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 		}
 
 		/// <summary>
