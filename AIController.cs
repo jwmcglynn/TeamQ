@@ -93,7 +93,7 @@ namespace Sputnik {
             //Theoretically I should shoot when player is in front, but this is funner
             Random r = new Random();
             // Changed from: s.shoot = r.NextDouble() < 0.5;
-            if (r.NextDouble() < 0.5)
+            if (r.NextDouble() < 0.1)
                 s.Shoot(elapsedTime);
         }
 
