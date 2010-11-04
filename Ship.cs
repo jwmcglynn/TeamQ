@@ -62,11 +62,7 @@ namespace Sputnik
 
 		public void Shoot(float elapsedTime)
 		{
-			shooter.IsShooting = true;
-			shooter.Rotation = this.Rotation;
-			shooter.Position = this.Position;
-			shooter.Update(elapsedTime);
-			shooter.IsShooting = false;
+			shooter.Update(elapsedTime, this.Rotation, this.Position);
 		}
 
 		public bool isSputnik()

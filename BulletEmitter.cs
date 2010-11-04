@@ -9,7 +9,6 @@ namespace Sputnik
 	class BulletEmitter : Entity
 	{
 		private GameEnvironment env; 
-		public bool IsShooting;
 		public bool ShotByPlayer;
 		private float emitterDistance = 20.0f;
 
@@ -28,21 +27,19 @@ namespace Sputnik
 
 		private float mediumBulletSpread = 10 * (float) Math.PI / 180;
 
-		public BulletEmitter(GameEnvironment e, BulletStrength type, bool playerShotBullet) // type
+		public BulletEmitter(GameEnvironment e, BulletStrength type, bool playerShotBullet)
 		{	
 			env = e;
 			strength = type;
 			ShotByPlayer = playerShotBullet;
 		}
 
-		public override void Update(float elapsedTime)
+		public void Update(float elapsedTime, float degree, Vector2 pos)
 		{
-			base.Update(elapsedTime);
+			Rotation = degree;
+			Position = pos;
 
-			if(!IsShooting) 
-			{
-				return;
-			}
+			base.Update(elapsedTime);
 
 			// time that has passed since last bullet and if its passed a certain threshold we will shoot a bullet
 			// after a bullet is shot, we must subtract from our cooldowntime the threshold, so we can continue using
@@ -107,7 +104,7 @@ namespace Sputnik
 						Vector2 rightBulletPos = Position + horizontalDistance;
 						Vector2 leftBulletPos = Position - horizontalDistance;
 
-						Bullet rightBullet = new Bullet(env, rightBulletPos, (double)Rotation, IsShooting);
+						Bullet rightBullet = new Bullet(env, rightBulletPos, (double)Rotation, ShotByPlayer);
 						AddChild(rightBullet);
 
 						Bullet leftBullet = new Bullet(env, leftBulletPos, (double)Rotation, ShotByPlayer);
