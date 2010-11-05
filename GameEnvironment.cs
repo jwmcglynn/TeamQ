@@ -9,6 +9,8 @@ using Microsoft.Xna.Framework.Storage;
 using Tiled = Squared.Tiled;
 using System.IO;
 
+using FarseerPhysics.Controllers;
+
 namespace Sputnik {
 	class GameEnvironment : Environment {
 		private SpriteBatch m_spriteBatch;
@@ -29,6 +31,7 @@ namespace Sputnik {
 		protected int fps;
 		private int frameCounter;
 
+        public BlackHolePhysicsController physicsController;
 
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {
@@ -49,6 +52,10 @@ namespace Sputnik {
 			// Create collision notification callbacks.
 			CollisionWorld.ContactManager.PreSolve += PreSolve;
 
+            physicsController = new BlackHolePhysicsController(200.0f, 1.5f, 0.0f); // 200 controls how strong the pull is towards the black hole. 
+                                                                                    // 1.5 determines the area for which the black hole will have an effect on.
+            CollisionWorld.AddController(physicsController);
+             
 			// TODO: Scale to physics world.
 			m_debugPhysicsMatrix = Matrix.CreateOrthographicOffCenter(0.0f, m_controller.GraphicsDevice.Viewport.Width * k_physicsScale, m_controller.GraphicsDevice.Viewport.Height * k_physicsScale, 0.0f, -1.0f, 1.0f);
 		}
