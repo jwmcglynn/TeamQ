@@ -216,9 +216,10 @@ namespace Sputnik {
 		/// </summary>
 		/// <param name="shape">Shape.</param>
 		/// <param name="density">Density of the shape.  Mass will be computed automatically.</param>
-		public void AddCollisionShape(Physics.Collision.Shapes.Shape shape, float density = 1.0f) {
+		/// <returns>Fixture definition.</returns>
+		public Physics.Dynamics.Fixture AddCollisionShape(Physics.Collision.Shapes.Shape shape, float density = 1.0f) {
 			if (CollisionBody == null) throw new ArgumentException("Cannot add collision shape until collision body is created.");
-			CollisionBody.CreateFixture(shape, density);
+			return CollisionBody.CreateFixture(shape, density);
 		}
 
 		/// <summary>
@@ -226,11 +227,12 @@ namespace Sputnik {
 		/// </summary>
 		/// <param name="radius">Radius of the circle in body space.</param>
 		/// <param name="center">Center of the circle in body space.</param>
-		/// <param name="density"></param>
-		public void AddCollisionCircle(float radius, Vector2 center, float density = 1.0f) {
+		/// <param name="density">Density of shape, used to compute mass.</param>
+		/// <returns>Fixture definition.</returns>
+		public Physics.Dynamics.Fixture AddCollisionCircle(float radius, Vector2 center, float density = 1.0f) {
 			Physics.Collision.Shapes.CircleShape circle = new Physics.Collision.Shapes.CircleShape(radius * GameEnvironment.k_physicsScale);
 			circle.Position = center * GameEnvironment.k_physicsScale;
-			AddCollisionShape(circle, density);
+			return AddCollisionShape(circle, density);
 		}
 
 		/// <summary>
@@ -240,10 +242,11 @@ namespace Sputnik {
 		/// <param name="center">The center point of the rectangle in body space.</param>
 		/// <param name="rotation">Rotation of the shape relative to the body in radians.</param>
 		/// <param name="density">Density of the shape.</param>
-		public void AddCollisionRectangle(Vector2 halfsize, Vector2 center, float rotation = 0.0f, float density = 1.0f) {
+		/// <returns>Fixture definition.</returns>
+		public Physics.Dynamics.Fixture AddCollisionRectangle(Vector2 halfsize, Vector2 center, float rotation = 0.0f, float density = 1.0f) {
 			Physics.Collision.Shapes.PolygonShape poly = new Physics.Collision.Shapes.PolygonShape();
 			poly.SetAsBox(halfsize.X * GameEnvironment.k_physicsScale, halfsize.Y * GameEnvironment.k_physicsScale, center * GameEnvironment.k_physicsScale, rotation);
-			AddCollisionShape(poly, density);
+			return AddCollisionShape(poly, density);
 		}
 
 		/// <summary>
@@ -251,10 +254,10 @@ namespace Sputnik {
 		/// </summary>
 		/// <param name="start">Start point in body space.</param>
 		/// <param name="end">End point in body space.</param>
-		public void AddCollisionLine(Vector2 start, Vector2 end) {
+		public Physics.Dynamics.Fixture AddCollisionLine(Vector2 start, Vector2 end) {
 			Physics.Collision.Shapes.PolygonShape poly = new Physics.Collision.Shapes.PolygonShape();
 			poly.SetAsEdge(start * GameEnvironment.k_physicsScale, end * GameEnvironment.k_physicsScale);
-			AddCollisionShape(poly, 0.0f);
+			return AddCollisionShape(poly, 0.0f);
 		}
 
 		/*************************************************************************/
