@@ -61,8 +61,39 @@ namespace Sputnik {
 			m_projection = Matrix.CreateOrthographicOffCenter(0.0f, ctrl.GraphicsDevice.Viewport.Width, ctrl.GraphicsDevice.Viewport.Height, 0.0f, -1.0f, 1.0f);
 		}
 
+		private enum Tile {
+			None
+			, AsteroidWall
+			, WhiteBlock
+			, GreyBlock
+		};
+
 		public void LoadMap(string filename) {
 			m_map = Tiled.Map.Load(Path.Combine(Controller.Content.RootDirectory, filename), Controller.Content);
+			
+			// Destroy and re-create collision body for map.
+			DestroyCollisionBody();
+			CreateCollisionBody(CollisionWorld, Physics.Dynamics.BodyType.Static);
+
+			Position = new Vector2(-Controller.GraphicsDevice.Viewport.Width + m_map.TileWidth, -Controller.GraphicsDevice.Viewport.Height + m_map.TileHeight);
+			Vector2 tileHalfSize = new Vector2(m_map.TileWidth, m_map.TileHeight) / 2;
+
+			foreach (KeyValuePair<string, Tiled.Layer> i in m_map.Layers) {
+				Tiled.Layer layer = i.Value;
+
+				for (int x = 0; x < layer.Width; ++x)
+				for (int y = 0; y < layer.Height; ++y) {
+					Tile tileType = (Tile) layer.GetTile(x, y);
+					
+					switch (tileType) {
+						case Tile.AsteroidWall:
+						case Tile.GreyBlock:
+							// Create collision.
+							AddCollisionRectangle(tileHalfSize, new Vector2(m_map.TileWidth * x, m_map.TileHeight * y) - tileHalfSize);
+							break;
+					}
+				}
+			}
 		}
 
 		public override void Update(float elapsedTime) {
