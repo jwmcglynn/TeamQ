@@ -35,26 +35,30 @@ namespace Sputnik
             s.Rotation = (float)Math.Atan2(ms.Y - s.Position.Y, ms.X - s.Position.X);
             if (kb.IsKeyDown(Keys.W))
             {
-                temp.Y = -s.maxSpeed;
+                temp.Y = -1;
             }
             if (kb.IsKeyDown(Keys.A))
             {
-                temp.X = -s.maxSpeed;
+                temp.X = -1;
             }
             if (kb.IsKeyDown(Keys.S))
             {
-                temp.Y = s.maxSpeed;
+                temp.Y = 1;
             }
             if (kb.IsKeyDown(Keys.D))
             {
-                temp.X = s.maxSpeed;
+                temp.X = 1;
             }
+            if (temp.X != 0 && temp.Y != 0)
+                temp *= (float)Math.Sqrt(Math.Pow(s.maxSpeed, 2) / 2);
+            else
+                temp *= s.maxSpeed;
             s.DesiredVelocity = temp;
 
-			// need to check if sputnik is in a ship or not before you can shoot.
-            if(ms.LeftButton == ButtonState.Pressed)
+            // need to check if sputnik is in a ship or not before you can shoot.
+            if (ms.LeftButton == ButtonState.Pressed)
                 s.Shoot(elapsedTime);
-            
+
         }
     }
 }
