@@ -14,6 +14,7 @@ namespace Sputnik
 
 		//BulletEmitter emit;
 		Random r = new Random();
+		BlackHole blackHole;
 
 		public GymEnvironment(Controller ctrl)
 			: base(ctrl)
@@ -56,6 +57,9 @@ namespace Sputnik
 			//AddChild(new TestShip(150, 150, 0, 0, this));
 			AddChild(new Crosshair(this));
 
+			blackHole = new BlackHole(this);
+			AddChild(blackHole);
+
 			LoadMap("gym.tmx");
 		}
 
@@ -63,6 +67,8 @@ namespace Sputnik
 		{
 			KeyboardState kb = Keyboard.GetState();
 			//emit.IsShooting = kb.IsKeyDown(Keys.Space);
+
+			if(kb.IsKeyDown(Keys.B)) blackHole.Update(elapsedTime);
 
 			const float k_cameraVel = 150.0f;
 			if (kb.IsKeyDown(Keys.Up)) m_viewportPosition.Y -= k_cameraVel * elapsedTime;
