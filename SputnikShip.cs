@@ -14,6 +14,9 @@ namespace Sputnik
 
 		public SputnikShip(float x, float y, float vx, float vy, GameEnvironment env) : base(x, y, vx, vy, 0.0f, 0.0f, 0.0f, 0.0f, env) 
 		{
+			this.shooter = new BulletEmitter(env, BulletEmitter.BulletStrength.Weak, IsFriendly());
+			env.AddChild(this.shooter);
+
 			LoadTexture(env.contentManager, "Sputnik");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 
