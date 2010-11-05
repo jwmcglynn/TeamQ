@@ -20,11 +20,29 @@ namespace Sputnik
 			Zindex = 0.0f;
 			
 			CreateCollisionBody(env.CollisionWorld, FarseerPhysics.Dynamics.BodyType.Static, CollisionFlags.DisableSleep);
-			AddCollisionCircle(Texture.Height/12, Vector2.Zero);
+			var circle = AddCollisionCircle(Texture.Height / 12, Vector2.Zero); // Using 12 here as an arbitrary value. Reason: Want the black hole to have a small collis
+			circle.IsSensor = true; 
 			
 			Position = new Vector2(50.0f, 50.0f);
 
-            env.physicsController.AddBody(CollisionBody);
+			//CollisionBody.IgnoreGravity = true;
+
+			env.physicsController.AddBody(CollisionBody);
+		}
+
+		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+		{
+			Console.WriteLine("COLLIDED");
+
+			if (entB is TakesDamage)
+			{
+				((TakesDamage)entB).InstaKill();
+			}
+
+			// Disable collision response.
+			contact.Enabled = false;
+
+			base.OnCollide(entB, contact);
 		}
 
 		public override void Update(float elapsedTime)

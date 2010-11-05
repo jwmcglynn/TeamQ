@@ -45,6 +45,13 @@ namespace Sputnik
 			return true;
 		}
 
+		public void InstaKill()
+		{
+			// Perform what ever actions are necessary to 
+			// Destory a ship
+			// TODO: Animations / explosions.
+			Destroy();
+		}
 
         public override void Update(float elapsedTime)
         {

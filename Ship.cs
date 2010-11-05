@@ -63,7 +63,7 @@ namespace Sputnik
 		{
 			this.health -= damage;
 			if(this.health < 1) {
-				this.KillShip();
+				this.InstaKill();
 			}
 		}
 
@@ -79,7 +79,7 @@ namespace Sputnik
 			return false;
 		}
 
-		public void KillShip()
+		public void InstaKill()
 		{
 			// Perform what ever actions are necessary to 
 			// Destory a ship
