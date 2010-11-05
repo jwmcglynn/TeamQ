@@ -7,6 +7,6 @@ namespace Sputnik
 {
     interface ShipController
     {
-        void Update(Ship s, float elapsedTime);
+		void Update(Ship s, float elapsedTime);
     }
 }
