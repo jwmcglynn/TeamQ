@@ -7,12 +7,12 @@ using Microsoft.Xna.Framework;
 
 namespace Sputnik
 {
-    class SputnikShip : Entity
+    class SputnikShip : Ship
     {
 
-        public ShipController ai = null;
+        public PlayerController ai = null;
 
-		public SputnikShip(float x, float y, float vx, float vy, GameEnvironment env) : base() 
+		public SputnikShip(float x, float y, float vx, float vy, GameEnvironment env) : base(x, y, vx, vy, 0.0f, 0.0f, 0.0f, 0.0f, env) 
 		{
 			LoadTexture(env.contentManager, "Sputnik");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
@@ -21,13 +21,12 @@ namespace Sputnik
 			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f; // This value causes a small amount of slowing before stop which looks nice.
 
-			Position = new Vector2(x, y);
-			DesiredVelocity = new Vector2(vx, vy);
 			ai = new PlayerController(env);
 		}
 
-        new public void Update(float elapsedTime)
+        public override void Update(float elapsedTime)
         {
+			ai.Update(this, elapsedTime);
             base.Update(elapsedTime);
         }
 
