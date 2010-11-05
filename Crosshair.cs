@@ -28,6 +28,7 @@ namespace Sputnik
             MouseState ms = Mouse.GetState();
             Position = new Vector2(ms.X, ms.Y);
             Children.ForEach((Entity ent) => { ent.Update(elapsedTime); });
+            base.Update(elapsedTime);
         }
     }
 }

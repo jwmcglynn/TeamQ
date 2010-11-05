@@ -18,15 +18,14 @@ namespace Sputnik
 		public Bullet(GameEnvironment env, Vector2 position, double angle, bool playerShotBullet)
 		{
 			LoadTexture(env.contentManager, "bullet");
+			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 
 			ShotByPlayer = playerShotBullet;
 
 			Zindex = 0.0f;
 			CreateCollisionBody(env.CollisionWorld, FarseerPhysics.Dynamics.BodyType.Dynamic, CollisionFlags.IsBullet | CollisionFlags.DisableSleep | CollisionFlags.FixedRotation);
-			//AddCollisionRectangle(new Vector2(13.0f, 4.5f), new Vector2(18.0f, 9.5f));
 			AddCollisionCircle(Texture.Height/2, Vector2.Zero);
-			//VisualRotationOnly = true;
-            Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
+			VisualRotationOnly = true;
 
 			CollisionBody.LinearDamping = 0.0f;
 

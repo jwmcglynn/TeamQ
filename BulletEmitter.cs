@@ -11,6 +11,7 @@ namespace Sputnik
 		private GameEnvironment env; 
 		public bool ShotByPlayer;
 		private float emitterDistance = 20.0f;
+		Random rand = new Random();
 
 		public enum BulletStrength {
 			Weak, 
@@ -34,13 +35,8 @@ namespace Sputnik
 			ShotByPlayer = playerShotBullet;
 		}
 
-		public void Update(float elapsedTime, float degree, Vector2 pos)
+		public void Shoot(float elapsedTime)
 		{
-			Rotation = degree;
-			Position = pos;
-
-			base.Update(elapsedTime);
-
 			// time that has passed since last bullet and if its passed a certain threshold we will shoot a bullet
 			// after a bullet is shot, we must subtract from our cooldowntime the threshold, so we can continue using
 			// time spent so far. 
@@ -55,7 +51,7 @@ namespace Sputnik
 						
 						// Spawn a bullet
 						Bullet bullet = new Bullet(env, Position, (double)Rotation, ShotByPlayer);
-						AddChild(bullet);
+						env.AddChild(bullet);
 					}
 					break;						
 				} case BulletStrength.Medium: {
@@ -63,32 +59,11 @@ namespace Sputnik
 					{
 						updateAccum -= mediumBulletInterval;
 
-						// spawn 1.5 times more often
-						// the bullets will be spread within a cone infront. 
-						// approximately 5 degrees (has to be in radians)
-						// "5 Degrees of spread"
-						float horizontalAngle = Rotation + (float)Math.PI / 2; // Rotation is in radians
-						Vector2 horizontalDistance =
-							new Vector2(emitterDistance * (float)Math.Cos(horizontalAngle),
-										emitterDistance * (float)Math.Sin(horizontalAngle));
-
 						// BulletAngle will be randomized across a spread of mediumBulletSpread degrees.
-						Random rand = new Random();
-						float randAngle = (float) rand.NextDouble();
+						double randAngle = Rotation + (rand.NextDouble() - 0.5f) * mediumBulletSpread;
 
-						//Console.WriteLine(randAngle); 
-						if(randAngle > 0.5) {
-							randAngle = Rotation + randAngle * mediumBulletSpread;
-						} else {
-							randAngle = Rotation - randAngle * mediumBulletSpread;
-						}
-						//Console.WriteLine(randAngle);
-						//randAngle = Rotation;
-
-						Vector2 bulletPos = Position + horizontalDistance;
-
-						Bullet bullet = new Bullet(env, bulletPos, (double)randAngle, ShotByPlayer);
-						AddChild(bullet);
+						Bullet bullet = new Bullet(env, Position, (double)randAngle, ShotByPlayer);
+						env.AddChild(bullet);
 					}
 					break;
 				} case BulletStrength.Strong: {
@@ -105,10 +80,10 @@ namespace Sputnik
 						Vector2 leftBulletPos = Position - horizontalDistance;
 
 						Bullet rightBullet = new Bullet(env, rightBulletPos, (double)Rotation, ShotByPlayer);
-						AddChild(rightBullet);
+						env.AddChild(rightBullet);
 
 						Bullet leftBullet = new Bullet(env, leftBulletPos, (double)Rotation, ShotByPlayer);
-						AddChild(leftBullet);
+						env.AddChild(leftBullet);
 					}
 					break;
 				}
