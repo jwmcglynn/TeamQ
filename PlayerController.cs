@@ -15,12 +15,14 @@ namespace Sputnik
 {
     class PlayerController : ShipController
     {
+		private GameEnvironment m_env;
+
         /// <summary>
         ///  Creates a new Player
         /// </summary>
-        public PlayerController(Environment env)
+        public PlayerController(GameEnvironment env)
         {
-
+			m_env = env;
         }
 
         /// <summary>
@@ -32,7 +34,8 @@ namespace Sputnik
             Vector2 temp = Vector2.Zero;
             KeyboardState kb = Keyboard.GetState();
             MouseState ms = Mouse.GetState();
-            s.Rotation = (float)Math.Atan2(ms.Y - s.Position.Y, ms.X - s.Position.X);
+			Vector2 mousePos = m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y));
+			s.Rotation = (float)Math.Atan2(mousePos.Y - s.Position.Y, mousePos.X - s.Position.X);
             if (kb.IsKeyDown(Keys.W))
             {
                 temp.Y = -1;

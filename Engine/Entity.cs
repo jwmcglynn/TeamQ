@@ -9,7 +9,7 @@ using Physics = FarseerPhysics;
 using System.IO;
 
 namespace Sputnik {
-	class Entity {
+	public class Entity {
 		// Position and motion.
 		private Vector2 m_position = new Vector2(0, 0); // Intentionally private.  Use Position.
 		private Vector2 m_velocity = new Vector2(0, 0); // Intentionally private.  Use DesiredVelocity.

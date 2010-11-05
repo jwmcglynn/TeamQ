@@ -15,15 +15,18 @@ namespace Sputnik {
 	class GameEnvironment : Environment {
 		private SpriteBatch m_spriteBatch;
 		private Tiled.Map m_map;
-		protected Vector2 m_viewportPosition = Vector2.Zero;
+		public Camera2D Camera;
 
+		// Physics.
 		private Physics.DebugViewXNA m_debugView;
 		public Physics.Dynamics.World CollisionWorld;
-		protected Matrix m_debugPhysicsMatrix;
 
 		public static float k_physicsScale = 1.0f / 50.0f; // 50 pixels = 1 meter.
 		public static float k_invPhysicsScale = 50.0f; // ^ must be inverse.
 
+		private Matrix m_projection;
+
+		// Update loop.
 		public float m_updateAccum; // How much time has passed relative to the physics world.
 
 		//FPS Counters
@@ -36,10 +39,7 @@ namespace Sputnik {
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {
 
-			//Frame rate variables initialize
-			frameTime = 0;
-			fps = 30;
-			frameCounter = 0;
+			Camera = new Camera2D(this);
 
 			// Create a new SpriteBatch, which can be used to draw textures.
 			m_spriteBatch = new SpriteBatch(ctrl.GraphicsDevice);
@@ -55,15 +55,14 @@ namespace Sputnik {
 
 			physicsController = new BlackHolePhysicsController(300.0f, 100.0f * k_physicsScale, 9.0f * k_physicsScale); // 300 controls how strong the pull is towards the black hole.
 																									// 100.0 determines the radius fore which black hole will have an effect on.
-		
 			CollisionWorld.AddController(physicsController);
 
-			// TODO: Scale to physics world.
-			m_debugPhysicsMatrix = Matrix.CreateOrthographicOffCenter(0.0f, m_controller.GraphicsDevice.Viewport.Width * k_physicsScale, m_controller.GraphicsDevice.Viewport.Height * k_physicsScale, 0.0f, -1.0f, 1.0f);
+			// TODO: Make SpriteBatch drawing use this projection too.
+			m_projection = Matrix.CreateOrthographicOffCenter(0.0f, ctrl.GraphicsDevice.Viewport.Width, ctrl.GraphicsDevice.Viewport.Height, 0.0f, -1.0f, 1.0f);
 		}
 
 		public void LoadMap(string filename) {
-			m_map = Tiled.Map.Load(Path.Combine(m_controller.Content.RootDirectory, filename), m_controller.Content);
+			m_map = Tiled.Map.Load(Path.Combine(Controller.Content.RootDirectory, filename), Controller.Content);
 		}
 
 		public override void Update(float elapsedTime) {
@@ -77,6 +76,7 @@ namespace Sputnik {
 
 				// Update entities.
 				base.Update(k_physicsStep);
+				Camera.Update(k_physicsStep);
 			}
 
 			//FPS counter
@@ -87,7 +87,7 @@ namespace Sputnik {
 				fps = frameCounter;
 				frameTime = 0;
 				frameCounter = 0;
-
+				Controller.Window.Title = "Sputnik (" + fps + " fps)";
 			}
 		}
 
@@ -96,10 +96,27 @@ namespace Sputnik {
 		/// </summary>
 		public override void Draw() {
 			m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
-			if (m_map != null) m_map.Draw(m_spriteBatch, new Rectangle(0, 0, m_controller.GraphicsDevice.Viewport.Width, m_controller.GraphicsDevice.Viewport.Height), m_viewportPosition);
+
+			// Draw map.
+			int offsetX = (int) (Camera.Position.X - Camera.Origin.X);
+			int offsetY = (int) (Camera.Position.Y - Camera.Origin.Y);
+			if (m_map != null) m_map.Draw(m_spriteBatch, new Rectangle(
+					(int) -Camera.Origin.X
+					, (int) -Camera.Origin.Y
+					, Controller.GraphicsDevice.Viewport.Width + (int) Camera.Origin.X
+					, Controller.GraphicsDevice.Viewport.Height + (int) Camera.Origin.Y
+				), Camera.Position
+			);
+			m_spriteBatch.End();
+
+			// Draw entities.
+			m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
 			Draw(m_spriteBatch);
 			m_spriteBatch.End();
-			m_debugView.RenderDebugData(ref m_debugPhysicsMatrix);
+
+			// Debug drawing.
+			Matrix debugMatrix = Matrix.CreateScale(k_invPhysicsScale) * Camera.Transform;
+			m_debugView.RenderDebugData(ref m_projection, ref debugMatrix);
 		}
 
 		public void BeginContact(Physics.Dynamics.Contacts.Contact contact) {
