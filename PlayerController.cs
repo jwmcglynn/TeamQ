@@ -50,6 +50,8 @@ namespace Sputnik
                 temp.X = s.maxSpeed;
             }
             s.DesiredVelocity = temp;
+
+			// need to check if sputnik is in a ship or not before you can shoot.
             if(ms.LeftButton == ButtonState.Pressed)
                 s.Shoot(elapsedTime);
             

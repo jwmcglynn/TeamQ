@@ -43,16 +43,14 @@ namespace Sputnik
 					(float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Width, (float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Height,
 					this));*/
 
-                Ship s = new Ship(null, this);
-                s.TestShip((float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Width, (float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Height,
-                    0, 0,
-                    (float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Width, (float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Height,
-                    (float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Width, (float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Height,
-                    this);
+				Ship s = new CircloidShip((float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Width, (float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Height,
+					0, 0,
+					(float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Width, (float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Height,
+					(float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Width, (float)r.NextDouble() * ctrl.Graphics.GraphicsDevice.Viewport.Height,
+					this);
                 AddChild(s);
 			}
-            Ship s2 = new Ship(null, this);
-            s2.TestShip(150, 150, 0, 0, this);
+            Entity s2 = new SputnikShip(150, 150, 0, 0, this);
             AddChild(s2);
 			//AddChild(new TestShip(150, 150, 0, 0, this));
 			AddChild(new Crosshair(this));

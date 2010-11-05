@@ -12,23 +12,22 @@ namespace Sputnik
 {
 	class Ship : Entity, TakesDamage
 	{
-		private ShipController ai;
+		protected ShipController ai;
 		private ShipController previousAI = null;
 		private int health = 10;
 
-		private BulletEmitter shooter = null;
+		protected BulletEmitter shooter = null;
 
 		public float maxSpeed;
 		public float maxTurn;
 
-		public Ship(AIController ai, GameEnvironment env) : base() 
+		public Ship(float x, float y, float vx, float vy, float sx, float sy, float fx, float fy, GameEnvironment env) : base() 
 		{
-			this.ai = ai;
+			Position = new Vector2(x, y);
+			DesiredVelocity = new Vector2(vx, vy);
+
 			this.maxSpeed = 100.0f;
 			this.maxTurn = 0.025f;
-
-			shooter = new BulletEmitter(env, BulletEmitter.BulletStrength.Medium, IsFriendly());
-			env.AddChild(shooter);
 		}
 
 		public override void Update(float elapsedTime)
@@ -86,34 +85,6 @@ namespace Sputnik
 		public bool IsFriendly()
 		{
 			return false;
-		}
-
-		public void TestShip(float x, float y,float vx, float vy, float sx, float sy, float fx, float fy, GameEnvironment env)
-		{
-			LoadTexture(env.contentManager, "circloid");
-			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
-			
-			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
-			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
-			CollisionBody.LinearDamping = 8.0f; // This value causes a small amount of slowing before stop which looks nice
-			
-			Position = new Vector2(x, y);
-			DesiredVelocity = new Vector2(vx, vy);
-			ai = new AIController(new Vector2(sx, sy), new Vector2(fx, fy), env);
-		}
-
-		public void TestShip(float x, float y, float vx, float vy,GameEnvironment env)
-		{
-			LoadTexture(env.contentManager, "Sputnik");
-			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
-
-			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
-			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
-			CollisionBody.LinearDamping = 8.0f; // This value causes a small amount of slowing before stop which looks nice.
-			
-			Position = new Vector2(x, y);
-			DesiredVelocity = new Vector2(vx, vy);
-			ai = new PlayerController(env);
 		}
 	}
 }

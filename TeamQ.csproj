@@ -112,6 +112,7 @@
     <Compile Include="BlackHolePhysicsController.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="BulletEmitter.cs" />
+    <Compile Include="CircloidShip.cs" />
     <Compile Include="Crosshair.cs" />
     <Compile Include="PlayerController.cs" />
     <Compile Include="Ship.cs" />
@@ -121,6 +122,7 @@
     <Compile Include="GameEnvironment.cs" />
     <Compile Include="GymEnvironment.cs" />
     <Compile Include="SputnikShip.cs" />
+    <Compile Include="SquaretopiaShip.cs" />
     <Compile Include="TakesDamage.cs" />
     <Compile Include="TestShip.cs" />
     <Compile Include="Loaders\Tiled.cs" />
@@ -130,6 +132,7 @@
     <Compile Include="ShipController.cs" />
     <Compile Include="SpecialAbility.cs" />
     <Compile Include="State.cs" />
+    <Compile Include="TriangulusShip.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
