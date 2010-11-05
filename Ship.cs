@@ -32,7 +32,12 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
-			ai.Update(this, elapsedTime);
+			if(ai != null) 
+			{
+				 ai.Update(this, elapsedTime);
+			}
+
+			//ai.Update(this, elapsedTime);
 
 			// Update emitter position.
 			shooter.Rotation = Rotation;

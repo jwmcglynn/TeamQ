@@ -7,11 +7,11 @@ using Microsoft.Xna.Framework;
 
 namespace Sputnik
 {
-    class CircloidShip : Ship
-    {
+	class CircloidShip : Ship
+	{
 		public CircloidShip(float x, float y, float vx, float vy, float sx, float sy, float fx, float fy, GameEnvironment env) 
 			: base(x, y, vx, vy, sx, sy, fx, fy, env)
-        {
+		{
 			this.shooter = new BulletEmitter(env, BulletEmitter.BulletStrength.Medium, IsFriendly());
 			env.AddChild(this.shooter);
 			ai = new AIController(new Vector2(sx, sy), new Vector2(fx, fy), env);
@@ -21,6 +21,7 @@ namespace Sputnik
 			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
-        }
-    }
+			CollisionBody.IgnoreGravity = true; // The circloid will not be affected by its own black hole. 
+		}
+	}
 }
