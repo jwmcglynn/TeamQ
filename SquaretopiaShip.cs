@@ -14,7 +14,7 @@ namespace Sputnik
 		{
 			this.shooter = new BulletEmitter(env, BulletEmitter.BulletStrength.Strong, IsFriendly());
 			env.AddChild(this.shooter);
-
+			this.ai = new AIController(new Vector2(sx, sy), new Vector2(fx, fy), env);
 			this.LoadTexture(env.contentManager, "squaretopia");
 
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;

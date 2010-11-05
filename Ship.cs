@@ -12,7 +12,7 @@ namespace Sputnik
 {
 	class Ship : Entity, TakesDamage
 	{
-		private ShipController ai;
+		protected ShipController ai;
 		private ShipController previousAI = null;
 		private int health = 10;
 
@@ -25,7 +25,6 @@ namespace Sputnik
 		{
 			Position = new Vector2(x, y);
 			DesiredVelocity = new Vector2(vx, vy);
-			ai = new AIController(new Vector2(sx, sy), new Vector2(fx, fy), env);
 
 			this.maxSpeed = 100.0f;
 			this.maxTurn = 0.025f;
