@@ -15,6 +15,7 @@ namespace Sputnik
 		protected ShipController ai;
 		private ShipController previousAI = null;
 		private int health = 10;
+		private bool m_shouldCull = false;
 
 		protected BulletEmitter shooter = null;
 
@@ -36,6 +37,8 @@ namespace Sputnik
 			{
 				 ai.Update(this, elapsedTime);
 			}
+
+			if (m_shouldCull) Destroy();
 
 			//ai.Update(this, elapsedTime);
 
@@ -84,7 +87,7 @@ namespace Sputnik
 			// Perform what ever actions are necessary to 
 			// Destory a ship
 			// TODO: Animations / explosions.
-			Destroy();
+			m_shouldCull = true;
 		}
 
 		public bool IsFriendly()

@@ -51,6 +51,7 @@ namespace Sputnik {
 
 			// Create collision notification callbacks.
 			CollisionWorld.ContactManager.PreSolve += PreSolve;
+			CollisionWorld.ContactManager.BeginContact += BeginContact;
 
 			physicsController = new BlackHolePhysicsController(300.0f, 100.0f * k_physicsScale, 9.0f * k_physicsScale); // 300 controls how strong the pull is towards the black hole.
 																									// 100.0 determines the radius fore which black hole will have an effect on.
@@ -101,12 +102,27 @@ namespace Sputnik {
 			m_debugView.RenderDebugData(ref m_debugPhysicsMatrix);
 		}
 
+		public void BeginContact(Physics.Dynamics.Contacts.Contact contact) {
+			// PreSolve performs the same function as this, only continue if one is a sensor.
+			if (!contact.FixtureA.IsSensor && !contact.FixtureB.IsSensor) return;
+			
+			HandleContact(contact);
+		}
+
 		/// <summary>
 		/// Farseer Physics callback.  Handles the case where two objects collide.
 		/// </summary>
 		/// <param name="contact">Contact point.</param>
 		/// <param name="oldManifold">Manifold from last update.</param>
 		protected void PreSolve(Physics.Dynamics.Contacts.Contact contact, ref Physics.Collision.Manifold oldManifold) {
+			HandleContact(contact);
+		}
+
+		/// <summary>
+		/// Handle contact interactions.
+		/// </summary>
+		/// <param name="contact">Contact point.</param>
+		private void HandleContact(Physics.Dynamics.Contacts.Contact contact) {
 			if (!contact.IsTouching()) return;
 
 			// Attempt to get Entities from both shapes.
@@ -119,7 +135,7 @@ namespace Sputnik {
 
 			contact.Enabled = shouldCollide;
 
-			if (shouldCollide && contact.IsTouching()) {
+			if (shouldCollide) {
 				entA.OnCollide(entB, contact);
 				entB.OnCollide(entA, contact);
 			}
