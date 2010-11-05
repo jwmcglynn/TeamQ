@@ -34,9 +34,12 @@ namespace Sputnik
 		public override void Update(float elapsedTime)
 		{
 			ai.Update(this, elapsedTime);
-            Position += DesiredVelocity * elapsedTime;
-			//Stopped using momentum
-            //base.Update(elapsedTime);
+
+			// Update emitter position.
+			shooter.Rotation = Rotation;
+			shooter.Position = Position;
+
+			base.Update(elapsedTime);
 		}
 
 		// Attach Sputnik to the ship
@@ -62,7 +65,7 @@ namespace Sputnik
 
 		public void Shoot(float elapsedTime)
 		{
-			shooter.Update(elapsedTime, this.Rotation, this.Position + this.Registration);
+			shooter.Shoot(elapsedTime);
 		}
 
 		public bool isSputnik()
@@ -89,10 +92,13 @@ namespace Sputnik
 		{
 			LoadTexture(env.contentManager, "circloid");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
-			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.DisableSleep);
+			
+			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
+			CollisionBody.LinearDamping = 8.0f; // This value causes a small amount of slowing before stop which looks nice
+			
 			Position = new Vector2(x, y);
-			SetPhysicsVelocityOnce(new Vector2(vx, vy));
+			DesiredVelocity = new Vector2(vx, vy);
 			ai = new AIController(new Vector2(sx, sy), new Vector2(fx, fy), env);
 		}
 
@@ -100,10 +106,13 @@ namespace Sputnik
 		{
 			LoadTexture(env.contentManager, "Sputnik");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
-			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.DisableSleep);
+
+			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
+			CollisionBody.LinearDamping = 8.0f; // This value causes a small amount of slowing before stop which looks nice.
+			
 			Position = new Vector2(x, y);
-			SetPhysicsVelocityOnce(new Vector2(vx, vy));
+			DesiredVelocity = new Vector2(vx, vy);
 			ai = new PlayerController(env);
 		}
 	}
