@@ -5,11 +5,14 @@
  </tileset>
  <layer name="Foreground" width="100" height="100">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3a0Y6CMBAFUFf8/29WY9iwxNqCS52p5yR9aEPSGW8qRDydiGi6jcuni+DXZTH4vHUeP0nHKJ7lkU3GmkvkEY884srYW8aaW/Xu7T/uz9+ex7lxvl4v7ffuc9OoebR+Bj3zaKlHHm3zljyW++7NRB5tc3m8Z28ey7Vz5bpX+8rjL3nEsiWPeazXW66bTYX93c8fsvaVte6arH1lrbsma19Z667J2lfWumuy9pW17pqsfWWtuyZrX6O9s51l7UkescgjFnnEkrXumlpf69+bohgxj5YzL4++5BFH6XxMhRHJiHncOR+xyCOWPf9DizJGtCcPjiOPWLaefXkcTx6xyCOWLd9Z8ujjWSalNfr51ud+AAAAAAAAAAAAAAAAAAAAAAAAAAAAADjaFYQQ6MVAnAAA
+   H4sIAAAAAAAAC+3aUaqDMBAF0L62+1/zw4+AlKbGJNpxeg7kwyCS6yVVqLdb3V/DYL7e+62X+cr9fK5G7zUYV+7jSB/lOhHG1c3qIwJ9xJKpj4U+vi9DhiJDligZZjyfo2QZMZLh3nj8Ol9bx+h7kz7ajmf00bJOfbQdt/RR1jLSSZY+enPo4xiz+ljP3TfOq63j1/uYuT/Wc/roM/r8KON1vuW8T2vyPL++DFkyZCgyZMmQociQJUOGIkOWLP/jLOSIRY5Ysuz1DBkWmfrI8F3Aldf+yVUz6SOWq657y1auxymr2C9jHy17Xh/n0kcctf3xqIxIMvaxsD9i0UcsPd+hRRkZ9fTBcfQRy969r4/j6SMWfcSy5zdLH+d410ltjvP86ns/AAAAAAAAAAAAAAAAAAAAAAAAAAAAABztH4gB5QdAnAAA
   </data>
  </layer>
  <objectgroup name="Objects" width="100" height="100">
-  <object name="" type="spawn" x="361" y="602"/>
-  <object name="" type="triangulus" x="235" y="143" width="248" height="135"/>
+  <object name="spawn here" type="spawn" x="607" y="290" width="34" height="30"/>
+  <object name="" type="circloid" x="346" y="411" width="109" height="73"/>
+  <object name="" type="triangulus" x="557" y="577" width="147" height="117"/>
+  <object name="" type="squaretopia" x="381" y="743" width="21" height="17"/>
+  <object name="" type="blackhole" x="878" y="491" width="12" height="10"/>
  </objectgroup>
 </map>

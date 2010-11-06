@@ -28,10 +28,6 @@ namespace Sputnik
 					this);
 				AddChild(s);
 			}
-			Entity s2 = new SputnikShip(150, 150, 0, 0, this);
-			Camera.Focus = s2;
-			Camera.Position = s2.Position;
-			AddChild(s2);
 			//AddChild(new TestShip(150, 150, 0, 0, this));
 			AddChild(new Crosshair(this));
 

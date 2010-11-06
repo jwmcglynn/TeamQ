@@ -502,6 +502,7 @@ namespace Squared.Tiled {
 		public SortedList<string, string> Properties = new SortedList<string, string>();
 
 		public string Name, Image;
+		public string Type;
 		public int Width, Height, X, Y;
 
 		protected Texture2D _Texture;
@@ -526,6 +527,7 @@ namespace Squared.Tiled {
 			var result = new Object();
 
 			result.Name = reader.GetAttribute("name");
+			result.Type = reader.GetAttribute("type");
 			result.X = int.Parse(reader.GetAttribute("x"));
 			result.Y = int.Parse(reader.GetAttribute("y"));
 			result.Width = reader.GetAttribute("width") == null ? 0 : int.Parse(reader.GetAttribute("width"));

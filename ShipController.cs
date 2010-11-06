@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Sputnik
 {
-    interface ShipController
-    {
+	interface ShipController
+	{
 		void Update(Ship s, float elapsedTime);
-    }
+	}
 }

@@ -17,21 +17,21 @@ namespace Sputnik {
 		private GraphicsDeviceManager m_graphics;
 		private Environment m_env;
 
-        /// <summary>
-        /// Made this to play with random positions
-        /// </summary>
-        public GraphicsDeviceManager Graphics
-        {
-            get
-            {
-                return m_graphics;
-            }
-        }
+		/// <summary>
+		/// Made this to play with random positions
+		/// </summary>
+		public GraphicsDeviceManager Graphics {
+			get {
+				return m_graphics;
+			}
+		}
 
 		public Controller() {
 			m_graphics = new GraphicsDeviceManager(this);
 			Window.Title = "Sputnik";
 			Content.RootDirectory = "Content";
+
+			OldKeyboard.m_state = Keyboard.GetState();
 		}
 
 		/// <summary>
@@ -80,6 +80,9 @@ namespace Sputnik {
 
 			m_env.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
 			base.Update(gameTime);
+
+			// Get the keyboard state for the next pass.
+			OldKeyboard.m_state = Keyboard.GetState();
 		}
 
 		/// <summary>

@@ -6,16 +6,18 @@ using Physics = FarseerPhysics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Storage;
+using Microsoft.Xna.Framework.Input;
 using Tiled = Squared.Tiled;
 using System.IO;
 
 using FarseerPhysics.Controllers;
 
 namespace Sputnik {
-	class GameEnvironment : Environment {
+	public class GameEnvironment : Environment {
 		private SpriteBatch m_spriteBatch;
 		private Tiled.Map m_map;
 		public Camera2D Camera;
+		private SpawnController m_spawnController;
 
 		// Physics.
 		private Physics.DebugViewXNA m_debugView;
@@ -47,7 +49,6 @@ namespace Sputnik {
 			CollisionWorld = new Physics.Dynamics.World(Vector2.Zero);
 
 			m_debugView = new Physics.DebugViewXNA(CollisionWorld);
-			m_debugView.AppendFlags(Physics.DebugViewFlags.DebugPanel);
 
 			// Create collision notification callbacks.
 			CollisionWorld.ContactManager.PreSolve += PreSolve;
@@ -75,12 +76,9 @@ namespace Sputnik {
 			DestroyCollisionBody();
 			CreateCollisionBody(CollisionWorld, Physics.Dynamics.BodyType.Static);
 
-			Position = new Vector2(-Controller.GraphicsDevice.Viewport.Width + m_map.TileWidth, -Controller.GraphicsDevice.Viewport.Height + m_map.TileHeight);
 			Vector2 tileHalfSize = new Vector2(m_map.TileWidth, m_map.TileHeight) / 2;
 
-			foreach (KeyValuePair<string, Tiled.Layer> i in m_map.Layers) {
-				Tiled.Layer layer = i.Value;
-
+			foreach (Tiled.Layer layer in m_map.Layers.Values) {
 				for (int x = 0; x < layer.Width; ++x)
 				for (int y = 0; y < layer.Height; ++y) {
 					Tile tileType = (Tile) layer.GetTile(x, y);
@@ -94,20 +92,32 @@ namespace Sputnik {
 					}
 				}
 			}
+
+			m_spawnController = new SpawnController(this, m_map.ObjectGroups.Values);
 		}
 
 		public override void Update(float elapsedTime) {
 			m_updateAccum += elapsedTime;
 
+			float timeSpent = 0.0f;
+
 			// Update physics.
 			const float k_physicsStep = 1.0f / 60.0f;
 			while (m_updateAccum > k_physicsStep) {
 				m_updateAccum -= k_physicsStep;
+				timeSpent += k_physicsStep;
 				CollisionWorld.Step(k_physicsStep);
+			}
 
-				// Update entities.
-				base.Update(k_physicsStep);
-				Camera.Update(k_physicsStep);
+			// Update entities.
+			m_spawnController.Update(timeSpent);
+			base.Update(timeSpent);
+			Camera.Update(timeSpent);
+
+			// Toggle debug view.
+			if (Keyboard.GetState().IsKeyDown(Keys.F1) && !OldKeyboard.GetState().IsKeyDown(Keys.F1)) {
+				if (m_debugView != null) m_debugView = null;
+				else m_debugView = new Physics.DebugViewXNA(CollisionWorld);
 			}
 
 			//FPS counter
@@ -128,6 +138,8 @@ namespace Sputnik {
 		public override void Draw() {
 			m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
 
+			Vector2 mapOffset = new Vector2(Controller.GraphicsDevice.Viewport.Width - m_map.TileWidth, Controller.GraphicsDevice.Viewport.Height - m_map.TileHeight);
+
 			// Draw map.
 			int offsetX = (int) (Camera.Position.X - Camera.Origin.X);
 			int offsetY = (int) (Camera.Position.Y - Camera.Origin.Y);
@@ -136,7 +148,7 @@ namespace Sputnik {
 					, (int) -Camera.Origin.Y
 					, Controller.GraphicsDevice.Viewport.Width + (int) Camera.Origin.X
 					, Controller.GraphicsDevice.Viewport.Height + (int) Camera.Origin.Y
-				), Camera.Position
+				), Camera.Position - mapOffset
 			);
 			m_spriteBatch.End();
 
@@ -145,9 +157,11 @@ namespace Sputnik {
 			Draw(m_spriteBatch);
 			m_spriteBatch.End();
 
-			// Debug drawing.
-			Matrix debugMatrix = Matrix.CreateScale(k_invPhysicsScale) * Camera.Transform;
-			m_debugView.RenderDebugData(ref m_projection, ref debugMatrix);
+			if (m_debugView != null) {
+				// Debug drawing.
+				Matrix debugMatrix = Matrix.CreateScale(k_invPhysicsScale) * Camera.Transform;
+				m_debugView.RenderDebugData(ref m_projection, ref debugMatrix);
+			}
 		}
 
 		public void BeginContact(Physics.Dynamics.Contacts.Contact contact) {

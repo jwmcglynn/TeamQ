@@ -7,10 +7,10 @@ using Microsoft.Xna.Framework;
 
 namespace Sputnik
 {
-    class SputnikShip : Ship
-    {
+	class SputnikShip : Ship
+	{
 
-        public PlayerController ai = null;
+		public PlayerController ai = null;
 
 		public SputnikShip(float x, float y, float vx, float vy, GameEnvironment env) : base(x, y, vx, vy, 0.0f, 0.0f, 0.0f, 0.0f, env) 
 		{
@@ -25,18 +25,27 @@ namespace Sputnik
 			CollisionBody.LinearDamping = 8.0f; // This value causes a small amount of slowing before stop which looks nice.
 
 			ai = new PlayerController(env);
+
+			// Adjust camera.
+			env.Camera.Position = new Vector2(x, y);
+			env.Camera.Focus = this;
 		}
 
-        public override void Update(float elapsedTime)
-        {
-			ai.Update(this, elapsedTime);
-            base.Update(elapsedTime);
-        }
+		public SputnikShip(GameEnvironment env, SpawnPoint sp)
+				: this(sp.Position.X, sp.Position.Y, 0.0f, 0.0f, env) {
+			Position = sp.Position;
+		}
 
-        public ShipController GetAI()
-        {
-            return this.ai;
-        }
+		public override void Update(float elapsedTime)
+		{
+			ai.Update(this, elapsedTime);
+			base.Update(elapsedTime);
+		}
+
+		public ShipController GetAI()
+		{
+			return this.ai;
+		}
 
 		public override bool IsFriendly() {
 			return true;

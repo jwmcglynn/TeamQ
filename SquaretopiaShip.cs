@@ -22,5 +22,9 @@ namespace Sputnik
 			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
 		}
+
+		public SquaretopiaShip(GameEnvironment env, SpawnPoint sp)
+				: this(sp.Position.X, sp.Position.Y, 0.0f, 0.0f, sp.TopLeft.X, sp.TopLeft.Y, sp.BottomRight.X, sp.BottomRight.Y, env) {
+		}
 	}
 }

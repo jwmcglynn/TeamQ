@@ -117,6 +117,7 @@
     <Compile Include="Engine\Camera2D.cs" />
     <Compile Include="Engine\SpawnController.cs" />
     <Compile Include="Engine\SpawnPoint.cs" />
+    <Compile Include="Engine\OldKeyboard.cs" />
     <Compile Include="PlayerController.cs" />
     <Compile Include="Ship.cs" />
     <Compile Include="Engine\DebugViewXNA.cs" />

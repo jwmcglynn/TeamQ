@@ -25,9 +25,12 @@ namespace Sputnik
 			
 			Position = new Vector2(50.0f, 50.0f);
 
-			//CollisionBody.IgnoreGravity = true;
-
 			env.physicsController.AddBody(CollisionBody);
+		}
+
+		public BlackHole(GameEnvironment e, SpawnPoint sp)
+				: this(e) {
+			Position = sp.Position;
 		}
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
