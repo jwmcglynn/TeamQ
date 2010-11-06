@@ -43,7 +43,11 @@ namespace Sputnik
 		}
 
 		public override bool ShouldCollide(Entity entB) {
-			return !(entB is Environment);
+			return !(entB is Environment) && !(entB is Bullet);
+		}
+
+		public override void TakeHit(int damage) {
+			// Do nothing.
 		}
 	}
 }

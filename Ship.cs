@@ -62,7 +62,7 @@ namespace Sputnik
 
 		// An Entity deals damage to the Ship.  Currently, only the 
 		// damage from bullets is implemented.
-		public void TakeHit(int damage)
+		public virtual void TakeHit(int damage)
 		{
 			this.health -= damage;
 			if(this.health < 1) {
