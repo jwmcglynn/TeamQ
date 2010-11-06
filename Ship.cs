@@ -90,7 +90,7 @@ namespace Sputnik
 			m_shouldCull = true;
 		}
 
-		public bool IsFriendly()
+		public virtual bool IsFriendly()
 		{
 			return false;
 		}

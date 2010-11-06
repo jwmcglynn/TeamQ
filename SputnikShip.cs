@@ -37,5 +37,13 @@ namespace Sputnik
         {
             return this.ai;
         }
+
+		public override bool IsFriendly() {
+			return true;
+		}
+
+		public override bool ShouldCollide(Entity entB) {
+			return !(entB is Environment);
+		}
 	}
 }

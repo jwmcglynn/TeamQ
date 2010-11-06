@@ -8,7 +8,7 @@ namespace Sputnik
 {
 	class Bullet : Entity
 	{
-		private int bulletStrength;
+		private int bulletStrength = 1;
 		const float k_speed = 300.0f; // pixels per second
 		public bool ShotByPlayer; // to figure out who will be the target of our bullet
 		
