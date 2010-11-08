@@ -112,5 +112,9 @@ namespace FarseerPhysics.Controllers
 		{
 			Points.Add(point);
 		}
+
+		public void RemoveBody(Body body) {
+			Bodies.Remove(body);
+		}
 	}
 }

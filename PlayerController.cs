@@ -16,6 +16,9 @@ namespace Sputnik
     class PlayerController : ShipController
     {
 		private GameEnvironment m_env;
+		
+		BlackHole spawnedBlackHole;
+		private bool specialShot = false;
 
         /// <summary>
         ///  Creates a new Player
@@ -62,6 +65,23 @@ namespace Sputnik
             if (ms.LeftButton == ButtonState.Pressed)
                 s.Shoot(elapsedTime);
 
-        }
+			// Will spawn a blackhole when we first pressdown our right mouse button.
+			// if a blackhole has already been spawned this way, then the other one will be removed.
+			if(ms.RightButton == ButtonState.Pressed && !specialShot) {
+				if (spawnedBlackHole != null)
+				{
+					m_env.physicsController.RemoveBody(spawnedBlackHole.CollisionBody);
+					spawnedBlackHole.Destroy();
+				}
+
+				spawnedBlackHole = new BlackHole(m_env);
+				spawnedBlackHole.Position = m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y));
+				m_env.AddChild(spawnedBlackHole);
+				specialShot = true;
+			}
+			if(ms.RightButton == ButtonState.Released) {
+				specialShot = false;
+			}
+		}
     }
 }
