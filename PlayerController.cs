@@ -39,21 +39,24 @@ namespace Sputnik
             MouseState ms = Mouse.GetState();
 			Vector2 mousePos = m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y));
 			s.Rotation = (float)Math.Atan2(mousePos.Y - s.Position.Y, mousePos.X - s.Position.X);
+
+			float scaleFactor = 2.0f;
+
             if (kb.IsKeyDown(Keys.W))
             {
-                temp.Y = -1;
+                temp.Y = -1 * scaleFactor;
             }
             if (kb.IsKeyDown(Keys.A))
             {
-                temp.X = -1;
+				temp.X = -1 * scaleFactor;
             }
             if (kb.IsKeyDown(Keys.S))
             {
-                temp.Y = 1;
+				temp.Y = 1 * scaleFactor;
             }
             if (kb.IsKeyDown(Keys.D))
             {
-                temp.X = 1;
+				temp.X = 1 * scaleFactor;
             }
             if (temp.X != 0 && temp.Y != 0)
                 temp *= (float)Math.Sqrt(Math.Pow(s.maxSpeed, 2) / 2);
@@ -68,11 +71,9 @@ namespace Sputnik
 			// Will spawn a blackhole when we first pressdown our right mouse button.
 			// if a blackhole has already been spawned this way, then the other one will be removed.
 			if(ms.RightButton == ButtonState.Pressed && !specialShot) {
-				if (spawnedBlackHole != null)
-				{
+				if (spawnedBlackHole != null) {
 					spawnedBlackHole.Destroy();
 				}
-
 				spawnedBlackHole = new BlackHole(m_env, false);
 				spawnedBlackHole.Position = m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y));
 				m_env.AddChild(spawnedBlackHole);

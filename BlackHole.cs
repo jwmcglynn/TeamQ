@@ -13,35 +13,50 @@ namespace Sputnik
 		BlackHole wormHole;
 
 		bool didTeleport = false;
-		Entity teleportingEntity;
-		Vector2 exitDirection;
 		private List<Entity> waitingToTeleport = new List<Entity>();
+		
+		bool isAWormHole = false;
+		bool blackHoleFromMap = false;
 
 		public BlackHole(GameEnvironment e, bool isWormHole)
 		{
 			env = e;
+			isAWormHole = isWormHole;
+			initialize();
+		}
 
-			LoadTexture(env.contentManager, "black_hole_small");
+		public BlackHole(GameEnvironment e, SpawnPoint sp) {
+			env = e;
+			blackHoleFromMap = true;
+			initialize();
+			Position = sp.Position;
+		}
+
+		private void initialize() {
+			LoadTexture(env.contentManager, "black_hole_small_old");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			Zindex = 0.0f;
-			
+
 			CreateCollisionBody(env.CollisionWorld, FarseerPhysics.Dynamics.BodyType.Static, CollisionFlags.DisableSleep);
 			var circle = AddCollisionCircle(Texture.Height / 12, Vector2.Zero); // Using 12 here as an arbitrary value. Reason: Want the black hole to have a small collis
-			circle.IsSensor = true; 
+			circle.IsSensor = true;
 
 			env.BlackHoleController.AddBody(CollisionBody);
 
-			if(!isWormHole) {
-					wormHole = new BlackHole(env, true);
-					wormHole.Position = new Vector2(150.0f, 150.0f);
-					wormHole.wormHole = this;
-					AddChild(wormHole);
+			if (!isAWormHole && !blackHoleFromMap)
+			{
+				wormHole = new BlackHole(env, true);
+				Random rand = new Random();
+				wormHole.Position = env.PossibleBlackHoleLocations[rand.Next(0, env.PossibleBlackHoleLocations.Count)];
+				wormHole.wormHole = this;
+				AddChild(wormHole);
+			} else if (!isAWormHole) {
+				wormHole = new BlackHole(env, true);
+				Random rand = new Random();
+				wormHole.Position = new Vector2(500.0f, 500.0f);
+				wormHole.wormHole = this;
+				AddChild(wormHole);
 			}
-		}
-
-		public BlackHole(GameEnvironment e, SpawnPoint sp)
-				: this(e, false) {
-			Position = sp.Position;
 		}
 
 		public override void Destroy()

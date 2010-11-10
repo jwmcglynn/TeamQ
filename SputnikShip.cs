@@ -17,7 +17,7 @@ namespace Sputnik
 			this.shooter = new BulletEmitter(env, BulletEmitter.BulletStrength.Weak, IsFriendly());
 			env.AddChild(this.shooter);
 
-			LoadTexture(env.contentManager, "Sputnik");
+			LoadTexture(env.contentManager, "Sputnik_Old");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 
 			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
