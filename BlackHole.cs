@@ -7,9 +7,8 @@ using Microsoft.Xna.Framework;
 
 namespace Sputnik
 {
-	class BlackHole : SpecialAbility
+	class BlackHole : GameEntity
 	{
-		GameEnvironment env;
 		BlackHole wormHole;
 
 		bool didTeleport = false;
@@ -19,52 +18,56 @@ namespace Sputnik
 		bool blackHoleFromMap = false;
 
 		public BlackHole(GameEnvironment e, bool isWormHole)
+				: base(e)
 		{
-			env = e;
 			isAWormHole = isWormHole;
-			initialize();
+			Initialize();
 		}
 
-		public BlackHole(GameEnvironment e, SpawnPoint sp) {
-			env = e;
+		public BlackHole(GameEnvironment e, SpawnPoint sp)
+				: base(e, sp) {
 			blackHoleFromMap = true;
-			initialize();
+			Initialize();
 			Position = sp.Position;
 		}
 
-		private void initialize() {
-			LoadTexture(env.contentManager, "black_hole_small_old");
+		private void Initialize() {
+			LoadTexture(Environment.contentManager, "black_hole_small_old");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			Zindex = 0.0f;
 
-			CreateCollisionBody(env.CollisionWorld, FarseerPhysics.Dynamics.BodyType.Static, CollisionFlags.DisableSleep);
+			CreateCollisionBody(Environment.CollisionWorld, FarseerPhysics.Dynamics.BodyType.Static, CollisionFlags.DisableSleep);
 			var circle = AddCollisionCircle(Texture.Height / 12, Vector2.Zero); // Using 12 here as an arbitrary value. Reason: Want the black hole to have a small collis
 			circle.IsSensor = true;
 
-			env.BlackHoleController.AddBody(CollisionBody);
+			Environment.BlackHoleController.AddBody(CollisionBody);
 
 			if (!isAWormHole && !blackHoleFromMap)
 			{
-				wormHole = new BlackHole(env, true);
+				wormHole = new BlackHole(Environment, true);
 				Random rand = new Random();
-				wormHole.Position = env.PossibleBlackHoleLocations[rand.Next(0, env.PossibleBlackHoleLocations.Count)];
+				wormHole.Position = Environment.PossibleBlackHoleLocations[rand.Next(0, Environment.PossibleBlackHoleLocations.Count)];
 				wormHole.wormHole = this;
 				AddChild(wormHole);
 			} else if (!isAWormHole) {
-				wormHole = new BlackHole(env, true);
+				wormHole = new BlackHole(Environment, true);
 				Random rand = new Random();
 				wormHole.Position = new Vector2(500.0f, 500.0f);
+
 				wormHole.wormHole = this;
 				AddChild(wormHole);
 			}
 		}
 
-		public override void Destroy()
-		{
-			env.BlackHoleController.RemoveBody(CollisionBody);
-			base.Destroy();
+		public override bool ShouldCull() {
+			return false; // Quick workaround; blackholes should eventually cull but still be able to determine counterparts.
 		}
 
+		public override void Destroy()
+		{
+			Environment.BlackHoleController.RemoveBody(CollisionBody);
+			base.Destroy();
+		}
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
 		{

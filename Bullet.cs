@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace Sputnik
 {
-	class Bullet : Entity
+	class Bullet : GameEntity
 	{
 		private int bulletStrength = 1;
 		const float k_speed = 300.0f; // pixels per second
@@ -16,6 +16,7 @@ namespace Sputnik
 		private float m_lifetime = 0.0f;
 
 		public Bullet(GameEnvironment env, Vector2 position, double angle, bool playerShotBullet)
+				: base(env)
 		{
 			LoadTexture(env.contentManager, "bullet");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
@@ -56,10 +57,14 @@ namespace Sputnik
 		public override void Update(float elapsedTime)
 		{
 			m_lifetime += elapsedTime;
-			if (m_shouldCull || m_lifetime > 5.0f) Destroy();
 
 			Rotation = (float) Math.Atan2((double) ActualVelocity.Y, (double) ActualVelocity.X);
 			base.Update(elapsedTime);
+		}
+
+		public override bool ShouldCull() {
+			if (m_shouldCull || m_lifetime > 5.0f) return true;
+			return base.ShouldCull();
 		}
 
 		public override bool ShouldCollide(Entity entB) {

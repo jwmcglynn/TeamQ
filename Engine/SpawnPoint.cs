@@ -29,20 +29,36 @@ namespace Sputnik {
 			}
 		}
 
+		public Rectangle Rect {
+			get {
+				return new Rectangle((int) TopLeft.X, (int) TopLeft.Y, (int) Size.X, (int) Size.Y);
+			}
+		}
+
 		// Name.
 		public string Name;
 
 		// Type, used for spawning with reflection.
 		public string EntityType;
 
+		// Entity once spawned.
+		public Entity Entity;
+
 		// Should the entity respawn again after being culled?
 		public bool AllowRespawn = true;
 
 		// Time in seconds until SpawnPoint can trigger again.
-		public float RespawnCooldown = 0.0f;
+		public float RespawnCooldown;
 
 		// Arbitrary data added by level editor to initialize object.
 		public SortedList<string, string> Properties;
+
+
+		// Current progress on respawn time.
+		private float m_currentCooldown;
+
+		// Has the entity been offscreen since it was culled?
+		private bool m_hasBeenOffscreen = true;
 
 		#endregion
 
@@ -56,31 +72,60 @@ namespace Sputnik {
 			EntityType = obj.Type;
 		}
 
+		internal void Update(float elapsedTime, Camera2D camera) {
+			m_currentCooldown += elapsedTime;
+
+			Rectangle spawnRect = Rect;
+			spawnRect.Inflate((int) GameEnvironment.k_spawnRadius, (int) GameEnvironment.k_spawnRadius);
+
+			if (!m_hasBeenOffscreen) {
+				m_hasBeenOffscreen = !camera.IsInView(spawnRect);
+			} else if (m_currentCooldown > RespawnCooldown && camera.IsInView(spawnRect)) {
+				Spawn();
+			}
+		}
+
 		internal Entity Spawn() {
-			Entity ent;
+			SpawnController.SpawnPoints.Remove(this);
 
 			switch (EntityType) {
 				case "spawn":
-					ent = new SputnikShip(SpawnController.Environment, this);
+					Entity = new SputnikShip(SpawnController.Environment, this);
 					break;
 				case "triangulus":
-					ent = new TriangulusShip(SpawnController.Environment, this);
+					Entity = new TriangulusShip(SpawnController.Environment, this);
 					break;
 				case "squaretopia":
-					ent = new SquaretopiaShip(SpawnController.Environment, this);
+					Entity = new SquaretopiaShip(SpawnController.Environment, this);
 					break;
 				case "circloid":
-					ent = new CircloidShip(SpawnController.Environment, this);
+					Entity = new CircloidShip(SpawnController.Environment, this);
 					break;
 				case "blackhole":
-					ent = new BlackHole(SpawnController.Environment, this);
+					Entity = new BlackHole(SpawnController.Environment, this);
 					break;
 				default:
 					throw new InvalidOperationException("Invalid entity type.");
 			}
 
-			SpawnController.Environment.AddChild(ent);
-			return ent;
+			System.Console.WriteLine("Spawned " + Entity);
+
+			SpawnController.Environment.AddChild(Entity);
+			return Entity;
+		}
+
+		public void Reset() {
+			m_hasBeenOffscreen = false;
+
+			if (AllowRespawn) {
+				m_currentCooldown = 0.0f;
+				SpawnController.SpawnPoints.Add(this);
+				System.Console.WriteLine("Reset sp " + Entity);
+			} else {
+				System.Console.WriteLine("Destroy sp " + Entity);
+			}
+
+			Entity = null;
 		}
 	}
 }

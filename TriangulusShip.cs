@@ -9,22 +9,27 @@ namespace Sputnik
 {
 	class TriangulusShip : Ship
 	{
-		public TriangulusShip(float x, float y, float vx, float vy, float sx, float sy, float fx, float fy, GameEnvironment env)
-			: base(x, y, vx, vy, sx, sy, fx, fy, env)
+		public TriangulusShip(GameEnvironment env, Vector2 pos, Vector2 patrolStart, Vector2 patrolEnd)
+			: base(env, pos)
 		{
-			this.shooter = new BulletEmitter(env, BulletEmitter.BulletStrength.Weak, IsFriendly());
-			env.AddChild(this.shooter);
-			ai = new AIController(new Vector2(sx, sy), new Vector2(fx, fy), env);
-			this.LoadTexture(env.contentManager, "triangulus");
+			Initialize(patrolStart, patrolEnd);
+		}
+
+		private void Initialize(Vector2 patrolStart, Vector2 patrolEnd) {
+			shooter = new BulletEmitter(Environment, BulletEmitter.BulletStrength.Weak, IsFriendly());
+			AddChild(shooter);
+			ai = new AIController(patrolStart, patrolEnd, Environment);
+			LoadTexture(Environment.contentManager, "triangulus");
 
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
-			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
+			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
 		}
 
 		public TriangulusShip(GameEnvironment env, SpawnPoint sp)
-				: this(sp.Position.X, sp.Position.Y, 0.0f, 0.0f, sp.TopLeft.X, sp.TopLeft.Y, sp.BottomRight.X, sp.BottomRight.Y, env) {
+				: base(env, sp) {
+			Initialize(Position, Position + new Vector2(50.0f, 50.0f)); // FIXME: Find a better way to get positions.
 		}
 	}
 }

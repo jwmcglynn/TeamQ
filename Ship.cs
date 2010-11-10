@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework;
 
 namespace Sputnik
 {
-	class Ship : Entity, TakesDamage
+	class Ship : GameEntity, TakesDamage
 	{
 		protected ShipController ai;
 		private ShipController previousAI = null;
@@ -19,28 +19,23 @@ namespace Sputnik
 
 		protected BulletEmitter shooter = null;
 
-		public float maxSpeed;
-		public float maxTurn;
+		public float maxSpeed = 100.0f;
+		public float maxTurn = 0.025f;
 
-		public Ship(float x, float y, float vx, float vy, float sx, float sy, float fx, float fy, GameEnvironment env) : base() 
+		public Ship(GameEnvironment env, Vector2 pos)
+				: base(env)
 		{
-			Position = new Vector2(x, y);
-			DesiredVelocity = new Vector2(vx, vy);
+			Position = pos;
+		}
 
-			this.maxSpeed = 100.0f;
-			this.maxTurn = 0.025f;
+		public Ship(GameEnvironment env, SpawnPoint sp)
+				: base(env, sp)
+		{
 		}
 
 		public override void Update(float elapsedTime)
 		{
-			if(ai != null) 
-			{
-				 ai.Update(this, elapsedTime);
-			}
-
-			if (m_shouldCull) Destroy();
-
-			//ai.Update(this, elapsedTime);
+			ai.Update(this, elapsedTime);
 
 			// Update emitter position.
 			shooter.Rotation = Rotation;
@@ -58,6 +53,11 @@ namespace Sputnik
 
 		public override bool ShouldCollide(Entity entB) {
 			return !(entB is Ship);
+		}
+
+		public override bool ShouldCull() {
+			if (m_shouldCull) return true;
+			return base.ShouldCull();
 		}
 
 		// An Entity deals damage to the Ship.  Currently, only the 

@@ -34,12 +34,6 @@ namespace Sputnik {
 		public Vector2 TeleportInertiaDir;
 
 		/*************************************************************************/
-		// Constructors/destructors.
-
-		public Entity() {
-		}
-
-		/*************************************************************************/
 		// Entity tree.
 
 		/// <summary>
@@ -112,9 +106,24 @@ namespace Sputnik {
 
 			set {
 				if (CollisionBody != null) {
-					Vector2 physicsPos = value * GameEnvironment.k_physicsScale;
-					CollisionBody.SetTransformIgnoreContacts(ref physicsPos, CollisionBody.Rotation);
+					CollisionBody.Position = value * GameEnvironment.k_physicsScale;
 				} else m_position = value;
+			}
+		}
+
+		public Rectangle VisibleRect {
+			get {
+				Rectangle rect = new Rectangle();
+
+				if (Texture != null) {
+					rect.Location = new Point((int) -Registration.X, (int) -Registration.Y);
+					rect.Width = Texture.Width;
+					rect.Height = Texture.Height;
+				}
+
+				rect.Offset((int) Position.X, (int) Position.Y);
+
+				return rect;
 			}
 		}
 
@@ -274,6 +283,14 @@ namespace Sputnik {
 		/// <param name="entB">Other entity.</param>
 		/// <param name="contact">Contact point.</param>
 		public virtual void OnCollide(Entity entB, Physics.Dynamics.Contacts.Contact contact) {
+		}
+
+		/// <summary>
+		/// Called when two entities separate.
+		/// </summary>
+		/// <param name="entB">Other entity.</param>
+		/// <param name="contact">Contact point.</param>
+		public virtual void OnSeparate(Entity entB, Physics.Dynamics.Contacts.Contact contact) {
 		}
 
 		/// <summary>

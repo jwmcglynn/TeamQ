@@ -29,9 +29,6 @@ namespace Sputnik {
 						if (!spawnedPlayer && sp.EntityType == "spawn") {
 							spawnedPlayer = true;
 							sp.Spawn();
-						} else {
-							// TEMP.
-							sp.Spawn(); // TEMP.
 						}
 						
 					}
@@ -42,7 +39,7 @@ namespace Sputnik {
 		}
 
 		public void Update(float elapsedTime) {
-			// TODO
+			SpawnPoints.ForEach((SpawnPoint sp) => sp.Update(elapsedTime, Environment.Camera));
 		}
 	}
 }

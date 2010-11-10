@@ -730,14 +730,8 @@ namespace Squared.Tiled {
 		}
 
 		public void Draw (SpriteBatch batch, Rectangle rectangle, Vector2 viewportPosition) {
-			foreach (Layer layers in Layers.Values)
-			{
+			foreach (Layer layers in Layers.Values) {
 				layers.Draw(batch, Tilesets.Values, rectangle, viewportPosition, TileWidth, TileHeight);
-			}
-
-			foreach (var objectgroups in ObjectGroups.Values)
-			{
-				objectgroups.Draw(this, batch, rectangle, viewportPosition);
 			}
 		}
 	}

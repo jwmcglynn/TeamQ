@@ -9,13 +9,12 @@ namespace Sputnik
 {
 	class SputnikShip : Ship
 	{
+		public SputnikShip(GameEnvironment env, SpawnPoint sp)
+				: base(env, sp) {
+			Position = sp.Position;
 
-		public PlayerController ai = null;
-
-		public SputnikShip(float x, float y, float vx, float vy, GameEnvironment env) : base(x, y, vx, vy, 0.0f, 0.0f, 0.0f, 0.0f, env) 
-		{
-			this.shooter = new BulletEmitter(env, BulletEmitter.BulletStrength.Weak, IsFriendly());
-			env.AddChild(this.shooter);
+			shooter = new BulletEmitter(env, BulletEmitter.BulletStrength.Weak, IsFriendly());
+			AddChild(shooter);
 
 			LoadTexture(env.contentManager, "Sputnik_Old");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
@@ -27,21 +26,18 @@ namespace Sputnik
 			ai = new PlayerController(env);
 
 			// Adjust camera.
-			env.Camera.Position = new Vector2(x, y);
-			env.Camera.Focus = this;
+			env.Camera.TeleportAndFocus(this);
 		}
 
-		public SputnikShip(GameEnvironment env, SpawnPoint sp)
-				: this(sp.Position.X, sp.Position.Y, 0.0f, 0.0f, env) {
-			Position = sp.Position;
+		public override void Destroy() {
+			Environment.Camera.Focus = null;
+			base.Destroy();
 		}
 
-		public override void Update(float elapsedTime)
-		{
-			ai.Update(this, elapsedTime);
-			base.Update(elapsedTime);
+		public override bool ShouldCull() {
+			return false; // No, not Sputnik!  Don't cull him!
 		}
-
+		
 		public ShipController GetAI()
 		{
 			return this.ai;

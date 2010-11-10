@@ -14,6 +14,11 @@ using FarseerPhysics.Controllers;
 
 namespace Sputnik {
 	public class GameEnvironment : Environment {
+		// Spawning/culling constants.
+		public const float k_cullRadius = 300.0f; // Must be greater than spawn radius.
+		public const float k_spawnRadius = 100.0f; // Must be less than cull radius.
+
+
 		private SpriteBatch m_spriteBatch;
 		private Tiled.Map m_map;
 		public Camera2D Camera;
@@ -55,6 +60,7 @@ namespace Sputnik {
 			// Create collision notification callbacks.
 			CollisionWorld.ContactManager.PreSolve += PreSolve;
 			CollisionWorld.ContactManager.BeginContact += BeginContact;
+			CollisionWorld.ContactManager.EndContact += EndContact;
 
 			BlackHoleController = new BlackHolePhysicsController(300.0f, 100.0f * k_physicsScale, 9.0f * k_physicsScale); // 300 controls how strong the pull is towards the black hole.
 																									// 100.0 determines the radius fore which black hole will have an effect on.
@@ -141,13 +147,11 @@ namespace Sputnik {
 			Vector2 mapOffset = new Vector2(Controller.GraphicsDevice.Viewport.Width - m_map.TileWidth, Controller.GraphicsDevice.Viewport.Height - m_map.TileHeight);
 
 			// Draw map.
-			int offsetX = (int) (Camera.Position.X - Camera.Origin.X);
-			int offsetY = (int) (Camera.Position.Y - Camera.Origin.Y);
 			if (m_map != null) m_map.Draw(m_spriteBatch, new Rectangle(
-					(int) -Camera.Origin.X
-					, (int) -Camera.Origin.Y
-					, Controller.GraphicsDevice.Viewport.Width + (int) Camera.Origin.X
-					, Controller.GraphicsDevice.Viewport.Height + (int) Camera.Origin.Y
+					(int) -Camera.CenterOffset.X
+					, (int) -Camera.CenterOffset.Y
+					, Controller.GraphicsDevice.Viewport.Width + (int) Camera.CenterOffset.X
+					, Controller.GraphicsDevice.Viewport.Height + (int) Camera.CenterOffset.Y
 				), Camera.Position - mapOffset
 			);
 			m_spriteBatch.End();
@@ -180,6 +184,15 @@ namespace Sputnik {
 			HandleContact(contact);
 		}
 
+		protected void EndContact(Physics.Dynamics.Contacts.Contact contact) {
+			// Get Entities from both shapes.
+			Entity entA = (Entity) contact.FixtureA.Body.UserData;
+			Entity entB = (Entity) contact.FixtureB.Body.UserData;
+
+			entA.OnSeparate(entB, contact);
+			entB.OnSeparate(entA, contact);
+		}
+
 		/// <summary>
 		/// Handle contact interactions.
 		/// </summary>
@@ -187,7 +200,7 @@ namespace Sputnik {
 		private void HandleContact(Physics.Dynamics.Contacts.Contact contact) {
 			if (!contact.IsTouching()) return;
 
-			// Attempt to get Entities from both shapes.
+			// Get Entities from both shapes.
 			Entity entA = (Entity) contact.FixtureA.Body.UserData;
 			Entity entB = (Entity) contact.FixtureB.Body.UserData;
 
