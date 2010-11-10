@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using System.Reflection;
 
 namespace Sputnik {
-	class SpawnPoint {
+	public class SpawnPoint {
 		#region Properties
 
 		private SpawnController SpawnController;

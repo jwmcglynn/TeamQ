@@ -36,7 +36,9 @@ namespace Sputnik {
 		protected int fps;
 		private int frameCounter;
 
-		public BlackHolePhysicsController physicsController;
+		public BlackHolePhysicsController BlackHoleController;
+		public List<Vector2> PossibleBlackHoleLocations = new List<Vector2>();
+
 
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {
@@ -54,9 +56,9 @@ namespace Sputnik {
 			CollisionWorld.ContactManager.PreSolve += PreSolve;
 			CollisionWorld.ContactManager.BeginContact += BeginContact;
 
-			physicsController = new BlackHolePhysicsController(300.0f, 100.0f * k_physicsScale, 9.0f * k_physicsScale); // 300 controls how strong the pull is towards the black hole.
+			BlackHoleController = new BlackHolePhysicsController(300.0f, 100.0f * k_physicsScale, 9.0f * k_physicsScale); // 300 controls how strong the pull is towards the black hole.
 																									// 100.0 determines the radius fore which black hole will have an effect on.
-			CollisionWorld.AddController(physicsController);
+			CollisionWorld.AddController(BlackHoleController);
 
 			// TODO: Make SpriteBatch drawing use this projection too.
 			m_projection = Matrix.CreateOrthographicOffCenter(0.0f, ctrl.GraphicsDevice.Viewport.Width, ctrl.GraphicsDevice.Viewport.Height, 0.0f, -1.0f, 1.0f);
@@ -99,20 +101,18 @@ namespace Sputnik {
 		public override void Update(float elapsedTime) {
 			m_updateAccum += elapsedTime;
 
-			float timeSpent = 0.0f;
-
 			// Update physics.
 			const float k_physicsStep = 1.0f / 60.0f;
 			while (m_updateAccum > k_physicsStep) {
 				m_updateAccum -= k_physicsStep;
-				timeSpent += k_physicsStep;
+
+				// Update entities.
+				m_spawnController.Update(k_physicsStep);
+				base.Update(k_physicsStep);
+				Camera.Update(k_physicsStep);
+
 				CollisionWorld.Step(k_physicsStep);
 			}
-
-			// Update entities.
-			m_spawnController.Update(timeSpent);
-			base.Update(timeSpent);
-			Camera.Update(timeSpent);
 
 			// Toggle debug view.
 			if (Keyboard.GetState().IsKeyDown(Keys.F1) && !OldKeyboard.GetState().IsKeyDown(Keys.F1)) {

@@ -31,8 +31,8 @@ namespace Sputnik
 			//AddChild(new TestShip(150, 150, 0, 0, this));
 			AddChild(new Crosshair(this));
 
-			blackHole = new BlackHole(this);
-			AddChild(blackHole);
+			//blackHole = new BlackHole(this, false);
+			//AddChild(blackHole);
 
 			LoadMap("gym.tmx");
 		}

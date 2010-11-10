@@ -70,11 +70,10 @@ namespace Sputnik
 			if(ms.RightButton == ButtonState.Pressed && !specialShot) {
 				if (spawnedBlackHole != null)
 				{
-					m_env.physicsController.RemoveBody(spawnedBlackHole.CollisionBody);
 					spawnedBlackHole.Destroy();
 				}
 
-				spawnedBlackHole = new BlackHole(m_env);
+				spawnedBlackHole = new BlackHole(m_env, false);
 				spawnedBlackHole.Position = m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y));
 				m_env.AddChild(spawnedBlackHole);
 				specialShot = true;

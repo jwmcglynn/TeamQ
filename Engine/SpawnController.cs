@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace Sputnik {
 	class SpawnController {
@@ -17,6 +18,11 @@ namespace Sputnik {
 			foreach (Squared.Tiled.ObjectGroup objGroup in objectGroupList) {
 				foreach (List<Squared.Tiled.Object> objList in objGroup.Objects.Values) {
 					foreach (Squared.Tiled.Object obj in objList) {
+						if (obj.Type == "possibleBlackhole") {
+							Environment.PossibleBlackHoleLocations.Add(new Vector2(obj.X, obj.Y));
+							continue;
+						}
+
 						SpawnPoint sp = new SpawnPoint(this, obj);
 						SpawnPoints.Add(sp);
 
@@ -27,6 +33,7 @@ namespace Sputnik {
 							// TEMP.
 							sp.Spawn(); // TEMP.
 						}
+						
 					}
 				}
 			}

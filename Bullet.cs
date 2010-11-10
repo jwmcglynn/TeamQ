@@ -75,7 +75,7 @@ namespace Sputnik
 		}
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact) {
-			m_shouldCull = true;
+			m_shouldCull = !(entB is BlackHole);
 			if (entB is TakesDamage) {
 				((TakesDamage) entB).TakeHit(bulletStrength);
 			}

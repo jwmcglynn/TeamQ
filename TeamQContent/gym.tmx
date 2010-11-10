@@ -5,7 +5,7 @@
  </tileset>
  <layer name="Foreground" width="100" height="100">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3aUaqDMBAF0L62+1/zw4+AlKbGJNpxeg7kwyCS6yVVqLdb3V/DYL7e+62X+cr9fK5G7zUYV+7jSB/lOhHG1c3qIwJ9xJKpj4U+vi9DhiJDligZZjyfo2QZMZLh3nj8Ol9bx+h7kz7ajmf00bJOfbQdt/RR1jLSSZY+enPo4xiz+ljP3TfOq63j1/uYuT/Wc/roM/r8KON1vuW8T2vyPL++DFkyZCgyZMmQociQJUOGIkOWLP/jLOSIRY5Ysuz1DBkWmfrI8F3Aldf+yVUz6SOWq657y1auxymr2C9jHy17Xh/n0kcctf3xqIxIMvaxsD9i0UcsPd+hRRkZ9fTBcfQRy969r4/j6SMWfcSy5zdLH+d410ltjvP86ns/AAAAAAAAAAAAAAAAAAAAAAAAAAAAABztH4gB5QdAnAAA
+   H4sIAAAAAAAAC+3ai4qDMBAF0K71/795kRIQMW1MfMTxHAjFIGUml6iIr1feX8Fgf7XrLZf9pfUcZ6P2P2iX1rElj/Q/PYy7q8mjJbcjPTWPXkXKYyKP6+3Zw9VZyuNjXPwu50vraL0/Pz2PYXG8vN4NmfNydbQ+N8mj7HiPPErqlEfZcUkeqZaWTKLkUduHPI6xVx7zueHHebk6np7HnvtjPiePOq33jzSW8yXnfavJ/fz+IvQSoYckQi8Rekgi9LKlh9J3wFe9x4qSx9Y+1tZ7XBlni5DHRB99idRHhF4i9DCJlEeE7wLuXPs3d+1JHn25a92//OrrfUoV20XMo2TPy+Nc8uhHbn+8M6MnEfOY2B99kUdfar5D62VEVJMHx5FHX7bufXkcTx59kUdftlyz5HGOtUxyc5znqc/9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAHC0f2yExwlAnAAA
   </data>
  </layer>
  <objectgroup name="Objects" width="100" height="100">
@@ -14,5 +14,10 @@
   <object name="" type="triangulus" x="557" y="577" width="147" height="117"/>
   <object name="" type="squaretopia" x="381" y="743" width="21" height="17"/>
   <object name="" type="blackhole" x="878" y="491" width="12" height="10"/>
+  <object name="1" type="possibleBlackhole" x="129" y="97" width="30" height="30"/>
+  <object name="2" type="possibleBlackhole" x="287" y="193" width="30" height="30"/>
+  <object name="4" type="possibleBlackhole" x="671" y="385" width="30" height="30"/>
+  <object name="3" type="possibleBlackhole" x="257" y="544" width="30" height="30"/>
+  <object name="5" type="possibleBlackhole" x="837" y="609" width="30" height="30"/>
  </objectgroup>
 </map>
