@@ -49,7 +49,7 @@ namespace Sputnik {
                 s.Rotation += MathHelper.Pi * 2.0f;
             s.Rotation %= MathHelper.Pi * 2.0f;
             wantedDirection %= MathHelper.Pi * 2.0f;
-            if (Vector2.Distance(s.Position, destination) < s.maxSpeed/env.FPS) //This number needs tweaking, 0 does not work
+            if (Vector2.Distance(s.Position, destination) < s.maxSpeed * elapsedTime) //This number needs tweaking, 0 does not work
             {
                 goingStart = !goingStart;
                 // Changed from: s.velocity = Vector2.Zero;
