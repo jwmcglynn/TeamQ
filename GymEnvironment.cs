@@ -31,6 +31,8 @@ namespace Sputnik
 
 			AddChild(new Crosshair(this));
 			LoadMap("gym.tmx");
+
+			Sound.PlayCue("music");
 		}
 	}
 }
