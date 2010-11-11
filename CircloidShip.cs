@@ -30,6 +30,7 @@ namespace Sputnik
 
 		public CircloidShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {
+			Position = sp.Position;
 			Initialize(Position, Position + new Vector2(50.0f, 50.0f)); // FIXME: Find a better way to get positions.
 		}
 	}

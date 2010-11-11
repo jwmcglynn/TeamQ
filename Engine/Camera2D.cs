@@ -9,10 +9,9 @@ namespace Sputnik {
 	 * Based on Camera2D class from this stackoverflow post: http://stackoverflow.com/questions/712296/xna-2d-camera-engine-that-follows-sprite
 	**/
 	public class Camera2D {
-		public Camera2D(Environment env) {
-			var view = env.Controller.GraphicsDevice.Viewport;
-
-			CenterOffset = new Vector2(view.Width / 2, view.Height / 2);
+		public Camera2D(GameEnvironment env) {
+			Scale = env.Controller.GraphicsDevice.Viewport.Height / env.ScreenVirtualSize.Y;
+			CenterOffset = env.ScreenVirtualSize / 2;
 			MoveSpeed = 1.5f;
 		}
 
@@ -23,6 +22,7 @@ namespace Sputnik {
 		public Matrix Transform { get; private set; }
 		public Entity Focus;
 		public float MoveSpeed;
+		public float Scale;
 
 		public Rectangle Rect {
 			get {
@@ -38,7 +38,8 @@ namespace Sputnik {
 		public void Update(float elapsedTime) {
 			// Create the Transform used by any
 			// spritebatch process
-			Transform = Matrix.CreateTranslation(-Position.X + CenterOffset.X, -Position.Y + CenterOffset.Y, 0);
+			Transform = Matrix.CreateScale(Scale)
+						* Matrix.CreateTranslation(-Position.X + CenterOffset.X, -Position.Y + CenterOffset.Y, 0);
 
 			// Move the Camera to the position that it needs to go.
 			if (Focus != null) Position += (Focus.Position - Position) * MoveSpeed * elapsedTime;

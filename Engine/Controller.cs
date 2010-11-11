@@ -28,6 +28,11 @@ namespace Sputnik {
 
 		public Controller() {
 			m_graphics = new GraphicsDeviceManager(this);
+			m_graphics.PreferMultiSampling = true;
+			m_graphics.PreferredBackBufferWidth = 1280; // TODO: We want to go up to 1680x1050.
+			m_graphics.PreferredBackBufferHeight = 800;
+			m_graphics.ApplyChanges();
+
 			Window.Title = "Sputnik";
 			Content.RootDirectory = "Content";
 

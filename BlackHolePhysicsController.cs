@@ -4,15 +4,14 @@ using FarseerPhysics.Common;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 
-namespace FarseerPhysics.Controllers
+namespace Sputnik
 {
-	public enum GravityType
-	{
-		Linear,
-		DistanceSquared
+	public enum GravityType {
+		Linear
+		, DistanceSquared
 	}
 
-	public class BlackHolePhysicsController : Controller
+	public class BlackHolePhysicsController : FarseerPhysics.Controllers.Controller
 	{
 		public List<Body> Bodies = new List<Body>();
 		public List<Vector2> Points = new List<Vector2>();

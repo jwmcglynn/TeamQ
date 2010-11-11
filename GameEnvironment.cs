@@ -14,33 +14,37 @@ using FarseerPhysics.Controllers;
 
 namespace Sputnik {
 	public class GameEnvironment : Environment {
-		// Spawning/culling constants.
+		// Spawning/culling.
 		public const float k_cullRadius = 300.0f; // Must be greater than spawn radius.
 		public const float k_spawnRadius = 100.0f; // Must be less than cull radius.
+		private SpawnController m_spawnController;
 
+		// Camera.
+		public Vector2 ScreenVirtualSize = new Vector2(1680, 1050);
+		public Camera2D Camera;
 
+		// Drawing.
 		private SpriteBatch m_spriteBatch;
 		private Tiled.Map m_map;
-		public Camera2D Camera;
-		private SpawnController m_spawnController;
+
+		private Matrix m_projection;
 
 		// Physics.
 		private Physics.DebugViewXNA m_debugView;
-		public Physics.Dynamics.World CollisionWorld;
+		public Physics.Dynamics.World CollisionWorld = new Physics.Dynamics.World(Vector2.Zero);
 
 		public static float k_physicsScale = 1.0f / 50.0f; // 50 pixels = 1 meter.
 		public static float k_invPhysicsScale = 50.0f; // ^ must be inverse.
 
-		private Matrix m_projection;
-
 		// Update loop.
 		public float m_updateAccum; // How much time has passed relative to the physics world.
 
-		//FPS Counters
-		private float frameTime;
-		protected int fps;
-		private int frameCounter;
+		// FPS Counters.
+		private float m_frameTime;
+		protected int m_fps;
+		private int m_frameCounter;
 
+		// Black holes.
 		public BlackHolePhysicsController BlackHoleController;
 		public List<Vector2> PossibleBlackHoleLocations = new List<Vector2>();
 
@@ -48,12 +52,15 @@ namespace Sputnik {
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {
 
+			// Correct virtual screen aspect ratio.
+			ScreenVirtualSize.X = ScreenVirtualSize.Y * ctrl.GraphicsDevice.Viewport.AspectRatio;
+			Console.WriteLine("Virtual Screen size: " + ScreenVirtualSize);
+			Console.WriteLine("Viewport size: " + ctrl.GraphicsDevice.Viewport.Width + "x" + ctrl.GraphicsDevice.Viewport.Height);
+
 			Camera = new Camera2D(this);
 
 			// Create a new SpriteBatch, which can be used to draw textures.
 			m_spriteBatch = new SpriteBatch(ctrl.GraphicsDevice);
-
-			CollisionWorld = new Physics.Dynamics.World(Vector2.Zero);
 
 			m_debugView = new Physics.DebugViewXNA(CollisionWorld);
 
@@ -67,7 +74,7 @@ namespace Sputnik {
 			CollisionWorld.AddController(BlackHoleController);
 
 			// TODO: Make SpriteBatch drawing use this projection too.
-			m_projection = Matrix.CreateOrthographicOffCenter(0.0f, ctrl.GraphicsDevice.Viewport.Width, ctrl.GraphicsDevice.Viewport.Height, 0.0f, -1.0f, 1.0f);
+			m_projection = Matrix.CreateOrthographicOffCenter(0.0f, Controller.GraphicsDevice.Viewport.Width, Controller.GraphicsDevice.Viewport.Height, 0.0f, -1.0f, 1.0f);
 		}
 
 		private enum Tile {
@@ -95,7 +102,7 @@ namespace Sputnik {
 						case Tile.AsteroidWall:
 						case Tile.GreyBlock:
 							// Create collision.
-							AddCollisionRectangle(tileHalfSize, new Vector2(m_map.TileWidth * x, m_map.TileHeight * y) - tileHalfSize);
+							AddCollisionRectangle(tileHalfSize, new Vector2(m_map.TileWidth * x, m_map.TileHeight * y) + tileHalfSize);
 							break;
 					}
 				}
@@ -106,11 +113,13 @@ namespace Sputnik {
 
 		public override void Update(float elapsedTime) {
 			m_updateAccum += elapsedTime;
+			bool didUpdate = false;
 
 			// Update physics.
 			const float k_physicsStep = 1.0f / 60.0f;
 			while (m_updateAccum > k_physicsStep) {
 				m_updateAccum -= k_physicsStep;
+				didUpdate = true;
 
 				// Update entities.
 				m_spawnController.Update(k_physicsStep);
@@ -120,21 +129,27 @@ namespace Sputnik {
 				CollisionWorld.Step(k_physicsStep);
 			}
 
+			if (!didUpdate) {
+				// Update entities if they did not update above.
+				m_spawnController.Update(0.0f);
+				base.Update(0.0f);
+				Camera.Update(0.0f);
+			}
+
 			// Toggle debug view.
 			if (Keyboard.GetState().IsKeyDown(Keys.F1) && !OldKeyboard.GetState().IsKeyDown(Keys.F1)) {
 				if (m_debugView != null) m_debugView = null;
 				else m_debugView = new Physics.DebugViewXNA(CollisionWorld);
 			}
 
-			//FPS counter
-			frameCounter++;
-			frameTime += elapsedTime;
-			if (frameTime >= 1.0f)
-			{
-				fps = frameCounter;
-				frameTime = 0;
-				frameCounter = 0;
-				Controller.Window.Title = "Sputnik (" + fps + " fps)";
+			// FPS counter.
+			m_frameCounter++;
+			m_frameTime += elapsedTime;
+			if (m_frameTime >= 1.0f) {
+				m_fps = m_frameCounter;
+				m_frameTime -= 1.0f;
+				m_frameCounter = 0;
+				Controller.Window.Title = "Sputnik (" + m_fps + " fps)";
 			}
 		}
 
@@ -142,19 +157,12 @@ namespace Sputnik {
 		/// Draw the world.
 		/// </summary>
 		public override void Draw() {
-			m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
-
-			Vector2 mapOffset = new Vector2(Controller.GraphicsDevice.Viewport.Width - m_map.TileWidth, Controller.GraphicsDevice.Viewport.Height - m_map.TileHeight);
-
 			// Draw map.
-			if (m_map != null) m_map.Draw(m_spriteBatch, new Rectangle(
-					(int) -Camera.CenterOffset.X
-					, (int) -Camera.CenterOffset.Y
-					, Controller.GraphicsDevice.Viewport.Width + (int) Camera.CenterOffset.X
-					, Controller.GraphicsDevice.Viewport.Height + (int) Camera.CenterOffset.Y
-				), Camera.Position - mapOffset
-			);
-			m_spriteBatch.End();
+			if (m_map != null) {
+				m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
+				m_map.Draw(m_spriteBatch, Camera.Rect);
+				m_spriteBatch.End();
+			}
 
 			// Draw entities.
 			m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
@@ -219,11 +227,9 @@ namespace Sputnik {
 		/// <summary>
 		/// Current FPS.
 		/// </summary>
-		public int FPS
-		{
-			get
-			{
-				return fps;
+		public int FPS {
+			get {
+				return m_fps;
 			}
 		}
 	}

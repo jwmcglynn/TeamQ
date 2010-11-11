@@ -328,16 +328,12 @@ namespace Squared.Tiled {
 			_TileInfoCache = cache.ToArray();
 		}
 
-		public void Draw(SpriteBatch batch, IList<Tileset> tilesets, Rectangle rectangle, Vector2 viewportPosition, int tileWidth, int tileHeight)
+		public void Draw(SpriteBatch batch, IList<Tileset> tilesets, Rectangle rectangle, int tileWidth, int tileHeight)
 		{
-			int i = 0;
-			Vector2 destPos = new Vector2(rectangle.Left, rectangle.Top);
-			Vector2 viewPos = viewportPosition;
-
-			int minX = (int)Math.Floor(viewportPosition.X / tileWidth);
-			int minY = (int)Math.Floor(viewportPosition.Y / tileHeight);
-			int maxX = (int)Math.Ceiling((rectangle.Width + viewportPosition.X) / tileWidth);
-			int maxY = (int)Math.Ceiling((rectangle.Height + viewportPosition.Y) / tileHeight);
+			int minX = (int) Math.Floor((float) rectangle.Left / tileWidth);
+			int minY = (int) Math.Floor((float) rectangle.Top / tileHeight);
+			int maxX = (int) Math.Ceiling((float) rectangle.Right / tileWidth);
+			int maxY = (int) Math.Ceiling((float) rectangle.Bottom / tileHeight);
 
 			if (minX < 0)
 				minX = 0;
@@ -348,41 +344,24 @@ namespace Squared.Tiled {
 			if (maxY >= Height)
 				maxY = Height - 1;
 
-			if (viewPos.X > 0)
-			{
-				viewPos.X = ((int)Math.Floor(viewPos.X)) % tileWidth;
-			}
-			else
-			{
-				viewPos.X = (float)Math.Floor(viewPos.X);
-			}
-
-			if (viewPos.Y > 0)
-			{
-				viewPos.Y = ((int)Math.Floor(viewPos.Y)) % tileHeight;
-			}
-			else
-			{
-				viewPos.Y = (float)Math.Floor(viewPos.Y);
-			}
-
 			TileInfo info = new TileInfo();
 			if (_TileInfoCache == null)
 				BuildTileInfoCache(tilesets);
 
+			Vector2 destPos = new Vector2(minX * tileWidth, minY * tileHeight);
+
 			for (int y = minY; y <= maxY; y++)
 			{
-				destPos.X = rectangle.Left;
+				destPos.X = minX * tileWidth;
 
 				for (int x = minX; x <= maxX; x++)
 				{
-					i = (y * Width) + x;
-					int index = Tiles[i] - 1;
+					int index = Tiles[(y * Width) + x] - 1;
 
 					if ((index >= 0) && (index < _TileInfoCache.Length))
 					{
 						info = _TileInfoCache[index];
-						batch.Draw(info.Texture, destPos - viewPos, info.Rectangle, new Color(1.0f, 1.0f, 1.0f, this.Opacity));
+						batch.Draw(info.Texture, destPos, info.Rectangle, new Color(1.0f, 1.0f, 1.0f, this.Opacity));
 					}
 
 					destPos.X += tileWidth;
@@ -482,19 +461,6 @@ namespace Squared.Tiled {
 
 			return result;
 		}
-
-		public void Draw(Map result, SpriteBatch batch, Rectangle rectangle, Vector2 viewportPosition)
-		{
-			foreach (var list in Objects.Values)
-			{
-				foreach (var objects in list) {
-					if (objects.Texture != null)
-					{
-						objects.Draw(batch, rectangle, new Vector2(this.X * result.TileWidth, this.Y * result.TileHeight), viewportPosition, this.Opacity);
-					}
-				}
-			}
-		}
 	}
 
 	public class Object
@@ -579,24 +545,6 @@ namespace Squared.Tiled {
 			}
 
 			return result;
-		}
-
-		public void Draw(SpriteBatch batch, Rectangle rectangle, Vector2 offset, Vector2 viewportPosition, float opacity)
-		{
-			Vector2 viewPos = viewportPosition;
-
-			int minX = (int)Math.Floor(viewportPosition.X);
-			int minY = (int)Math.Floor(viewportPosition.Y);
-			int maxX = (int)Math.Ceiling((rectangle.Width + viewportPosition.X));
-			int maxY = (int)Math.Ceiling((rectangle.Height + viewportPosition.Y));
-
-			if (this.X + offset.X + this.Width > minX && this.X + offset.X < maxX)
-				if (this.Y + offset.Y + this.Height > minY && this.Y + offset.Y < maxY)
-				{
-					int x = (int)(this.X + offset.X - viewportPosition.X);
-					int y = (int)(this.Y + offset.Y - viewportPosition.Y);
-					batch.Draw(_Texture, new Rectangle(x, y, this.Width, this.Height), new Rectangle(0, 0, _Texture.Width, _Texture.Height), new Color(1.0f, 1.0f, 1.0f, opacity));
-				}
 		}
 	}
 
@@ -729,9 +677,9 @@ namespace Squared.Tiled {
 			return result;
 		}
 
-		public void Draw (SpriteBatch batch, Rectangle rectangle, Vector2 viewportPosition) {
+		public void Draw (SpriteBatch batch, Rectangle rectangle) {
 			foreach (Layer layers in Layers.Values) {
-				layers.Draw(batch, Tilesets.Values, rectangle, viewportPosition, TileWidth, TileHeight);
+				layers.Draw(batch, Tilesets.Values, rectangle, TileWidth, TileHeight);
 			}
 		}
 	}
