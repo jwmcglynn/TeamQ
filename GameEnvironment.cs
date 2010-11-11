@@ -20,7 +20,7 @@ namespace Sputnik {
 		private SpawnController m_spawnController;
 
 		// Camera.
-		private Vector2 k_maxVirtualSize = new Vector2(1680, 1050);
+		public static Vector2 k_maxVirtualSize { get { return new Vector2(1680, 1050); } }
 		public Vector2 ScreenVirtualSize = new Vector2(1680, 1050);
 		public Camera2D Camera;
 
@@ -167,7 +167,6 @@ namespace Sputnik {
 						(OldKeyboard.GetState().IsKeyDown(Keys.LeftAlt) || OldKeyboard.GetState().IsKeyDown(Keys.RightAlt))
 							&& OldKeyboard.GetState().IsKeyDown(Keys.Enter))) {
 				Controller.IsFullscreen = !Controller.IsFullscreen;
-				Console.WriteLine("Fullscreen");
 			}
 
 			// FPS counter.

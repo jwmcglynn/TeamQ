@@ -40,10 +40,15 @@ namespace Sputnik {
 		/// </summary>
 		/// <returns>[true] if Entity should cull, [false] if not.</returns>
 		public virtual bool ShouldCull() {
-			Rectangle cullRect = VisibleRect;
-			cullRect.Inflate((int) GameEnvironment.k_cullRadius, (int) GameEnvironment.k_cullRadius);
+			int halfwidth = (int) (GameEnvironment.k_maxVirtualSize.X / 2 + GameEnvironment.k_cullRadius);
+			int halfheight = (int) (GameEnvironment.k_maxVirtualSize.Y / 2 + GameEnvironment.k_cullRadius);
 
-			return !Environment.Camera.IsInView(cullRect);
+			int x = (int) Environment.Camera.Position.X;
+			int y = (int) Environment.Camera.Position.Y;
+
+			Rectangle cullRect = new Rectangle(x - halfwidth, y - halfheight, 2 * halfwidth, 2 * halfheight);
+
+			return !cullRect.Intersects(VisibleRect);
 		}
 
 		/// <summary>

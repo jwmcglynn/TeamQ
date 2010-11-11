@@ -39,7 +39,15 @@ namespace Sputnik {
 		}
 
 		public void Update(float elapsedTime) {
-			SpawnPoints.ForEach((SpawnPoint sp) => sp.Update(elapsedTime, Environment.Camera));
+			int halfwidth = (int) (GameEnvironment.k_maxVirtualSize.X / 2 + GameEnvironment.k_spawnRadius);
+			int halfheight = (int) (GameEnvironment.k_maxVirtualSize.Y / 2 + GameEnvironment.k_spawnRadius);
+
+			int x = (int) Environment.Camera.Position.X;
+			int y = (int) Environment.Camera.Position.Y;
+
+			Rectangle spawnRect = new Rectangle(x - halfwidth, y - halfheight, 2 * halfwidth, 2 * halfheight);
+
+			SpawnPoints.ForEach((SpawnPoint sp) => sp.Update(elapsedTime, spawnRect));
 		}
 	}
 }

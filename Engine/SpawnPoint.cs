@@ -72,15 +72,12 @@ namespace Sputnik {
 			EntityType = obj.Type;
 		}
 
-		internal void Update(float elapsedTime, Camera2D camera) {
+		internal void Update(float elapsedTime, Rectangle spawnRect) {
 			m_currentCooldown += elapsedTime;
 
-			Rectangle spawnRect = Rect;
-			spawnRect.Inflate((int) GameEnvironment.k_spawnRadius, (int) GameEnvironment.k_spawnRadius);
-
 			if (!m_hasBeenOffscreen) {
-				m_hasBeenOffscreen = !camera.IsInView(spawnRect);
-			} else if (m_currentCooldown > RespawnCooldown && camera.IsInView(spawnRect)) {
+				m_hasBeenOffscreen = !spawnRect.Intersects(Rect);
+			} else if (m_currentCooldown > RespawnCooldown && spawnRect.Intersects(Rect)) {
 				Spawn();
 			}
 		}
