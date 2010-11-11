@@ -18,7 +18,7 @@ namespace Sputnik
 		private GameEnvironment m_env;
 		
 		BlackHole spawnedBlackHole;
-		private bool specialShot = false;
+		private bool specialShot = true;
 
         /// <summary>
         ///  Creates a new Player
@@ -72,7 +72,7 @@ namespace Sputnik
 			// if a blackhole has already been spawned this way, then the other one will be removed.
 			if(ms.RightButton == ButtonState.Pressed && !specialShot) {
 				if (spawnedBlackHole != null) {
-					spawnedBlackHole.Destroy();
+					spawnedBlackHole.Dispose();
 				}
 				spawnedBlackHole = new BlackHole(m_env, false);
 				spawnedBlackHole.Position = m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y));

@@ -19,18 +19,18 @@ namespace Sputnik {
 		}
 
 		public override void Update(float elapsedTime) {
-			if (ShouldCull()) Destroy();
+			if (ShouldCull()) Dispose();
 
 			base.Update(elapsedTime);
 		}
 
-		public override void Destroy() {
+		public override void Dispose() {
 			if (SpawnPoint != null) {
 				SpawnPoint.Position = Position;
 				OnCull();
 			}
 
-			base.Destroy();
+			base.Dispose();
 		}
 
 		/// <summary>

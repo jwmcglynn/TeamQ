@@ -9,7 +9,7 @@ using Physics = FarseerPhysics;
 using System.IO;
 
 namespace Sputnik {
-	public class Entity {
+	public class Entity : IDisposable {
 		// Position and motion.
 		private Vector2 m_position = new Vector2(0, 0); // Intentionally private.  Use Position.
 		private Vector2 m_velocity = new Vector2(0, 0); // Intentionally private.  Use DesiredVelocity.
@@ -72,12 +72,12 @@ namespace Sputnik {
 		/// <summary>
 		/// Remove current entity from world and destroy its associated collision body.
 		/// </summary>
-		public virtual void Destroy() {
+		public virtual void Dispose() {
 			Remove();
 			DestroyCollisionBody();
 
 			Children.ForEach((Entity ent) => {
-				ent.Destroy();
+				ent.Dispose();
 			});
 		}
 
@@ -319,6 +319,7 @@ namespace Sputnik {
 				}
 			}
 
+			// Apply blackhole teleportation force.
 			if (CollisionBody != null) {
 				if (TimeSinceTeleport < 1.0f) {
 					CollisionBody.ApplyForce(TeleportInertiaDir * 25.0f * CollisionBody.Mass);

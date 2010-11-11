@@ -63,10 +63,10 @@ namespace Sputnik
 			return false; // Quick workaround; blackholes should eventually cull but still be able to determine counterparts.
 		}
 
-		public override void Destroy()
+		public override void Dispose()
 		{
 			Environment.BlackHoleController.RemoveBody(CollisionBody);
-			base.Destroy();
+			base.Dispose();
 		}
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)

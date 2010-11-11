@@ -40,11 +40,6 @@ namespace Sputnik {
 		// Update loop.
 		public float m_updateAccum; // How much time has passed relative to the physics world.
 
-		// FPS Counters.
-		private float m_frameTime;
-		protected int m_fps;
-		private int m_frameCounter;
-
 		// Black holes.
 		public BlackHolePhysicsController BlackHoleController;
 		public List<Vector2> PossibleBlackHoleLocations = new List<Vector2>();
@@ -57,7 +52,7 @@ namespace Sputnik {
 			Camera = new Camera2D(this);
 			WindowSizeChanged(null, null);
 
-			// Create a new SpriteBatch, which can be used to draw textures.
+			// Create a new SpriteBatch which can be used to draw textures.
 			m_spriteBatch = new SpriteBatch(ctrl.GraphicsDevice);
 
 			m_debugView = new Physics.DebugViewXNA(CollisionWorld);
@@ -70,8 +65,16 @@ namespace Sputnik {
 			BlackHoleController = new BlackHolePhysicsController(300.0f, 100.0f * k_physicsScale, 9.0f * k_physicsScale); // 300 controls how strong the pull is towards the black hole.
 																									// 100.0 determines the radius fore which black hole will have an effect on.
 			CollisionWorld.AddController(BlackHoleController);
+
+			// Farseer freaks out unless we call Update here when changing Environments.  FIXME: Why?
+			Update(0.0f);
 		}
 
+		/// <summary>
+		/// Called when the window size changes.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void WindowSizeChanged(object sender, EventArgs e) {
 			Rectangle rect = Controller.Window.ClientBounds;
 			if (rect.Width == 0 || rect.Height == 0) return; // Do nothing, window was minimized.
@@ -86,14 +89,10 @@ namespace Sputnik {
 			if (ratio <= 16.0f / 10.0f) ScreenVirtualSize.X = ScreenVirtualSize.Y * ratio;
 			else ScreenVirtualSize.Y = ScreenVirtualSize.X / ratio;
 
-			Console.WriteLine("Virtual Screen size: " + ScreenVirtualSize);
-			Console.WriteLine("Viewport size: " + rect);
-
 			// TODO: Make SpriteBatch drawing use this projection too.
 			m_projection = Matrix.CreateOrthographicOffCenter(0.0f, rect.Width, rect.Height, 0.0f, -1.0f, 1.0f);
 
 			Camera.WindowSizeChanged();
-
 		}
 
 		private enum Tile {
@@ -103,6 +102,10 @@ namespace Sputnik {
 			, GreyBlock
 		};
 
+		/// <summary>
+		/// Load a map from file and create collision objects for it.
+		/// </summary>
+		/// <param name="filename">File to load map from.</param>
 		public void LoadMap(string filename) {
 			m_map = Tiled.Map.Load(Path.Combine(Controller.Content.RootDirectory, filename), Controller.Content);
 			
@@ -130,6 +133,10 @@ namespace Sputnik {
 			m_spawnController = new SpawnController(this, m_map.ObjectGroups.Values);
 		}
 
+		/// <summary>
+		/// Update the Environment each frame.
+		/// </summary>
+		/// <param name="elapsedTime">Time since last Update() call.</param>
 		public override void Update(float elapsedTime) {
 			m_updateAccum += elapsedTime;
 			bool didUpdate = false;
@@ -140,17 +147,18 @@ namespace Sputnik {
 				m_updateAccum -= k_physicsStep;
 				didUpdate = true;
 
+				CollisionWorld.Step(k_physicsStep);
+
+				if (m_spawnController != null) m_spawnController.Update(k_physicsStep);
+
 				// Update entities.
-				m_spawnController.Update(k_physicsStep);
 				base.Update(k_physicsStep);
 				Camera.Update(k_physicsStep);
-
-				CollisionWorld.Step(k_physicsStep);
 			}
 
 			if (!didUpdate) {
 				// Update entities if they did not update above.
-				m_spawnController.Update(0.0f);
+				if (m_spawnController != null) m_spawnController.Update(0.0f);
 				base.Update(0.0f);
 				Camera.Update(0.0f);
 			}
@@ -161,22 +169,18 @@ namespace Sputnik {
 				else m_debugView = new Physics.DebugViewXNA(CollisionWorld);
 			}
 
+			// Main Menu = F2.
+			if (Keyboard.GetState().IsKeyDown(Keys.F2) && !OldKeyboard.GetState().IsKeyDown(Keys.F2)) {
+				Controller.ChangeEnvironment(new Menus.MainMenu(Controller));
+			}
+
+
 			// Fullscreen toggle with Alt+Enter.
 			if ((Keyboard.GetState().IsKeyDown(Keys.LeftAlt) || Keyboard.GetState().IsKeyDown(Keys.RightAlt))
 					&& Keyboard.GetState().IsKeyDown(Keys.Enter) && !(
 						(OldKeyboard.GetState().IsKeyDown(Keys.LeftAlt) || OldKeyboard.GetState().IsKeyDown(Keys.RightAlt))
 							&& OldKeyboard.GetState().IsKeyDown(Keys.Enter))) {
 				Controller.IsFullscreen = !Controller.IsFullscreen;
-			}
-
-			// FPS counter.
-			m_frameCounter++;
-			m_frameTime += elapsedTime;
-			if (m_frameTime >= 1.0f) {
-				m_fps = m_frameCounter;
-				m_frameTime -= 1.0f;
-				m_frameCounter = 0;
-				Controller.Window.Title = "Sputnik (" + m_fps + " fps)";
 			}
 		}
 
@@ -203,6 +207,10 @@ namespace Sputnik {
 			}
 		}
 
+		/// <summary>
+		/// Farseer Physics callback.  Called when a contact point is created.
+		/// </summary>
+		/// <param name="contact">Contact point.</param>
 		public void BeginContact(Physics.Dynamics.Contacts.Contact contact) {
 			// PreSolve performs the same function as this, only continue if one is a sensor.
 			if (!contact.FixtureA.IsSensor && !contact.FixtureB.IsSensor) return;
@@ -219,6 +227,10 @@ namespace Sputnik {
 			HandleContact(contact);
 		}
 
+		/// <summary>
+		/// Farseer Physics callback.  Called when a contact is destroyed.
+		/// </summary>
+		/// <param name="contact">Contact point.</param>
 		protected void EndContact(Physics.Dynamics.Contacts.Contact contact) {
 			// Get Entities from both shapes.
 			Entity entA = (Entity) contact.FixtureA.Body.UserData;
@@ -248,15 +260,6 @@ namespace Sputnik {
 			if (shouldCollide) {
 				entA.OnCollide(entB, contact);
 				entB.OnCollide(entA, contact);
-			}
-		}
-
-		/// <summary>
-		/// Current FPS.
-		/// </summary>
-		public int FPS {
-			get {
-				return m_fps;
 			}
 		}
 	}

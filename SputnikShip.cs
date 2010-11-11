@@ -29,9 +29,9 @@ namespace Sputnik
 			env.Camera.TeleportAndFocus(this);
 		}
 
-		public override void Destroy() {
+		public override void Dispose() {
 			Environment.Camera.Focus = null;
-			base.Destroy();
+			base.Dispose();
 		}
 
 		public override bool ShouldCull() {

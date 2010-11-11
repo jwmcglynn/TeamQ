@@ -14,23 +14,22 @@ namespace Sputnik {
 	/// This is the main type for your game
 	/// </summary>
 	public class Controller : Microsoft.Xna.Framework.Game {
-		private GraphicsDeviceManager m_graphics;
 		private Environment m_env;
+		private Environment m_nextEnv;
 
-		public Vector2 WindowedSize = new Vector2(1280, 800);
+		// Windowed/fullscreen.
+		private Vector2 m_windowedSize = new Vector2(1280, 800);
 		private bool m_fullscreen = false;
 
-		/// <summary>
-		/// Made this to play with random positions
-		/// </summary>
-		public GraphicsDeviceManager Graphics {
-			get {
-				return m_graphics;
-			}
-		}
+		// FPS Counters.
+		private double m_frameTime;
+		private int m_fps;
+		private int m_frameCounter;
+
+		public GraphicsDeviceManager Graphics { get; private set; }
 
 		public Controller() {
-			m_graphics = new GraphicsDeviceManager(this);
+			Graphics = new GraphicsDeviceManager(this);
 
 			Window.AllowUserResizing = true;
 			Window.Title = "Sputnik";
@@ -50,23 +49,25 @@ namespace Sputnik {
 
 				if (m_fullscreen) {
 					// Save previous windowed size.
-					WindowedSize.X = Graphics.GraphicsDevice.Viewport.Width;
-					WindowedSize.Y = Graphics.GraphicsDevice.Viewport.Height;
-
-					Console.WriteLine("Graphics size = " + GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width + ", " + GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);
+					m_windowedSize.X = Graphics.GraphicsDevice.Viewport.Width;
+					m_windowedSize.Y = Graphics.GraphicsDevice.Viewport.Height;
 
 					// Set backbuffer size to screen size.
 					Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
 					Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
 				} else {
 					// Set backbuffer size to window size.
-					Graphics.PreferredBackBufferWidth = (int) WindowedSize.X;
-					Graphics.PreferredBackBufferHeight = (int) WindowedSize.Y;
-					Console.WriteLine("To windowed: " + WindowedSize);
+					Graphics.PreferredBackBufferWidth = (int) m_windowedSize.X;
+					Graphics.PreferredBackBufferHeight = (int) m_windowedSize.Y;
 				}
 
 				Graphics.ToggleFullScreen();
 			}
+		}
+
+		public void ChangeEnvironment(Environment env) {
+			if (m_nextEnv != null) throw new InvalidOperationException("ChangeEnvironment called again before change occurred.");
+			m_nextEnv = env;
 		}
 
 		/// <summary>
@@ -100,9 +101,17 @@ namespace Sputnik {
 			// Allows the game to exit.
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
 					|| Keyboard.GetState().IsKeyDown(Keys.Escape)) {
-				this.Exit();
+				Exit();
 			}
 
+			// Try changing environment.
+			if (m_nextEnv != null) {
+				m_env.Dispose();
+				m_env = m_nextEnv;
+				m_nextEnv = null;
+			}
+
+			// Game loop.
 			Sound.Update();
 
 			m_env.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
@@ -110,6 +119,16 @@ namespace Sputnik {
 
 			// Get the keyboard state for the next pass.
 			OldKeyboard.m_state = Keyboard.GetState();
+
+			// FPS counter.
+			m_frameCounter++;
+			m_frameTime += gameTime.ElapsedGameTime.TotalSeconds;
+			if (m_frameTime >= 1.0f) {
+				m_fps = m_frameCounter;
+				m_frameTime -= 1.0f;
+				m_frameCounter = 0;
+				Window.Title = "Sputnik (" + m_fps + " fps)";
+			}
 		}
 
 		/// <summary>

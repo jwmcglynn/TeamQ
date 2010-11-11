@@ -120,6 +120,10 @@
     <Compile Include="Engine\SpawnController.cs" />
     <Compile Include="Engine\SpawnPoint.cs" />
     <Compile Include="Engine\OldKeyboard.cs" />
+    <Compile Include="Menus\MainMenu.cs" />
+    <Compile Include="Menus\Menu.cs" />
+    <Compile Include="Menus\TextWidget.cs" />
+    <Compile Include="Menus\Widget.cs" />
     <Compile Include="PlayerController.cs" />
     <Compile Include="Ship.cs" />
     <Compile Include="Engine\DebugViewXNA.cs" />
