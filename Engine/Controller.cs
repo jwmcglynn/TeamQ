@@ -17,6 +17,9 @@ namespace Sputnik {
 		private GraphicsDeviceManager m_graphics;
 		private Environment m_env;
 
+		public Vector2 WindowedSize = new Vector2(1280, 800);
+		private bool m_fullscreen = false;
+
 		/// <summary>
 		/// Made this to play with random positions
 		/// </summary>
@@ -28,15 +31,42 @@ namespace Sputnik {
 
 		public Controller() {
 			m_graphics = new GraphicsDeviceManager(this);
-			m_graphics.PreferMultiSampling = true;
-			m_graphics.PreferredBackBufferWidth = 1280; // TODO: We want to go up to 1680x1050.
-			m_graphics.PreferredBackBufferHeight = 800;
-			m_graphics.ApplyChanges();
 
+			Window.AllowUserResizing = true;
 			Window.Title = "Sputnik";
 			Content.RootDirectory = "Content";
 
 			OldKeyboard.m_state = Keyboard.GetState();
+		}
+
+		public bool IsFullscreen {
+			get {
+				return m_fullscreen;
+			}
+
+			set {
+				if (value == m_fullscreen) return;
+				m_fullscreen = value;
+
+				if (m_fullscreen) {
+					// Save previous windowed size.
+					WindowedSize.X = Graphics.GraphicsDevice.Viewport.Width;
+					WindowedSize.Y = Graphics.GraphicsDevice.Viewport.Height;
+
+					Console.WriteLine("Graphics size = " + GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width + ", " + GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);
+
+					// Set backbuffer size to screen size.
+					Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+					Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+				} else {
+					// Set backbuffer size to window size.
+					Graphics.PreferredBackBufferWidth = (int) WindowedSize.X;
+					Graphics.PreferredBackBufferHeight = (int) WindowedSize.Y;
+					Console.WriteLine("To windowed: " + WindowedSize);
+				}
+
+				Graphics.ToggleFullScreen();
+			}
 		}
 
 		/// <summary>

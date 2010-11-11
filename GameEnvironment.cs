@@ -20,6 +20,7 @@ namespace Sputnik {
 		private SpawnController m_spawnController;
 
 		// Camera.
+		private Vector2 k_maxVirtualSize = new Vector2(1680, 1050);
 		public Vector2 ScreenVirtualSize = new Vector2(1680, 1050);
 		public Camera2D Camera;
 
@@ -52,12 +53,9 @@ namespace Sputnik {
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {
 
-			// Correct virtual screen aspect ratio.
-			ScreenVirtualSize.X = ScreenVirtualSize.Y * ctrl.GraphicsDevice.Viewport.AspectRatio;
-			Console.WriteLine("Virtual Screen size: " + ScreenVirtualSize);
-			Console.WriteLine("Viewport size: " + ctrl.GraphicsDevice.Viewport.Width + "x" + ctrl.GraphicsDevice.Viewport.Height);
-
+			Controller.Window.ClientSizeChanged += WindowSizeChanged;
 			Camera = new Camera2D(this);
+			WindowSizeChanged(null, null);
 
 			// Create a new SpriteBatch, which can be used to draw textures.
 			m_spriteBatch = new SpriteBatch(ctrl.GraphicsDevice);
@@ -72,9 +70,30 @@ namespace Sputnik {
 			BlackHoleController = new BlackHolePhysicsController(300.0f, 100.0f * k_physicsScale, 9.0f * k_physicsScale); // 300 controls how strong the pull is towards the black hole.
 																									// 100.0 determines the radius fore which black hole will have an effect on.
 			CollisionWorld.AddController(BlackHoleController);
+		}
+
+		private void WindowSizeChanged(object sender, EventArgs e) {
+			Rectangle rect = Controller.Window.ClientBounds;
+			if (rect.Width == 0 || rect.Height == 0) return; // Do nothing, window was minimized.
+
+			Controller.Graphics.PreferredBackBufferWidth = rect.Width;
+			Controller.Graphics.PreferredBackBufferHeight = rect.Height;
+			Controller.Graphics.ApplyChanges();
+
+			// Correct virtual screen aspect ratio.
+			float ratio = (float) rect.Width / rect.Height;
+			ScreenVirtualSize = k_maxVirtualSize;
+			if (ratio <= 16.0f / 10.0f) ScreenVirtualSize.X = ScreenVirtualSize.Y * ratio;
+			else ScreenVirtualSize.Y = ScreenVirtualSize.X / ratio;
+
+			Console.WriteLine("Virtual Screen size: " + ScreenVirtualSize);
+			Console.WriteLine("Viewport size: " + rect);
 
 			// TODO: Make SpriteBatch drawing use this projection too.
-			m_projection = Matrix.CreateOrthographicOffCenter(0.0f, Controller.GraphicsDevice.Viewport.Width, Controller.GraphicsDevice.Viewport.Height, 0.0f, -1.0f, 1.0f);
+			m_projection = Matrix.CreateOrthographicOffCenter(0.0f, rect.Width, rect.Height, 0.0f, -1.0f, 1.0f);
+
+			Camera.WindowSizeChanged();
+
 		}
 
 		private enum Tile {
@@ -140,6 +159,15 @@ namespace Sputnik {
 			if (Keyboard.GetState().IsKeyDown(Keys.F1) && !OldKeyboard.GetState().IsKeyDown(Keys.F1)) {
 				if (m_debugView != null) m_debugView = null;
 				else m_debugView = new Physics.DebugViewXNA(CollisionWorld);
+			}
+
+			// Fullscreen toggle with Alt+Enter.
+			if ((Keyboard.GetState().IsKeyDown(Keys.LeftAlt) || Keyboard.GetState().IsKeyDown(Keys.RightAlt))
+					&& Keyboard.GetState().IsKeyDown(Keys.Enter) && !(
+						(OldKeyboard.GetState().IsKeyDown(Keys.LeftAlt) || OldKeyboard.GetState().IsKeyDown(Keys.RightAlt))
+							&& OldKeyboard.GetState().IsKeyDown(Keys.Enter))) {
+				Controller.IsFullscreen = !Controller.IsFullscreen;
+				Console.WriteLine("Fullscreen");
 			}
 
 			// FPS counter.

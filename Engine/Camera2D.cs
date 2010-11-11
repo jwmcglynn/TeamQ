@@ -10,19 +10,43 @@ namespace Sputnik {
 	**/
 	public class Camera2D {
 		public Camera2D(GameEnvironment env) {
-			Scale = env.Controller.GraphicsDevice.Viewport.Height / env.ScreenVirtualSize.Y;
-			CenterOffset = env.ScreenVirtualSize / 2;
+			Environment = env;
 			MoveSpeed = 1.5f;
+
+			// Set default window size.
+			WindowSizeChanged();
+		}
+
+		public void WindowSizeChanged() {
+			Rectangle rect = Environment.Controller.Window.ClientBounds;
+			if (rect.Width == 0 || rect.Height == 0) return; // Do nothing, window was minimized.
+
+			Scale = (float) rect.Height / Environment.ScreenVirtualSize.Y;
+			CenterOffset = Environment.ScreenVirtualSize / 2;
 		}
 
 		#region Properties
 
+		private GameEnvironment Environment;
+
 		public Vector2 Position;
 		public Vector2 CenterOffset { get; private set; }
 		public Matrix Transform { get; private set; }
+		public Matrix InverseTransform {
+			get {
+				if (!m_inverseIsValid) {
+					m_inverseTransform = Matrix.Invert(Transform);
+					m_inverseIsValid = true;
+				}
+				return m_inverseTransform;
+			}
+		}
 		public Entity Focus;
 		public float MoveSpeed;
 		public float Scale;
+
+		private bool m_inverseIsValid = false;
+		private Matrix m_inverseTransform;
 
 		public Rectangle Rect {
 			get {
@@ -38,8 +62,9 @@ namespace Sputnik {
 		public void Update(float elapsedTime) {
 			// Create the Transform used by any
 			// spritebatch process
-			Transform = Matrix.CreateScale(Scale)
-						* Matrix.CreateTranslation(-Position.X + CenterOffset.X, -Position.Y + CenterOffset.Y, 0);
+			Transform = Matrix.CreateTranslation(-Position.X + CenterOffset.X, -Position.Y + CenterOffset.Y, 0)
+							* Matrix.CreateScale(Scale);
+			m_inverseIsValid = false;
 
 			// Move the Camera to the position that it needs to go.
 			if (Focus != null) Position += (Focus.Position - Position) * MoveSpeed * elapsedTime;
@@ -72,7 +97,7 @@ namespace Sputnik {
 		}
 
 		public Vector2 ScreenToWorld(Vector2 screenPos) {
-			return screenPos + Position - CenterOffset;
+			return Vector2.Transform(screenPos, InverseTransform);
 		}
 
 		public void TeleportAndFocus(Entity ent) {
