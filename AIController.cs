@@ -1,15 +1,12 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-using Microsoft.Xna.Framework.Net;
-using Microsoft.Xna.Framework.Storage;
+using Microsoft.Xna.Framework.Content;
+using FarseerPhysics.Dynamics;
+using System.IO;
 
 namespace Sputnik {
     class AIController : ShipController
@@ -17,6 +14,7 @@ namespace Sputnik {
         bool goingStart;
         Vector2 start, finish;
         public GameEnvironment env;
+        Vector2 positionHit;
 
         /// <summary>
         ///  Creates a new AI with given start and finish positions of patrol path and given environment
@@ -40,11 +38,9 @@ namespace Sputnik {
                 destination = start;
             else
                 destination = finish;
-            // Changed from: float wantedDirection = (float)Math.Atan2(destination.Y - s.position.Y, destination.X - s.position.X);
             float wantedDirection = (float)Math.Atan2(destination.Y - s.Position.Y, destination.X - s.Position.X);
             while (wantedDirection < 0)
                 wantedDirection += MathHelper.Pi * 2.0f;
-            // Changed from while (s.direction < 0)
             while (s.Rotation < 0)
                 s.Rotation += MathHelper.Pi * 2.0f;
             s.Rotation %= MathHelper.Pi * 2.0f;
@@ -52,18 +48,14 @@ namespace Sputnik {
             if (Vector2.Distance(s.Position, destination) < s.maxSpeed * elapsedTime) //This number needs tweaking, 0 does not work
             {
                 goingStart = !goingStart;
-                // Changed from: s.velocity = Vector2.Zero;
                 s.DesiredVelocity = Vector2.Zero;
             }
             else if (Math.Abs(wantedDirection-s.Rotation) < s.maxTurn)
             {
-                // changed from: s.velocity = new Vector2((float)Math.Cos(s.direction) * s.maxSpeed, (float)Math.Sin(s.direction) * s.maxSpeed);
-                s.DesiredVelocity = new Vector2((float)Math.Cos(s.Rotation) * s.maxSpeed, (float)Math.Sin(s.Rotation) * s.maxSpeed);
-                //s.SetPhysicsVelocityOnce(new Vector2((float)Math.Cos(s.Rotation) * s.maxSpeed, (float)Math.Sin(s.Rotation) * s.maxSpeed));
+                s.DesiredVelocity = new Vector2((float)Math.Cos(s.Rotation) * s.maxSpeed, (float)Math.Sin(s.Rotation) * s.maxSpeed);    
             }
             else
             {
-                // Changed from: s.velocity = Vector2.Zero;
                 s.DesiredVelocity = Vector2.Zero;
                 float counterclockwiseDistance = Math.Abs(wantedDirection - (s.Rotation + s.maxTurn)%(MathHelper.Pi * 2));
                 float clockwiseDistance = Math.Abs(wantedDirection - (s.Rotation - s.maxTurn + MathHelper.Pi * 2) % (MathHelper.Pi * 2));
@@ -90,12 +82,56 @@ namespace Sputnik {
                     }
                 }
             }
-            //Theoretically I should shoot when player is in front, but this is funner
-            Random r = new Random();
-            // Changed from: s.shoot = r.NextDouble() < 0.5;
-
-            if (r.NextDouble() < 0.1)
+            if (CanSee(s,FindSputnik()))
                 s.Shoot(elapsedTime);
+        }
+
+        /// <summary>
+        ///  For Testing purposes, finds Sputnik's ship
+        /// </summary>
+
+        private Ship FindSputnik()
+        {
+            foreach (Entity e in env.Children)
+            {
+                if (e is SputnikShip)
+                    return (Ship)e;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Preliminary Vision, given starting Ship s and target Ship f, can s see f 
+        /// </summary>
+        private bool CanSee(Ship s, Ship f)
+        {
+            float theta = (float)(Math.Atan2(f.Position.Y - s.Position.Y, f.Position.X - s.Position.X));
+            if (theta < 0)
+                theta += MathHelper.TwoPi;
+            if (Math.Abs(theta - s.Rotation) < (MathHelper.ToRadians(20)))
+            {
+                //Why do I have to use the collision Body's Position.  Does it relate to our relative positions?
+                //env.CollisionWorld.RayCast(RayCastHit, s.Position, f.Position);
+                env.CollisionWorld.RayCast(RayCastHit, s.CollisionBody.Position, f.CollisionBody.Position);
+                if (positionHit.Equals(f.CollisionBody.Position))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public float RayCastHit(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
+        {
+            positionHit = fixture.Body.Position;
+            return 0;
         }
 
     }

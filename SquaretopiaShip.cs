@@ -20,7 +20,6 @@ namespace Sputnik
 			AddChild(shooter);
 			ai = new AIController(patrolStart, patrolEnd, Environment);
 			LoadTexture(Environment.contentManager, "squaretopia");
-
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
