@@ -14,7 +14,7 @@ namespace Sputnik
 	{
 		protected ShipController ai;
 		private ShipController previousAI = null;
-		private int health = 10;
+		public int health = 10;
 		private bool m_shouldCull = false;
 
 		protected BulletEmitter shooter = null;
@@ -37,22 +37,30 @@ namespace Sputnik
 		{
 			ai.Update(this, elapsedTime);
 
-			// Update emitter position.
-			shooter.Rotation = Rotation;
-			shooter.Position = Position;
+			if (!(this is SputnikShip))
+			{
+				// Update emitter position.
+				shooter.Rotation = Rotation;
+				shooter.Position = Position;
+			}
 
 			base.Update(elapsedTime);
 		}
 
 		// Attach Sputnik to the ship
-		public void Attach(SputnikShip sp)
+		public virtual void Attach(SputnikShip sp)
 		{
 			this.previousAI = this.ai;
 			this.ai = sp.GetAI();
 		}
 
+        public virtual void Detatch()
+        {
+            this.ai = this.previousAI;
+        }
+
 		public override bool ShouldCollide(Entity entB) {
-			return !(entB is Ship);
+			return !(entB is Ship) || ((entB is SputnikShip) && !((SputnikShip)entB).attached);
 		}
 
 		public override bool ShouldCull() {
@@ -70,7 +78,7 @@ namespace Sputnik
 			}
 		}
 
-		public void Shoot(float elapsedTime)
+		public virtual void Shoot(float elapsedTime)
 		{
 			shooter.Shoot(elapsedTime);
 		}
@@ -87,6 +95,7 @@ namespace Sputnik
 			// Perform what ever actions are necessary to 
 			// Destory a ship
 			// TODO: Animations / explosions.
+			this.health = 0;
 			m_shouldCull = true;
 		}
 

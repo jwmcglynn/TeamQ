@@ -42,6 +42,18 @@ namespace Sputnik
 
 			float scaleFactor = 2.0f;
 
+			if (kb.IsKeyDown(Keys.Space))
+			{
+				if(s is SputnikShip)
+					if (((SputnikShip)s).attached)
+						s.Detatch();
+					else
+						((SputnikShip)s).shouldAttach = true;
+				else
+					s.Detatch();
+			}
+			else if(s is SputnikShip)
+				((SputnikShip)s).shouldAttach = false;
             if (kb.IsKeyDown(Keys.W))
             {
                 temp.Y = -1 * scaleFactor;
