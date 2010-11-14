@@ -16,7 +16,9 @@ namespace Sputnik
 		public SputnikShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {
 			Position = sp.Position;
-
+			
+			this.maxSpeed = 150;
+			
 			shooter = new BulletEmitter(env, BulletEmitter.BulletStrength.Weak, IsFriendly());
 			AddChild(shooter);
 
@@ -35,16 +37,16 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
-			if (controlled == null || controlled.health == 0)
+			if (controlled == null || controlled.health == 0 || !controlled.isSputnik())
 			{
 				attached = false;
-				base.Update(elapsedTime);
 			}
 			else
 			{
-				//this.DesiredVelocity = controlled.Position;
-				base.Update(elapsedTime);
+				this.Position = this.controlled.Position;
+				this.Rotation = this.controlled.Rotation;
 			}
+			base.Update(elapsedTime);
 		}
 
 		public override void Dispose() {
