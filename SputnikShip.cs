@@ -12,6 +12,7 @@ namespace Sputnik
 		public bool attached = false;
 		public bool shouldAttach = false;
 		private Ship controlled = null;
+		private Ship recentlyControlled = null;
 
 		public SputnikShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {
@@ -39,7 +40,7 @@ namespace Sputnik
 		{
 			if (controlled == null || controlled.health == 0 || !controlled.isSputnik())
 			{
-				attached = false;
+				Detatch();
 			}
 			else
 			{
@@ -70,12 +71,20 @@ namespace Sputnik
 
 		public override void Detatch()
 		{
+			recentlyControlled = controlled;
 			attached = false;
 			controlled = null;
 		}
 
 		public override bool IsFriendly() {
 			return true;
+		}
+
+		public override void OnSeparate(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+		{
+			if (entB == recentlyControlled && !attached)
+				recentlyControlled = null;
+			base.OnSeparate(entB, contact);
 		}
 
 		public override bool ShouldCollide(Entity entB) {
@@ -89,7 +98,7 @@ namespace Sputnik
         public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
 			contact.Enabled = false;
-			if (entB is Ship && !attached && shouldAttach)
+			if (entB is Ship && !attached && shouldAttach && entB != recentlyControlled)
 			{
 				this.attached = true;
 				((Ship)entB).Attach(this);

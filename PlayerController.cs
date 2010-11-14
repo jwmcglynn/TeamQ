@@ -16,10 +16,10 @@ namespace Sputnik
     class PlayerController : ShipController
     {
 		private GameEnvironment m_env;
-		
+		private const float timeBetweenControls = 1.0f;
 		BlackHole spawnedBlackHole;
 		private bool specialShot = true;
-
+		private float lastSpace = 0.0f;
         /// <summary>
         ///  Creates a new Player
         /// </summary>
@@ -40,19 +40,34 @@ namespace Sputnik
 			Vector2 mousePos = m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y));
 			s.Rotation = (float)Math.Atan2(mousePos.Y - s.Position.Y, mousePos.X - s.Position.X);
 
+			lastSpace -= elapsedTime;
+			if (lastSpace < 0)
+				lastSpace = 0.0f;
+
 			float scaleFactor = 2.0f;
 
 			if (kb.IsKeyDown(Keys.Space))
 			{
-				if(s is SputnikShip)
-					if (((SputnikShip)s).attached)
-						s.Detatch();
+				if (lastSpace == 0.0f)
+				{
+					lastSpace = timeBetweenControls;
+					if (s is SputnikShip)
+					{
+						if (((SputnikShip)s).attached)
+						{
+							s.Detatch();
+							((SputnikShip)s).shouldAttach = false;
+						}
+						else
+						{
+							((SputnikShip)s).shouldAttach = true;
+						}
+					}
 					else
-						((SputnikShip)s).shouldAttach = true;
-				else
-					s.Detatch();
+						s.Detatch();
+				}
 			}
-			else if(s is SputnikShip)
+			else if (s is SputnikShip)
 				((SputnikShip)s).shouldAttach = false;
             if (kb.IsKeyDown(Keys.W))
             {
