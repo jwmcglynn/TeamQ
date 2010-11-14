@@ -42,6 +42,7 @@ namespace Sputnik
 			}
 			else
 			{
+				//this.DesiredVelocity = controlled.Position;
 				base.Update(elapsedTime);
 			}
 		}
@@ -85,6 +86,7 @@ namespace Sputnik
 
         public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
+			contact.Enabled = false;
 			if (entB is Ship && !attached && shouldAttach)
 			{
 				this.attached = true;

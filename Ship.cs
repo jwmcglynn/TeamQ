@@ -60,7 +60,14 @@ namespace Sputnik
         }
 
 		public override bool ShouldCollide(Entity entB) {
-			return !(entB is Ship) || ((entB is SputnikShip) && !((SputnikShip)entB).attached);
+			return !(entB is Ship) || (entB is SputnikShip) ;
+		}
+
+		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+		{
+			if (entB is SputnikShip) ;
+				contact.Enabled = false;
+			base.OnCollide(entB, contact);
 		}
 
 		public override bool ShouldCull() {
@@ -68,8 +75,6 @@ namespace Sputnik
 			return base.ShouldCull();
 		}
 
-		// An Entity deals damage to the Ship.  Currently, only the 
-		// damage from bullets is implemented.
 		public virtual void TakeHit(int damage)
 		{
 			this.health -= damage;
@@ -80,7 +85,7 @@ namespace Sputnik
 
 		public virtual void Shoot(float elapsedTime)
 		{
-			shooter.Shoot(elapsedTime);
+			shooter.Shoot(elapsedTime, IsFriendly());
 		}
 
 		public bool isSputnik()
@@ -101,7 +106,7 @@ namespace Sputnik
 
 		public virtual bool IsFriendly()
 		{
-			return false;
+			return (this.ai is PlayerController);
 		}
 	}
 }

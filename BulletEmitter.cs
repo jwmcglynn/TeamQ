@@ -35,12 +35,13 @@ namespace Sputnik
 			ShotByPlayer = playerShotBullet;
 		}
 
-		public void Shoot(float elapsedTime)
+		public void Shoot(float elapsedTime, bool isPlayer)
 		{
 			// time that has passed since last bullet and if its passed a certain threshold we will shoot a bullet
 			// after a bullet is shot, we must subtract from our cooldowntime the threshold, so we can continue using
 			// time spent so far. 
 			updateAccum += elapsedTime;
+			ShotByPlayer = isPlayer;
 
 			// determines how often the bullets will be shot
 			switch (strength) {
