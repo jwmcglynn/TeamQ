@@ -21,6 +21,8 @@ namespace Sputnik
 			ai = new AIController(patrolStart, patrolEnd, Environment);
 			LoadTexture(Environment.contentManager, "circloid");
 
+			m_patrolRect = new Rectangle((int) patrolStart.X, (int) patrolEnd.Y, (int) (patrolEnd.X - patrolStart.X), (int) (patrolEnd.Y - patrolStart.Y));
+
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
@@ -31,7 +33,7 @@ namespace Sputnik
 		public CircloidShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {
 			Position = sp.Position;
-			Initialize(Position, Position + new Vector2(50.0f, 50.0f)); // FIXME: Find a better way to get positions.
+			Initialize(sp.TopLeft, sp.BottomRight); // FIXME: Find a better way to get positions.
 		}
 	}
 }

@@ -24,19 +24,31 @@ namespace Sputnik.Menus {
 			title.PositionPercent = new Vector2(0.5f, 0.3f);
 			AddChild(title);
 
+			float ypos = 50.0f;
 
 			TextButton button = new TextButton(this, "Start Gym");
 			button.PositionPercent = title.PositionPercent;
-			button.Position = new Vector2(0.0f, 50.0f);
+			button.Position = new Vector2(0.0f, ypos);
 			button.CreateButton(new Rectangle(-50, -16, 100, 32));
 			button.OnActivate += () => {
 				Controller.ChangeEnvironment(new GymEnvironment(Controller));
 			};
 			AddChild(button);
 
+			ypos += 50.0f;
+			button = new TextButton(this, "Start Test Level");
+			button.PositionPercent = title.PositionPercent;
+			button.Position = new Vector2(0.0f, ypos);
+			button.CreateButton(new Rectangle(-50, -16, 100, 32));
+			button.OnActivate += () => {
+				Controller.ChangeEnvironment(new TestLevelEnvironment(Controller));
+			};
+			AddChild(button);
+
+			ypos += 50.0f;
 			button = new TextButton(this, "Quit");
 			button.PositionPercent = title.PositionPercent;
-			button.Position = new Vector2(0.0f, 100.0f);
+			button.Position = new Vector2(0.0f, ypos);
 			button.CreateButton(new Rectangle(-50, -16, 100, 32));
 			button.OnActivate += () => {
 				Controller.Exit();

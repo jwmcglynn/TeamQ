@@ -22,6 +22,8 @@ namespace Sputnik
 		public float maxSpeed = 100.0f;
 		public float maxTurn = 0.025f;
 
+		protected Rectangle m_patrolRect;
+
 		public Ship(GameEnvironment env, Vector2 pos)
 				: base(env)
 		{
@@ -65,7 +67,12 @@ namespace Sputnik
 
 		public override bool ShouldCull() {
 			if (m_shouldCull) return true;
-			return base.ShouldCull();
+
+			if (m_patrolRect != null) {
+				return !InsideCullRect(Rectangle.Union(VisibleRect, m_patrolRect));
+			} else {
+				return !InsideCullRect(VisibleRect);
+			}
 		}
 
 		public virtual void TakeHit(int damage)

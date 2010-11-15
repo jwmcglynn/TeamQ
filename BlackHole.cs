@@ -36,7 +36,7 @@ namespace Sputnik
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			Zindex = 0.0f;
 
-			CreateCollisionBody(Environment.CollisionWorld, FarseerPhysics.Dynamics.BodyType.Static, CollisionFlags.DisableSleep);
+			CreateCollisionBody(Environment.CollisionWorld, FarseerPhysics.Dynamics.BodyType.Static, CollisionFlags.Default);
 			var circle = AddCollisionCircle(Texture.Height / 12, Vector2.Zero); // Using 12 here as an arbitrary value. Reason: Want the black hole to have a small collis
 			circle.IsSensor = true;
 

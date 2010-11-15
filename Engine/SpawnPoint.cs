@@ -70,6 +70,14 @@ namespace Sputnik {
 			Name = obj.Name;
 			Properties = obj.Properties;
 			EntityType = obj.Type;
+
+			// Immediately spawn some entities.
+			switch (EntityType) {
+				case "spawn":
+				case "boss":
+					Spawn();
+					break;
+			}
 		}
 
 		internal void Update(float elapsedTime, Rectangle spawnRect) {
@@ -107,8 +115,6 @@ namespace Sputnik {
 				default:
 					throw new InvalidOperationException("Invalid entity type.");
 			}
-
-			System.Console.WriteLine("Spawned " + Entity);
 
 			SpawnController.Environment.AddChild(Entity);
 			return Entity;

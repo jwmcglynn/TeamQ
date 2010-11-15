@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="tiles" tilewidth="32" tileheight="32">
+  <image source="tiles.png" trans="000000"/>
+ </tileset>
+ <tileset firstgid="17" name="trash_1" tilewidth="40" tileheight="53">
+  <image source="trash_1.png" trans="000000"/>
+ </tileset>
+ <tileset firstgid="18" name="trash_2" tilewidth="50" tileheight="37">
+  <image source="trash_2.png" trans="000000"/>
+ </tileset>
+ <layer name="FG" width="100" height="100">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+2cbY6rMAxFaXcw3f9in/IDCfFIcD5sXzv3SNF0pi1c+0BoS4fPcRwfjvDjxDtH9nGl/P57uP/+OHrRd3Hyq/z9Ce/8mYaU4uevcp93DZnGcbtdo+bi+nztbcSzR1YZjuP/dfZi0Yfe9a/KpolkfT3HjZ7lSp6j1Q80D61MT4+TOllZi0ZfkPovzfVGy41VD7OhtV1Yzi+ZiObjadmZ0PBhtQ1ndJLFRxYnUh/lPZ/ktZX1/J7NR2HF/uH5WjGTk5n5CuV1exYfM/1E8FDLgs5b31cNL1BynHwuP72GNwh5PPvvXfsdhEy7O7jinW/XvreI4uPt8a3lajByHkWClw/N7fq7aDlSWud6e/HatzXnGC0fK/teA9HHLFcfWmjNVwVrH9rHXg0fv9vtu49f475e6GOelfsLfdSxOGbcoQ8ZEjcr/Fn6sHjfZjFfvfV9Zv76XoY2WXy0kJ6HrJHZh+V7kNPD7LHdyoeFi8KTj1Xr+DvW9b0GfWBBH1hYZLZyUYjswyovfcjw3jcsfaA76ck7U5Oli0LLB7ITadaRmt72Cc2+vPlAdNKTU9LbkaGFxAeaE60eI9T/9HmJRabR+jO7KNQ+v9LINtOH2v2ZfUj2kdF8CH1Cd1FofZ9hVU4EFyOZPHj7fsmKvD3Pte4RgoMr0u/7jPYIadu7g5hJev4Daa5ZBWKunvNRmVwUELPNnB+M6qGAmlHzfC0yqDVH/rx9BtR6d/SBXC99YEEfWEQ9PzgDco27+UCvkT6woA+sWnf3gVYrfWBBH1jQBxa7+0CDPrCgDyx28hGhxp19IEIfWOziI0p99IHFDj4i1ZbdR7Ta6AOLHX0gk9lHxLqy+oha0y4+ohD1/89rRK8ji48MNRQiXg/g5C03ev4npNcDQKpLmhcps5QeH151oudbyaiP1bXPZoju4WTkegCoIwPS67169zpb32uMXH+XDvQ4ffTC3usw6qMFPYyj4YOMY3XtcyKDPrCgDyzoAwv6wII+sKAPLL4ccOMfFXCZY0CcAAA=
+  </data>
+ </layer>
+ <objectgroup name="Objects" width="100" height="100">
+  <object name="" type="spawn" x="243" y="160"/>
+  <object name="startlevel" type="blackhole" x="167" y="396" width="61" height="63"/>
+  <object name="" type="triangulus" x="441" y="259"/>
+  <object name="" type="triangulus" x="355" y="408"/>
+  <object name="startlevel" type="blackhole" x="844" y="945"/>
+  <object name="" type="circloid" x="437" y="1015" width="237" height="193"/>
+  <object name="" type="circloid" x="414" y="570" width="273" height="229"/>
+  <object name="" type="circloid" x="198" y="1221" width="344" height="245"/>
+  <object name="" type="circloid" x="78" y="1040" width="293" height="205"/>
+  <object name="" type="circloid" x="349" y="769" width="242" height="259"/>
+  <object name="" type="circloid" x="105" y="696" width="303" height="160"/>
+  <object name="" type="circloid" x="82" y="857" width="288" height="213"/>
+  <object name="" type="circloid" x="512" y="1276" width="284" height="331"/>
+  <object name="" type="circloid" x="193" y="575" width="312" height="215"/>
+  <object name="" type="squaretopia" x="980" y="228" width="276" height="287"/>
+  <object name="" type="squaretopia" x="1043" y="1143" width="257" height="239"/>
+  <object name="" type="squaretopia" x="1105" y="919" width="389" height="493"/>
+  <object name="" type="squaretopia" x="1211" y="633" width="320" height="456"/>
+  <object name="" type="squaretopia" x="1075" y="388" width="349" height="276"/>
+  <object name="" type="squaretopia" x="703" y="263" width="332" height="281"/>
+  <object name="" type="triangulus" x="1514" y="286" width="608" height="436"/>
+  <object name="" type="triangulus" x="1618" y="676" width="806" height="654"/>
+  <object name="" type="triangulus" x="2032" y="242" width="536" height="458"/>
+  <object name="" type="triangulus" x="2460" y="136" width="536" height="458"/>
+  <object name="" type="possibleBlackhole" x="1629" y="1637" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="1708" y="1944" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="1623" y="2225" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="1244" y="2533" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="755" y="2609" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="240" y="2423" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="243" y="2015" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="183" y="1593" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="979" y="1539" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="475" y="1689" width="59" height="53"/>
+  <object name="BIG BOSS ALERT" type="boss" x="878" y="1994" width="302" height="274"/>
+ </objectgroup>
+</map>

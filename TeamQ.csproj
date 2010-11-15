@@ -144,6 +144,7 @@
     <Compile Include="ShipController.cs" />
     <Compile Include="SpecialAbility.cs" />
     <Compile Include="State.cs" />
+    <Compile Include="TestLevelEnvironment.cs" />
     <Compile Include="TriangulusShip.cs" />
   </ItemGroup>
   <ItemGroup>

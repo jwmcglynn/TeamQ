@@ -34,8 +34,8 @@ namespace Sputnik {
 		private Physics.DebugViewXNA m_debugView;
 		public Physics.Dynamics.World CollisionWorld = new Physics.Dynamics.World(Vector2.Zero);
 
-		public static float k_physicsScale = 1.0f / 50.0f; // 50 pixels = 1 meter.
-		public static float k_invPhysicsScale = 50.0f; // ^ must be inverse.
+		public static float k_physicsScale = 1.0f / 100.0f; // 100 pixels = 1 meter.
+		public static float k_invPhysicsScale = 100.0f; // ^ must be inverse.
 
 		// Update loop.
 		public float m_updateAccum; // How much time has passed relative to the physics world.

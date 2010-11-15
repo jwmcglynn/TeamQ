@@ -24,12 +24,9 @@ namespace Sputnik {
 						}
 
 						SpawnPoint sp = new SpawnPoint(this, obj);
-						SpawnPoints.Add(sp);
+						if (sp.Entity == null) SpawnPoints.Add(sp);
 
-						if (!spawnedPlayer && sp.EntityType == "spawn") {
-							spawnedPlayer = true;
-							sp.Spawn();
-						}
+						if (sp.EntityType == "spawn") spawnedPlayer = true;
 					}
 				}
 			}
