@@ -18,7 +18,7 @@ namespace Sputnik
 		private void Initialize(Vector2 patrolStart, Vector2 patrolEnd) {
 			shooter = new BulletEmitter(Environment, BulletEmitter.BulletStrength.Strong, IsFriendly());
 			AddChild(shooter);
-			ai = new AIController(patrolStart, patrolEnd, this,Environment);
+			ai = new AIController(patrolStart, patrolEnd, Environment);
 			LoadTexture(Environment.contentManager, "squaretopia");
 
 			m_patrolRect = new Rectangle((int) patrolStart.X, (int) patrolEnd.Y, (int) (patrolEnd.X - patrolStart.X), (int) (patrolEnd.Y - patrolStart.Y));

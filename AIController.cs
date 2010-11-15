@@ -15,76 +15,75 @@ namespace Sputnik {
         Vector2 start, finish;
         public GameEnvironment env;
         Vector2 positionHit;
-        Ship ship;
+
         /// <summary>
         ///  Creates a new AI with given start and finish positions of patrol path and given environment
         /// </summary>
-        public AIController(Vector2 s, Vector2 f, Ship sh, GameEnvironment e)
+        public AIController(Vector2 s, Vector2 f, GameEnvironment e)
         {
             start = s;
             finish = f;
             env = e;
             goingStart = true;
-            ship = sh;
         }
 
         /// <summary>
         ///  Updates the State of a ship
         /// </summary>
 
-        public void Update(float elapsedTime)
+        public void Update(Ship s, float elapsedTime)
         {
             Vector2 destination;
             if (goingStart)
                 destination = start;
             else
                 destination = finish;
-            float wantedDirection = (float)Math.Atan2(destination.Y - ship.Position.Y, destination.X - ship.Position.X);
+            float wantedDirection = (float)Math.Atan2(destination.Y - s.Position.Y, destination.X - s.Position.X);
             while (wantedDirection < 0)
                 wantedDirection += MathHelper.Pi * 2.0f;
-            while (ship.Rotation < 0)
-                ship.Rotation += MathHelper.Pi * 2.0f;
-            ship.Rotation %= MathHelper.Pi * 2.0f;
+            while (s.Rotation < 0)
+                s.Rotation += MathHelper.Pi * 2.0f;
+            s.Rotation %= MathHelper.Pi * 2.0f;
             wantedDirection %= MathHelper.Pi * 2.0f;
-            if (Vector2.Distance(ship.Position, destination) < ship.maxSpeed * elapsedTime) //This number needs tweaking, 0 does not work
+            if (Vector2.Distance(s.Position, destination) < s.maxSpeed * elapsedTime) //This number needs tweaking, 0 does not work
             {
                 goingStart = !goingStart;
-                ship.DesiredVelocity = Vector2.Zero;
+                s.DesiredVelocity = Vector2.Zero;
             }
-            else if (Math.Abs(wantedDirection - ship.Rotation) < ship.maxTurn)
+            else if (Math.Abs(wantedDirection-s.Rotation) < s.maxTurn)
             {
-                ship.DesiredVelocity = new Vector2((float)Math.Cos(ship.Rotation) * ship.maxSpeed, (float)Math.Sin(ship.Rotation) * ship.maxSpeed);    
+                s.DesiredVelocity = new Vector2((float)Math.Cos(s.Rotation) * s.maxSpeed, (float)Math.Sin(s.Rotation) * s.maxSpeed);    
             }
             else
             {
-                ship.DesiredVelocity = Vector2.Zero;
-                float counterclockwiseDistance = Math.Abs(wantedDirection - (ship.Rotation + ship.maxTurn) % (MathHelper.Pi * 2));
-                float clockwiseDistance = Math.Abs(wantedDirection - (ship.Rotation - ship.maxTurn + MathHelper.Pi * 2) % (MathHelper.Pi * 2));
+                s.DesiredVelocity = Vector2.Zero;
+                float counterclockwiseDistance = Math.Abs(wantedDirection - (s.Rotation + s.maxTurn)%(MathHelper.Pi * 2));
+                float clockwiseDistance = Math.Abs(wantedDirection - (s.Rotation - s.maxTurn + MathHelper.Pi * 2) % (MathHelper.Pi * 2));
                 if (counterclockwiseDistance < clockwiseDistance)
                 {
-                    if (counterclockwiseDistance < ship.maxTurn)
+                    if (counterclockwiseDistance < s.maxTurn)
                     {
-                        ship.Rotation = wantedDirection;
+                        s.Rotation = wantedDirection;
                     }
                     else
                     {
-                        ship.Rotation += ship.maxTurn;
+                        s.Rotation += s.maxTurn;
                     }
                 }
                 else
                 {
-                    if (clockwiseDistance < ship.maxTurn)
+                    if (clockwiseDistance < s.maxTurn)
                     {
-                        ship.Rotation = wantedDirection;
+                        s.Rotation = wantedDirection;
                     }
                     else
                     {
-                        ship.Rotation -= ship.maxTurn;
+                        s.Rotation -= s.maxTurn;
                     }
                 }
             }
-            if (CanSee(FindSputnik()))
-                ship.Shoot(elapsedTime);
+            if (CanSee(s,FindSputnik()))
+                s.Shoot(elapsedTime);
         }
 
         /// <summary>
@@ -98,28 +97,22 @@ namespace Sputnik {
                 if (e is SputnikShip)
                     return (Ship)e;
             }
-            //Ur screwed if you can't find Sputnik
-            return null;
-        }
-
-        private List<Ship> GetSeeables()
-        {
             return null;
         }
 
         /// <summary>
         /// Preliminary Vision, given starting Ship s and target Ship f, can s see f 
         /// </summary>
-        private bool CanSee(Ship f)
+        private bool CanSee(Ship s, Ship f)
         {
-            float theta = (float)(Math.Atan2(f.Position.Y - ship.Position.Y, f.Position.X - ship.Position.X));
+            float theta = (float)(Math.Atan2(f.Position.Y - s.Position.Y, f.Position.X - s.Position.X));
             if (theta < 0)
                 theta += MathHelper.TwoPi;
-            if (Math.Abs(theta - ship.Rotation) < (MathHelper.ToRadians(20)))
+            if (Math.Abs(theta - s.Rotation) < (MathHelper.ToRadians(20)))
             {
                 //Why do I have to use the collision Body's Position.  Does it relate to our relative positions?
                 //env.CollisionWorld.RayCast(RayCastHit, s.Position, f.Position);
-                env.CollisionWorld.RayCast(RayCastHit, ship.CollisionBody.Position, f.CollisionBody.Position);
+                env.CollisionWorld.RayCast(RayCastHit, s.CollisionBody.Position, f.CollisionBody.Position);
                 if (positionHit.Equals(f.CollisionBody.Position))
                 {
                     return true;
