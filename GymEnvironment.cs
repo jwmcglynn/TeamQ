@@ -29,6 +29,9 @@ namespace Sputnik
 				AddChild(s);
 			}
 
+			Entity e = new SaphereBoss(this);
+			AddChild(e);
+
 			AddChild(new Crosshair(this));
 			LoadMap("gym.tmx");
 

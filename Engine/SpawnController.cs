@@ -13,7 +13,7 @@ namespace Sputnik {
 			Environment = env;
 
 			bool spawnedPlayer = false;
-
+			
 			// Load spawn points.
 			foreach (Squared.Tiled.ObjectGroup objGroup in objectGroupList) {
 				foreach (List<Squared.Tiled.Object> objList in objGroup.Objects.Values) {
@@ -30,7 +30,6 @@ namespace Sputnik {
 							spawnedPlayer = true;
 							sp.Spawn();
 						}
-						
 					}
 				}
 			}

@@ -111,6 +111,7 @@
     <Compile Include="BlackHole.cs" />
     <Compile Include="BlackHolePhysicsController.cs" />
     <Compile Include="Boss.cs" />
+    <Compile Include="BossAI.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="BulletEmitter.cs" />
     <Compile Include="CircloidShip.cs" />
