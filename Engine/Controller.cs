@@ -35,6 +35,8 @@ namespace Sputnik {
 			Window.Title = "Sputnik";
 			Content.RootDirectory = "Content";
 
+			IsFixedTimeStep = false;
+
 			OldKeyboard.m_state = Keyboard.GetState();
 		}
 
