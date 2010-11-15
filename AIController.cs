@@ -298,7 +298,6 @@ namespace Sputnik {
 
         public float RayCastHit(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
         {
-            //if(Vector2.Distance(fixture.Body.Position,
             positionHit = fixture.Body.Position;
             return fraction;
         }
