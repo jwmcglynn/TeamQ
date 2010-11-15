@@ -29,7 +29,7 @@ namespace Sputnik
 			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f; // This value causes a small amount of slowing before stop which looks nice.
 
-			ai = new PlayerController(env);
+			ai = new PlayerController(this,env);
 
 			// Adjust camera.
 			env.Camera.TeleportAndFocus(this);
@@ -47,7 +47,7 @@ namespace Sputnik
 				this.Rotation = this.controlled.Rotation;
 			}
 			else
-				ai.Update(this, elapsedTime);
+				ai.Update(elapsedTime);
 			base.Update(elapsedTime);
 		}
 
@@ -75,6 +75,7 @@ namespace Sputnik
 			recentlyControlled = controlled;
 			attached = false;
 			controlled = null;
+            ((PlayerController)ai).ChangeShip(this);
 		}
 
 		public override bool IsFriendly() {
@@ -104,6 +105,7 @@ namespace Sputnik
 				this.attached = true;
 				((Ship)entB).Attach(this);
 				controlled = (Ship)entB;
+                ((PlayerController)ai).ChangeShip(controlled);
 			}
 			base.OnCollide(entB, contact);
         }
