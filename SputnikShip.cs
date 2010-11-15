@@ -10,7 +10,6 @@ namespace Sputnik
 	class SputnikShip : Ship
 	{
 		public bool attached = false;
-		public bool shouldAttach = false;
 		private Ship controlled = null;
 		private Ship recentlyControlled = null;
 

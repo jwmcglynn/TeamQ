@@ -110,6 +110,7 @@
     <Compile Include="AIController.cs" />
     <Compile Include="BlackHole.cs" />
     <Compile Include="BlackHolePhysicsController.cs" />
+    <Compile Include="Boss.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="BulletEmitter.cs" />
     <Compile Include="CircloidShip.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="Menus\TextWidget.cs" />
     <Compile Include="Menus\Widget.cs" />
     <Compile Include="PlayerController.cs" />
+    <Compile Include="SaphereBoss.cs" />
     <Compile Include="Ship.cs" />
     <Compile Include="Engine\DebugViewXNA.cs" />
     <Compile Include="Engine\Entity.cs" />
