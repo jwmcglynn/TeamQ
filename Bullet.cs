@@ -68,8 +68,10 @@ namespace Sputnik
 			return base.ShouldCull();
 		}
 
-		public override bool ShouldCollide(Entity entB) {
+		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
+			if (entBFixture.IsSensor) return false;
 			if (entB is Bullet) return false; // Don't collide with other bullets.
+
 			if (entB is TakesDamage) {
 				// Enemy bullets only collide with player, player bullets only collide with enemies.
 				bool targetIsPlayer = ((TakesDamage) entB).IsFriendly();

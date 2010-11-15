@@ -61,8 +61,9 @@ namespace Sputnik
             this.ai = this.previousAI;
         }
 
-		public override bool ShouldCollide(Entity entB) {
-			return !(entB is Ship) || (entB is SputnikShip) ;
+		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
+			if (fixture.IsSensor || entBFixture.IsSensor) return true;
+			return !(entB is Ship) || (entB is SputnikShip);
 		}
 
 		public override bool ShouldCull() {

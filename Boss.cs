@@ -58,7 +58,7 @@ namespace Sputnik
 			return base.ShouldCull();
 		}*/
 
-		public override bool ShouldCollide(Entity entB)
+		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture)
 		{
 			return (entB is Bullet);
 		}
