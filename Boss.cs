@@ -11,6 +11,8 @@ namespace Sputnik
 		protected BulletEmitter bm1, bm2, bm3;
 		protected BossAI ai;
 		private bool m_shouldCull = false;
+		public float maxSpeed = 50.0f;
+		public float maxTurn = 0.025f;
 
 		public Boss(GameEnvironment env) //: base(env)
 		{
@@ -33,14 +35,16 @@ namespace Sputnik
 			bm3.Position = this.Position;
 		}
 
-		public override bool ShouldCollide(Entity entB)
-		{
-			return base.ShouldCollide(entB);
-		}
-
 		public bool IsFriendly()
 		{
 			return false;
+		}
+
+		public void Shoot(float elapsedTime)
+		{
+			bm1.Shoot(elapsedTime, false);
+			bm2.Shoot(elapsedTime, false);
+			bm3.Shoot(elapsedTime, false);
 		}
 
 		public void InstaKill()
@@ -53,6 +57,11 @@ namespace Sputnik
 			if (m_shouldCull) return true;
 			return base.ShouldCull();
 		}*/
+
+		public override bool ShouldCollide(Entity entB)
+		{
+			return (entB is Bullet);
+		}
 
 		public void TakeHit(int damage)
 		{

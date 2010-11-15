@@ -9,10 +9,10 @@ namespace Sputnik
 {
 	class SaphereBoss : Boss
 	{
-		public const int maxSpeed = 50;
 		public SaphereBoss(GameEnvironment env) : base(env) 
 		{
-			LoadTexture(env.contentManager, "saphere");
+			//LoadTexture(env.contentManager, "saphere");
+			LoadTexture(env.contentManager, "astroid_1");
 
 			this.bm1 = new BulletEmitter(env, BulletEmitter.BulletStrength.Medium, false);
 			this.bm2 = new BulletEmitter(env, BulletEmitter.BulletStrength.Medium, false);
@@ -28,7 +28,7 @@ namespace Sputnik
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true;
 
-			Vector2[] temp = { new Vector2(env.ScreenVirtualSize.X - 150, env.ScreenVirtualSize.Y - 150), new Vector2(50f, 50f) };
+			Vector2[] temp = { new Vector2(env.ScreenVirtualSize.X - 50, env.ScreenVirtualSize.Y - 50), new Vector2(50f, 50f) };
 
 			this.ai = new BossAI(env, this, temp);
 		}
