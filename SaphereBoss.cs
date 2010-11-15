@@ -14,9 +14,9 @@ namespace Sputnik
 			//LoadTexture(env.contentManager, "saphere");
 			LoadTexture(env.contentManager, "astroid_1");
 
-			this.bm1 = new BulletEmitter(env, BulletEmitter.BulletStrength.Medium, false);
-			this.bm2 = new BulletEmitter(env, BulletEmitter.BulletStrength.Medium, false);
-			this.bm3 = new BulletEmitter(env, BulletEmitter.BulletStrength.Medium, false);
+			this.bm1 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
+			this.bm2 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
+			this.bm3 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
 
 			AddChild(bm1);
 			AddChild(bm2);
@@ -38,9 +38,9 @@ namespace Sputnik
 			LoadTexture(env.contentManager, "saphere");
 			//Position = sp.Position;
 
-			this.bm1 = new BulletEmitter(env, BulletEmitter.BulletStrength.Medium, false);
-			this.bm2 = new BulletEmitter(env, BulletEmitter.BulletStrength.Medium, false);
-			this.bm3 = new BulletEmitter(env, BulletEmitter.BulletStrength.Medium, false);
+			this.bm1 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
+			this.bm2 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
+			this.bm3 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
 
 			AddChild(bm1);
 			AddChild(bm2);

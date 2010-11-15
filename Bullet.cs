@@ -11,13 +11,14 @@ namespace Sputnik
 		private int bulletStrength = 1;
 		const float k_speed = 300.0f; // pixels per second
 		public bool ShotByPlayer; // to figure out who will be the target of our bullet
-		
+        public Entity owner;
 		private bool m_shouldCull = false;
 		private float m_lifetime = 0.0f;
 
-		public Bullet(GameEnvironment env, Vector2 position, double angle, bool playerShotBullet)
+		public Bullet(GameEnvironment env, Entity s,Vector2 position, double angle, bool playerShotBullet)
 				: base(env)
 		{
+            owner = s;
 			LoadTexture(env.contentManager, "bullet");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 

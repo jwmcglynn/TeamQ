@@ -19,7 +19,7 @@ namespace Sputnik
 			
 			this.maxSpeed = 150;
 			
-			shooter = new BulletEmitter(env, BulletEmitter.BulletStrength.Weak, IsFriendly());
+			shooter = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Weak, IsFriendly());
 			AddChild(shooter);
 
 			LoadTexture(env.contentManager, "Sputnik_Old");

@@ -16,7 +16,7 @@ namespace Sputnik
 		}
 
 		private void Initialize(Vector2 patrolStart, Vector2 patrolEnd) {
-			shooter = new BulletEmitter(Environment, BulletEmitter.BulletStrength.Strong, IsFriendly());
+			shooter = new BulletEmitter(Environment, this,BulletEmitter.BulletStrength.Strong, IsFriendly());
 			AddChild(shooter);
 			ai = new AIController(patrolStart, patrolEnd, Environment);
 			LoadTexture(Environment.contentManager, "squaretopia");
