@@ -16,7 +16,7 @@ namespace Sputnik
     class PlayerController : ShipController
     {
 		private GameEnvironment m_env;
-		private const float timeBetweenControls = 1.0f;
+		private const float timeBetweenControls = 0.0f;
 		BlackHole spawnedBlackHole;
 		private bool specialShot = true;
 		private float lastSpace = 0.0f;
@@ -46,29 +46,12 @@ namespace Sputnik
 
 			float scaleFactor = 2.0f;
 
-			if (kb.IsKeyDown(Keys.Space))
+
+			if (kb.IsKeyDown(Keys.Space) && !OldKeyboard.GetState().IsKeyDown(Keys.Space))
 			{
-				if (lastSpace == 0.0f)
-				{
-					lastSpace = timeBetweenControls;
-					if (s is SputnikShip)
-					{
-						if (((SputnikShip)s).attached)
-						{
-							s.Detatch();
-							((SputnikShip)s).shouldAttach = false;
-						}
-						else
-						{
-							((SputnikShip)s).shouldAttach = true;
-						}
-					}
-					else
-						s.Detatch();
-				}
+				s.Detatch();
 			}
-			else if (s is SputnikShip)
-				((SputnikShip)s).shouldAttach = false;
+			
             if (kb.IsKeyDown(Keys.W))
             {
                 temp.Y = -1 * scaleFactor;

@@ -38,15 +38,17 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
-			if (controlled == null || controlled.health == 0 || !controlled.isSputnik())
+			if ((controlled == null || controlled.health == 0) && attached)
 			{
 				Detatch();
 			}
-			else
+			else if (attached && controlled != null)
 			{
 				this.Position = this.controlled.Position;
 				this.Rotation = this.controlled.Rotation;
 			}
+			else
+				ai.Update(this, elapsedTime);
 			base.Update(elapsedTime);
 		}
 
@@ -98,7 +100,7 @@ namespace Sputnik
         public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
 			contact.Enabled = false;
-			if (entB is Ship && !attached && shouldAttach && entB != recentlyControlled)
+			if (entB is Ship && !attached && entB != recentlyControlled)
 			{
 				this.attached = true;
 				((Ship)entB).Attach(this);
