@@ -17,7 +17,7 @@ namespace Sputnik
 				: base(env, sp) {
 			Position = sp.Position;
 			
-			this.maxSpeed = 150;
+			this.maxSpeed = 200;
 			
 			shooter = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Weak, IsFriendly());
 			AddChild(shooter);

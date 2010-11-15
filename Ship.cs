@@ -16,10 +16,10 @@ namespace Sputnik
 		private ShipController previousAI = null;
 		public int health = 10;
 		private bool m_shouldCull = false;
-
+        public float shooterRotation;
 		protected BulletEmitter shooter = null;
 
-		public float maxSpeed = 100.0f;
+		public float maxSpeed = 200.0f;
 		public float maxTurn = 0.025f;
 
 		protected Rectangle m_patrolRect;
@@ -28,6 +28,7 @@ namespace Sputnik
 				: base(env)
 		{
 			Position = pos;
+            shooterRotation = Rotation;
 		}
 
 		public Ship(GameEnvironment env, SpawnPoint sp)
@@ -37,12 +38,16 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
+            if (!(this is SputnikShip))
+            {
+                shooterRotation = Rotation;
+            }
 			ai.Update(this, elapsedTime);
 
 			if (!(this is SputnikShip))
 			{
 				// Update emitter position.
-				shooter.Rotation = Rotation;
+                shooter.Rotation = shooterRotation;
 				shooter.Position = Position;
 			}
 

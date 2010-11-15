@@ -72,14 +72,14 @@ namespace Sputnik {
                 s.Rotation += MathHelper.Pi * 2.0f;
             s.Rotation %= MathHelper.Pi * 2.0f;
             wantedDirection %= MathHelper.Pi * 2.0f;
-            if (Vector2.Distance(s.Position, destination) < s.maxSpeed * elapsedTime) //This number needs tweaking, 0 does not work
+            if (Vector2.Distance(s.Position, destination) < s.maxSpeed/2 * elapsedTime) //This number needs tweaking, 0 does not work
             {
                 goingStart = !goingStart;
                 s.DesiredVelocity = Vector2.Zero;
             }
             else if (Math.Abs(wantedDirection - s.Rotation) < s.maxTurn)
             {
-                s.DesiredVelocity = new Vector2((float)Math.Cos(s.Rotation) * s.maxSpeed, (float)Math.Sin(s.Rotation) * s.maxSpeed);
+                s.DesiredVelocity = new Vector2((float)Math.Cos(s.Rotation) * s.maxSpeed/2, (float)Math.Sin(s.Rotation) * s.maxSpeed/2);
             }
             else
             {
@@ -249,7 +249,8 @@ namespace Sputnik {
                     }
                 }
             }
-            s.Shoot(elapsedTime);
+            if(CanSee(s,target))
+                s.Shoot(elapsedTime);
             //Did i Kill the target
             if (target.ShouldCull())
             {
@@ -271,6 +272,12 @@ namespace Sputnik {
                 theta += MathHelper.TwoPi;
             if (Math.Abs(theta - s.Rotation) < (MathHelper.ToRadians(20)))
             {
+                //TODO Im not quite sure why, but sometimes ships try to see null collisionbodys
+                if (s.CollisionBody == null || f.CollisionBody== null)
+                {
+                    return false;
+                }
+
                 //Why do I have to use the collision Body's Position.  Does it relate to our relative positions?
                 //env.CollisionWorld.RayCast(RayCastHit, s.Position, f.Position);
                 env.CollisionWorld.RayCast(RayCastHit, s.CollisionBody.Position, f.CollisionBody.Position);
@@ -291,8 +298,9 @@ namespace Sputnik {
 
         public float RayCastHit(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
         {
+            //if(Vector2.Distance(fixture.Body.Position,
             positionHit = fixture.Body.Position;
-            return 0;
+            return fraction;
         }
 
     }
