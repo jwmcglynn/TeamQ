@@ -231,7 +231,7 @@ namespace Sputnik {
 			Entity entB = (Entity) fixtureB.Body.UserData;
 
 			// Determine if shapes agree to collide.
-			return entA.ShouldCollide(entB) && entB.ShouldCollide(entA);
+			return entA.ShouldCollide(entB, fixtureA, fixtureB) && entB.ShouldCollide(entA, fixtureB, fixtureA);
 		}
 
 		/// <summary>

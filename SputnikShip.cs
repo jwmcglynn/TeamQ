@@ -88,7 +88,7 @@ namespace Sputnik
 			base.OnSeparate(entB, contact);
 		}
 
-		public override bool ShouldCollide(Entity entB) {
+		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
 			return !(entB is Environment) && !(entB is Bullet);
 		}
 

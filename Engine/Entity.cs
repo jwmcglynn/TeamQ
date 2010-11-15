@@ -299,7 +299,7 @@ namespace Sputnik {
 		/// </summary>
 		/// <param name="entB">Entity that we are trying to collide with.</param>
 		/// <returns></returns>
-		public virtual bool ShouldCollide(Entity entB) {
+		public virtual bool ShouldCollide(Entity entB, Physics.Dynamics.Fixture fixture, Physics.Dynamics.Fixture entBFixture) {
 			return true;
 		}
 
