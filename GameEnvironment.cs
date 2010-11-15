@@ -61,6 +61,7 @@ namespace Sputnik {
 			CollisionWorld.ContactManager.PreSolve += PreSolve;
 			CollisionWorld.ContactManager.BeginContact += BeginContact;
 			CollisionWorld.ContactManager.EndContact += EndContact;
+			CollisionWorld.ContactManager.ContactFilter += ContactFilter;
 
 			BlackHoleController = new BlackHolePhysicsController(300.0f, 100.0f * k_physicsScale, 9.0f * k_physicsScale); // 300 controls how strong the pull is towards the black hole.
 																									// 100.0 determines the radius fore which black hole will have an effect on.
@@ -219,11 +220,26 @@ namespace Sputnik {
 		}
 
 		/// <summary>
+		/// Farseer Physics callback.  Called when two AABB's overlap to determine if they should collide.
+		/// </summary>
+		/// <param name="fixtureA">First fixture involved.</param>
+		/// <param name="fixtureB">Second fixture involved.</param>
+		/// <returns></returns>
+		private bool ContactFilter(Physics.Dynamics.Fixture fixtureA, Physics.Dynamics.Fixture fixtureB) {
+			// Get Entities from both shapes.
+			Entity entA = (Entity) fixtureA.Body.UserData;
+			Entity entB = (Entity) fixtureB.Body.UserData;
+
+			// Determine if shapes agree to collide.
+			return entA.ShouldCollide(entB) && entB.ShouldCollide(entA);
+		}
+
+		/// <summary>
 		/// Farseer Physics callback.  Handles the case where two objects collide.
 		/// </summary>
 		/// <param name="contact">Contact point.</param>
 		/// <param name="oldManifold">Manifold from last update.</param>
-		protected void PreSolve(Physics.Dynamics.Contacts.Contact contact, ref Physics.Collision.Manifold oldManifold) {
+		private void PreSolve(Physics.Dynamics.Contacts.Contact contact, ref Physics.Collision.Manifold oldManifold) {
 			HandleContact(contact);
 		}
 
@@ -231,7 +247,7 @@ namespace Sputnik {
 		/// Farseer Physics callback.  Called when a contact is destroyed.
 		/// </summary>
 		/// <param name="contact">Contact point.</param>
-		protected void EndContact(Physics.Dynamics.Contacts.Contact contact) {
+		private void EndContact(Physics.Dynamics.Contacts.Contact contact) {
 			// Get Entities from both shapes.
 			Entity entA = (Entity) contact.FixtureA.Body.UserData;
 			Entity entB = (Entity) contact.FixtureB.Body.UserData;
@@ -251,16 +267,8 @@ namespace Sputnik {
 			Entity entA = (Entity) contact.FixtureA.Body.UserData;
 			Entity entB = (Entity) contact.FixtureB.Body.UserData;
 
-			// Determine if shapes agree to collide.
-			bool shouldCollide = entA.ShouldCollide(entB);
-			shouldCollide &= entB.ShouldCollide(entA);
-
-			contact.Enabled = shouldCollide;
-
-			if (shouldCollide) {
-				entA.OnCollide(entB, contact);
-				entB.OnCollide(entA, contact);
-			}
+			entA.OnCollide(entB, contact);
+			entB.OnCollide(entA, contact);
 		}
 	}
 }
