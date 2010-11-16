@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="32" tileheight="32">
- <tileset firstgid="1" name="Foreground" tilewidth="32" tileheight="32">
-  <image source="tiles.png"/>
+ <tileset firstgid="1" name="tiles" tilewidth="32" tileheight="32">
+  <image source="tiles.png" trans="000000"/>
  </tileset>
  <layer name="Foreground" width="100" height="100">
   <data encoding="base64" compression="gzip">
@@ -13,11 +13,12 @@
   <object name="" type="circloid" x="346" y="411" width="109" height="73"/>
   <object name="" type="triangulus" x="557" y="577" width="147" height="117"/>
   <object name="" type="squaretopia" x="381" y="743" width="21" height="17"/>
-  <object name="" type="blackhole" x="878" y="491" width="12" height="10"/>
+  <object name="" type="blackhole" x="1162" y="736" width="20" height="25"/>
   <object name="1" type="possibleBlackhole" x="129" y="97" width="30" height="30"/>
   <object name="2" type="possibleBlackhole" x="287" y="193" width="30" height="30"/>
   <object name="4" type="possibleBlackhole" x="671" y="385" width="30" height="30"/>
   <object name="3" type="possibleBlackhole" x="257" y="544" width="30" height="30"/>
   <object name="5" type="possibleBlackhole" x="837" y="609" width="30" height="30"/>
+  <object name="" type="blackhole" x="334" y="138" width="28" height="28"/>
  </objectgroup>
 </map>

@@ -58,7 +58,7 @@ namespace Sputnik {
 		private float m_currentCooldown;
 
 		// Has the entity been offscreen since it was culled?
-		private bool m_hasBeenOffscreen = true;
+		public bool HasBeenOffscreen = true;
 
 		#endregion
 
@@ -89,8 +89,8 @@ namespace Sputnik {
 		internal void Update(float elapsedTime, Rectangle spawnRect) {
 			m_currentCooldown += elapsedTime;
 
-			if (!m_hasBeenOffscreen) {
-				m_hasBeenOffscreen = !spawnRect.Intersects(Rect);
+			if (!HasBeenOffscreen) {
+				HasBeenOffscreen = !spawnRect.Intersects(Rect);
 			} else if (m_currentCooldown > RespawnCooldown && spawnRect.Intersects(Rect)) {
 				Spawn();
 			}
@@ -127,7 +127,7 @@ namespace Sputnik {
 		}
 
 		public void Reset() {
-			m_hasBeenOffscreen = false;
+			HasBeenOffscreen = false;
 
 			if (AllowRespawn) {
 				m_currentCooldown = 0.0f;

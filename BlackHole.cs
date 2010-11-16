@@ -60,6 +60,7 @@ namespace Sputnik
 			env.PlayerCreatedBlackHoles.RemoveAll(sp => {
 				if (sp.Entity != null) sp.Entity.Dispose();
 
+				sp.HasBeenOffscreen = true;
 				env.SpawnedBlackHoles.Remove(sp);
 				env.SpawnController.SpawnPoints.Remove(sp);
 				return true;
