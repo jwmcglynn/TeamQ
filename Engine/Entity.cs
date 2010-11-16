@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Audio;
 using Physics = FarseerPhysics;
 using System.IO;
 
@@ -32,6 +33,9 @@ namespace Sputnik {
 
 		public float TimeSinceTeleport = float.PositiveInfinity;
 		public Vector2 TeleportInertiaDir;
+
+		// Sound.
+		public AudioEmitter SoundEmitter;
 
 		/*************************************************************************/
 		// Entity tree.
