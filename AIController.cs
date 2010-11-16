@@ -55,7 +55,7 @@ namespace Sputnik {
                 Hostile(s, elapsedTime);
             }
 
-
+			s.DesiredRotation = s.Rotation;
         }
 
         private void Neutral(Ship s, float elapsedTime)

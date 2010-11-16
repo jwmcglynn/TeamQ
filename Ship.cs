@@ -16,7 +16,7 @@ namespace Sputnik
 		private ShipController previousAI = null;
 		public int health = 10;
 		private bool m_shouldCull = false;
-        public float shooterRotation;
+		public float shooterRotation;
 		protected BulletEmitter shooter = null;
 
 		public float maxSpeed = 200.0f;
@@ -24,11 +24,16 @@ namespace Sputnik
 
 		protected Rectangle m_patrolRect;
 
+		// Smooth rotation.
+		public float DesiredRotation;
+		private float m_lastRotDir = 1.0f;
+		public float MaxRotVel = 3.0f * (float) Math.PI; // Up to 1.5 rotations per second.
+
 		public Ship(GameEnvironment env, Vector2 pos)
 				: base(env)
 		{
 			Position = pos;
-            shooterRotation = Rotation;
+			shooterRotation = Rotation;
 		}
 
 		public Ship(GameEnvironment env, SpawnPoint sp)
@@ -38,17 +43,25 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
-            if (!(this is SputnikShip))
-            {
-                shooterRotation = Rotation;
-            }
 			ai.Update(this, elapsedTime);
 
-			if (!(this is SputnikShip))
+			if (shooter != null)
 			{
 				// Update emitter position.
-                shooter.Rotation = shooterRotation;
+				shooter.Rotation = shooterRotation;
 				shooter.Position = Position;
+			}
+
+			if (Rotation != DesiredRotation) {
+				float distPos = Angle.Distance(DesiredRotation, Rotation);
+				float dir = Math.Sign(distPos);
+
+				if (Math.Abs(distPos) > Math.PI * 3 / 4) dir = m_lastRotDir;
+				if (dir != 0) m_lastRotDir = dir;
+
+				float del = dir * MaxRotVel * elapsedTime;
+				if (Math.Abs(del) > Math.Abs(distPos)) del = distPos;
+				Rotation += del;
 			}
 
 			base.Update(elapsedTime);
@@ -61,10 +74,10 @@ namespace Sputnik
 			this.ai = sp.GetAI();
 		}
 
-        public virtual void Detatch()
-        {
-            this.ai = this.previousAI;
-        }
+		public virtual void Detatch()
+		{
+			this.ai = this.previousAI;
+		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
 			if (fixture.IsSensor || entBFixture.IsSensor) return true;

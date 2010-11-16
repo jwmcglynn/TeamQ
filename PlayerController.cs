@@ -80,7 +80,7 @@ namespace Sputnik
             s.DesiredVelocity = temp;
             if (directionChanged)
             {
-                s.Rotation = (float)Math.Atan2(s.DesiredVelocity.Y, s.DesiredVelocity.X);
+                s.DesiredRotation = (float)Math.Atan2(s.DesiredVelocity.Y, s.DesiredVelocity.X);
             }
             // need to check if sputnik is in a ship or not before you can shoot.
             if (ms.LeftButton == ButtonState.Pressed)
