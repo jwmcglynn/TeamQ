@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FarseerPhysics.Dynamics;
+using Microsoft.Xna.Framework;
+
 
 namespace Sputnik
 {
@@ -13,6 +16,11 @@ namespace Sputnik
 		private bool m_shouldCull = false;
 		public float maxSpeed = 50.0f;
 		public float maxTurn = 0.025f;
+		private Vector2 
+			top = new Vector2(0, -75),
+			left = new Vector2(-75, 40), 
+			right = new Vector2(75, 40);
+
 
 		public Boss(GameEnvironment env) : base(env)
 		{
@@ -30,9 +38,9 @@ namespace Sputnik
 
 			base.Update(elapsedTime);
 
-			bm1.Position = this.Position;
-			bm2.Position = this.Position;
-			bm3.Position = this.Position;
+			bm1.Position = this.Position + top;
+			bm2.Position = this.Position + right;
+			bm3.Position = this.Position + left;
 		}
 
 		public bool IsFriendly()
