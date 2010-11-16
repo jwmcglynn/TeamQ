@@ -62,6 +62,12 @@ namespace Sputnik {
 
 		#endregion
 
+		public SpawnPoint(SpawnController spawner, string type, Vector2 position) {
+			SpawnController = spawner;
+			EntityType = type;
+			Position = position;
+		}
+
 		internal SpawnPoint(SpawnController spawner, Squared.Tiled.Object obj) {
 			SpawnController = spawner;
 			Size = new Vector2(obj.Width, obj.Height);

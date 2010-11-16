@@ -69,7 +69,6 @@ namespace Sputnik
 		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
-			if (entBFixture.IsSensor) return false;
 			if (entB is Bullet) return false; // Don't collide with other bullets.
 
 			if (entB is TakesDamage) {

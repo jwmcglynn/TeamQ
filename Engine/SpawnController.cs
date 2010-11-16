@@ -5,9 +5,9 @@ using System.Text;
 using Microsoft.Xna.Framework;
 
 namespace Sputnik {
-	class SpawnController {
+	public class SpawnController {
 		internal GameEnvironment Environment;
-		internal List<SpawnPoint> SpawnPoints = new List<SpawnPoint>();
+		public List<SpawnPoint> SpawnPoints = new List<SpawnPoint>();
 
 		public SpawnController(GameEnvironment env, IList<Squared.Tiled.ObjectGroup> objectGroupList) {
 			Environment = env;
@@ -19,7 +19,8 @@ namespace Sputnik {
 				foreach (List<Squared.Tiled.Object> objList in objGroup.Objects.Values) {
 					foreach (Squared.Tiled.Object obj in objList) {
 						if (obj.Type == "possibleBlackhole") {
-							Environment.PossibleBlackHoleLocations.Add(new Vector2(obj.X, obj.Y));
+							obj.Type = "blackhole";
+							Environment.PossibleBlackHoleLocations.Add(new SpawnPoint(this, obj));
 							continue;
 						} 
 						

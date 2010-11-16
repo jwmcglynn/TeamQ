@@ -17,7 +17,7 @@ namespace Sputnik {
 		// Spawning/culling.
 		public const float k_cullRadius = 300.0f; // Must be greater than spawn radius.
 		public const float k_spawnRadius = 100.0f; // Must be less than cull radius.
-		private SpawnController m_spawnController;
+		public SpawnController SpawnController { get; private set; }
 
 		// Camera.
 		public static Vector2 k_maxVirtualSize { get { return new Vector2(1680, 1050); } }
@@ -34,16 +34,17 @@ namespace Sputnik {
 		private Physics.DebugViewXNA m_debugView;
 		public Physics.Dynamics.World CollisionWorld = new Physics.Dynamics.World(Vector2.Zero);
 
-		public static float k_physicsScale = 1.0f / 100.0f; // 100 pixels = 1 meter.
-		public static float k_invPhysicsScale = 100.0f; // ^ must be inverse.
+		public static float k_physicsScale = 1.0f / 50.0f; // 50 pixels = 1 meter.
+		public static float k_invPhysicsScale = 50.0f; // ^ must be inverse.
 
 		// Update loop.
 		public float m_updateAccum; // How much time has passed relative to the physics world.
 
 		// Black holes.
 		public BlackHolePhysicsController BlackHoleController;
-		public List<Vector2> PossibleBlackHoleLocations = new List<Vector2>();
+		public List<SpawnPoint> PossibleBlackHoleLocations = new List<SpawnPoint>();
 		public List<SpawnPoint> SpawnedBlackHoles = new List<SpawnPoint>();
+		public List<SpawnPoint> PlayerCreatedBlackHoles = new List<SpawnPoint>();
 
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {
@@ -131,7 +132,7 @@ namespace Sputnik {
 				}
 			}
 
-			m_spawnController = new SpawnController(this, m_map.ObjectGroups.Values);
+			SpawnController = new SpawnController(this, m_map.ObjectGroups.Values);
 		}
 
 		/// <summary>
@@ -150,7 +151,7 @@ namespace Sputnik {
 
 				CollisionWorld.Step(k_physicsStep);
 
-				if (m_spawnController != null) m_spawnController.Update(k_physicsStep);
+				if (SpawnController != null) SpawnController.Update(k_physicsStep);
 
 				// Update entities.
 				base.Update(k_physicsStep);
@@ -159,7 +160,7 @@ namespace Sputnik {
 
 			if (!didUpdate) {
 				// Update entities if they did not update above.
-				if (m_spawnController != null) m_spawnController.Update(0.0f);
+				if (SpawnController != null) SpawnController.Update(0.0f);
 				base.Update(0.0f);
 				Camera.Update(0.0f);
 			}

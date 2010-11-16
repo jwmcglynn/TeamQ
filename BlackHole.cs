@@ -9,29 +9,39 @@ namespace Sputnik
 {
 	class BlackHole : GameEntity
 	{
-		BlackHole wormHole;
-		SpawnPoint selfSpawn;
-		SpawnPoint spawnedWormHole;
+		SpawnPoint wormHole;
 
 		bool didTeleport = false;
 		private List<Entity> waitingToTeleport = new List<Entity>();
 		
-		bool isAWormHole = false;
-		bool blackHoleFromMap = false;
-
-		public BlackHole(GameEnvironment e, bool isWormHole)
+		public BlackHole(GameEnvironment e, Vector2 pos)
 				: base(e)
 		{
-			isAWormHole = isWormHole;
+			SpawnPoint = new SpawnPoint(e.SpawnController, "blackhole", pos);
+			Environment.SpawnedBlackHoles.Add(SpawnPoint);
+			Environment.PlayerCreatedBlackHoles.Add(SpawnPoint);
+			SpawnPoint.Entity = this;
+			SpawnPoint.Name = "__player_created__";
+
+			Position = pos;
 			Initialize();
+
+			// Create wormhole.
+			Random rand = new Random();
+			wormHole = Environment.PossibleBlackHoleLocations[rand.Next(0, Environment.PossibleBlackHoleLocations.Count)];
+			wormHole.Name = "__player_created__";
+			Environment.SpawnedBlackHoles.Add(wormHole);
+			Environment.PlayerCreatedBlackHoles.Add(wormHole);
+			Environment.SpawnController.SpawnPoints.Add(wormHole);
 		}
 
 		public BlackHole(GameEnvironment e, SpawnPoint sp)
 				: base(e, sp) {
-			blackHoleFromMap = true;
-			selfSpawn = sp;
 			Position = sp.Position;
 			Initialize();
+
+			// Find where wormhole points.
+			wormHole = Environment.SpawnedBlackHoles.Find(spawn => spawn.Name == SpawnPoint.Name && spawn != SpawnPoint);
 		}
 
 		private void Initialize() {
@@ -44,25 +54,16 @@ namespace Sputnik
 			circle.IsSensor = true;
 
 			Environment.BlackHoleController.AddBody(CollisionBody);
-
-			if (!isAWormHole && !blackHoleFromMap)
-			{
-				wormHole = new BlackHole(Environment, true);
-				Random rand = new Random();
-				wormHole.Position = Environment.PossibleBlackHoleLocations[rand.Next(0, Environment.PossibleBlackHoleLocations.Count)];
-				wormHole.wormHole = this;
-				AddChild(wormHole);
-			} else if (!isAWormHole) {
-				foreach(SpawnPoint spawn in Environment.SpawnedBlackHoles) {
-					if(spawn.Name == selfSpawn.Name && spawn != selfSpawn) {
-						spawnedWormHole = spawn;
-					}
-				}
-			}
 		}
 
-		public override bool ShouldCull() {
-			return false; // Quick workaround; blackholes should eventually cull but still be able to determine counterparts.
+		public static void RemovePlayerCreatedBlackHoles(GameEnvironment env) {
+			env.PlayerCreatedBlackHoles.RemoveAll(sp => {
+				if (sp.Entity != null) sp.Entity.Dispose();
+
+				env.SpawnedBlackHoles.Remove(sp);
+				env.SpawnController.SpawnPoints.Remove(sp);
+				return true;
+			});
 		}
 
 		public override void Dispose()
@@ -88,17 +89,11 @@ namespace Sputnik
 		public override void Update(float elapsedTime)
 		{
 			waitingToTeleport.RemoveAll((Entity teleportingEntity) => {
-				Vector2 offset = (teleportingEntity.Position - Position);
-				if(!blackHoleFromMap) {
-					teleportingEntity.Position = wormHole.Position;
-				} else {
-					teleportingEntity.Position = spawnedWormHole.Position;
-				}
+				Vector2 dir = Vector2.Normalize(Position - teleportingEntity.Position);
+				teleportingEntity.Position = wormHole.Position;
 
 				teleportingEntity.TimeSinceTeleport = 0.0f;
-				teleportingEntity.TeleportInertiaDir = -offset;
-				teleportingEntity.TeleportInertiaDir.Normalize();
-
+				teleportingEntity.TeleportInertiaDir = dir;
 				return true;
 			});
 			
