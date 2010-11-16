@@ -21,10 +21,14 @@ namespace Sputnik {
 						if (obj.Type == "possibleBlackhole") {
 							Environment.PossibleBlackHoleLocations.Add(new Vector2(obj.X, obj.Y));
 							continue;
-						}
-
+						} 
+						
 						SpawnPoint sp = new SpawnPoint(this, obj);
 						if (sp.Entity == null) SpawnPoints.Add(sp);
+
+						if (obj.Type == "blackhole") {
+							Environment.SpawnedBlackHoles.Add(sp);
+						}
 
 						if (sp.EntityType == "spawn") spawnedPlayer = true;
 					}

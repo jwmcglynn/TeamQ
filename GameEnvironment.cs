@@ -43,7 +43,7 @@ namespace Sputnik {
 		// Black holes.
 		public BlackHolePhysicsController BlackHoleController;
 		public List<Vector2> PossibleBlackHoleLocations = new List<Vector2>();
-
+		public List<SpawnPoint> SpawnedBlackHoles = new List<SpawnPoint>();
 
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {

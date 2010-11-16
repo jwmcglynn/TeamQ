@@ -10,6 +10,8 @@ namespace Sputnik
 	class BlackHole : GameEntity
 	{
 		BlackHole wormHole;
+		SpawnPoint selfSpawn;
+		SpawnPoint spawnedWormHole;
 
 		bool didTeleport = false;
 		private List<Entity> waitingToTeleport = new List<Entity>();
@@ -27,8 +29,9 @@ namespace Sputnik
 		public BlackHole(GameEnvironment e, SpawnPoint sp)
 				: base(e, sp) {
 			blackHoleFromMap = true;
-			Initialize();
+			selfSpawn = sp;
 			Position = sp.Position;
+			Initialize();
 		}
 
 		private void Initialize() {
@@ -50,12 +53,11 @@ namespace Sputnik
 				wormHole.wormHole = this;
 				AddChild(wormHole);
 			} else if (!isAWormHole) {
-				wormHole = new BlackHole(Environment, true);
-				Random rand = new Random();
-				wormHole.Position = new Vector2(500.0f, 500.0f);
-
-				wormHole.wormHole = this;
-				AddChild(wormHole);
+				foreach(SpawnPoint spawn in Environment.SpawnedBlackHoles) {
+					if(spawn.Name == selfSpawn.Name && spawn != selfSpawn) {
+						spawnedWormHole = spawn;
+					}
+				}
 			}
 		}
 
@@ -87,7 +89,11 @@ namespace Sputnik
 		{
 			waitingToTeleport.RemoveAll((Entity teleportingEntity) => {
 				Vector2 offset = (teleportingEntity.Position - Position);
-				teleportingEntity.Position = wormHole.Position;
+				if(!blackHoleFromMap) {
+					teleportingEntity.Position = wormHole.Position;
+				} else {
+					teleportingEntity.Position = spawnedWormHole.Position;
+				}
 
 				teleportingEntity.TimeSinceTeleport = 0.0f;
 				teleportingEntity.TeleportInertiaDir = -offset;
