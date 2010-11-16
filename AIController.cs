@@ -184,14 +184,19 @@ namespace Sputnik {
         private bool CanSee(Entity s, Entity f)
         {
             float theta = Angle.Direction(s.Position, f.Position);
-
+            //TODO Im not quite sure why, but sometimes ships try to see null collisionbodys
+            if (s.CollisionBody == null || f.CollisionBody == null)
+            {
+                return false;
+            }
+            if (s.CollisionBody.Position.Equals(f.CollisionBody.Position))
+            {
+                //This case would only occur if the ai for the player controlled ship tries to see things.
+                return false;
+            }
 			if (Angle.DistanceMag(theta, s.Rotation) < (MathHelper.ToRadians(20)))
             {
-                //TODO Im not quite sure why, but sometimes ships try to see null collisionbodys
-                if (s.CollisionBody == null || f.CollisionBody== null)
-                {
-                    return false;
-                }
+                
 
                 //Why do I have to use the collision Body's Position.  Does it relate to our relative positions?
                 //env.CollisionWorld.RayCast(RayCastHit, s.Position, f.Position);
