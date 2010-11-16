@@ -68,6 +68,8 @@ namespace Sputnik {
 
 			// Move the Camera to the position that it needs to go.
 			if (Focus != null) Position += (Focus.Position - Position) * MoveSpeed * elapsedTime;
+
+			Sound.CameraPos = Position;
 		}
 
 		/// <summary>
