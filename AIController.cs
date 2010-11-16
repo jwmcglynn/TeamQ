@@ -55,7 +55,7 @@ namespace Sputnik {
                 Hostile(s, elapsedTime);
             }
 
-			s.DesiredRotation = s.Rotation;
+			s.shooterRotation = s.Rotation;
         }
 
         private void Neutral(Ship s, float elapsedTime)
@@ -65,49 +65,21 @@ namespace Sputnik {
                 destination = start;
             else
                 destination = finish;
-            float wantedDirection = (float)Math.Atan2(destination.Y - s.Position.Y, destination.X - s.Position.X);
-            while (wantedDirection < 0)
-                wantedDirection += MathHelper.Pi * 2.0f;
-            while (s.Rotation < 0)
-                s.Rotation += MathHelper.Pi * 2.0f;
-            s.Rotation %= MathHelper.Pi * 2.0f;
-            wantedDirection %= MathHelper.Pi * 2.0f;
+            float wantedDirection = Angle.Direction(s.Position, destination);
+
             if (Vector2.Distance(s.Position, destination) < s.maxSpeed/2 * elapsedTime) //This number needs tweaking, 0 does not work
             {
                 goingStart = !goingStart;
                 s.DesiredVelocity = Vector2.Zero;
             }
-            else if (Math.Abs(wantedDirection - s.Rotation) < s.maxTurn)
+            else if (Angle.DistanceMag(wantedDirection, s.Rotation) < s.MaxRotVel * elapsedTime)
             {
-                s.DesiredVelocity = new Vector2((float)Math.Cos(s.Rotation) * s.maxSpeed/2, (float)Math.Sin(s.Rotation) * s.maxSpeed/2);
+				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed / 2;
             }
             else
             {
                 s.DesiredVelocity = Vector2.Zero;
-                float counterclockwiseDistance = Math.Abs(wantedDirection - (s.Rotation + s.maxTurn) % (MathHelper.Pi * 2));
-                float clockwiseDistance = Math.Abs(wantedDirection - (s.Rotation - s.maxTurn + MathHelper.Pi * 2) % (MathHelper.Pi * 2));
-                if (counterclockwiseDistance < clockwiseDistance)
-                {
-                    if (counterclockwiseDistance < s.maxTurn)
-                    {
-                        s.Rotation = wantedDirection;
-                    }
-                    else
-                    {
-                        s.Rotation += s.maxTurn;
-                    }
-                }
-                else
-                {
-                    if (clockwiseDistance < s.maxTurn)
-                    {
-                        s.Rotation = wantedDirection;
-                    }
-                    else
-                    {
-                        s.Rotation -= s.maxTurn;
-                    }
-                }
+				s.DesiredRotation = wantedDirection;
             }
             Ship newTarget = SawPlayerShoot(s);
             if (newTarget != null)
@@ -138,48 +110,20 @@ namespace Sputnik {
         private void Alert(Ship s, float elapsedTime)
         {
             Vector2 destination = target.Position;
-            float wantedDirection = (float)Math.Atan2(destination.Y - s.Position.Y, destination.X - s.Position.X);
-            while (wantedDirection < 0)
-                wantedDirection += MathHelper.Pi * 2.0f;
-            while (s.Rotation < 0)
-                s.Rotation += MathHelper.Pi * 2.0f;
-            s.Rotation %= MathHelper.Pi * 2.0f;
-            wantedDirection %= MathHelper.Pi * 2.0f;
+            float wantedDirection = Angle.Direction(s.Position, destination);
+
             if (Vector2.Distance(s.Position, destination) < 100)
             {
                 s.DesiredVelocity = Vector2.Zero;
             }
-            else if (Math.Abs(wantedDirection - s.Rotation) < s.maxTurn)
+            else if (Angle.DistanceMag(wantedDirection, s.Rotation) < s.MaxRotVel * elapsedTime)
             {
-                s.DesiredVelocity = new Vector2((float)Math.Cos(s.Rotation) * s.maxSpeed, (float)Math.Sin(s.Rotation) * s.maxSpeed);
+				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed;
             }
             else
             {
                 s.DesiredVelocity = Vector2.Zero;
-                float counterclockwiseDistance = Math.Abs(wantedDirection - (s.Rotation + s.maxTurn) % (MathHelper.Pi * 2));
-                float clockwiseDistance = Math.Abs(wantedDirection - (s.Rotation - s.maxTurn + MathHelper.Pi * 2) % (MathHelper.Pi * 2));
-                if (counterclockwiseDistance < clockwiseDistance)
-                {
-                    if (counterclockwiseDistance < s.maxTurn)
-                    {
-                        s.Rotation = wantedDirection;
-                    }
-                    else
-                    {
-                        s.Rotation += s.maxTurn;
-                    }
-                }
-                else
-                {
-                    if (clockwiseDistance < s.maxTurn)
-                    {
-                        s.Rotation = wantedDirection;
-                    }
-                    else
-                    {
-                        s.Rotation -= s.maxTurn;
-                    }
-                }
+				s.DesiredRotation = wantedDirection;
             }
             Ship newTarget = SawPlayerShoot(s);
             if (newTarget != null)
@@ -197,7 +141,7 @@ namespace Sputnik {
         {
             foreach (Entity b in env.Children)
             {
-                if(b is Bullet && ((Bullet)b).ShotByPlayer && CanSee(s,b))
+                if(b is Bullet && ((Bullet)b).ShotByPlayer && CanSee(s, b))
                     return (Ship)(((Bullet)b).owner);
             }
             return null;
@@ -206,48 +150,20 @@ namespace Sputnik {
         private void Hostile(Ship s, float elapsedTime)
         {
             Vector2 destination = target.Position;
-            float wantedDirection = (float)Math.Atan2(destination.Y - s.Position.Y, destination.X - s.Position.X);
-            while (wantedDirection < 0)
-                wantedDirection += MathHelper.Pi * 2.0f;
-            while (s.Rotation < 0)
-                s.Rotation += MathHelper.Pi * 2.0f;
-            s.Rotation %= MathHelper.Pi * 2.0f;
-            wantedDirection %= MathHelper.Pi * 2.0f;
+            float wantedDirection = Angle.Direction(s.Position, destination);
+
             if (Vector2.Distance(s.Position, destination) < 100)
             {
                 s.DesiredVelocity = Vector2.Zero;
             }
-            else if (Math.Abs(wantedDirection-s.Rotation) < s.maxTurn)
+            else if (Angle.DistanceMag(wantedDirection, s.Rotation) < s.MaxRotVel * elapsedTime)
             {
-                s.DesiredVelocity = new Vector2((float)Math.Cos(s.Rotation) * s.maxSpeed, (float)Math.Sin(s.Rotation) * s.maxSpeed);    
+				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed;
             }
             else
             {
                 s.DesiredVelocity = Vector2.Zero;
-                float counterclockwiseDistance = Math.Abs(wantedDirection - (s.Rotation + s.maxTurn)%(MathHelper.Pi * 2));
-                float clockwiseDistance = Math.Abs(wantedDirection - (s.Rotation - s.maxTurn + MathHelper.Pi * 2) % (MathHelper.Pi * 2));
-                if (counterclockwiseDistance < clockwiseDistance)
-                {
-                    if (counterclockwiseDistance < s.maxTurn)
-                    {
-                        s.Rotation = wantedDirection;
-                    }
-                    else
-                    {
-                        s.Rotation += s.maxTurn;
-                    }
-                }
-                else
-                {
-                    if (clockwiseDistance < s.maxTurn)
-                    {
-                        s.Rotation = wantedDirection;
-                    }
-                    else
-                    {
-                        s.Rotation -= s.maxTurn;
-                    }
-                }
+				s.DesiredRotation = wantedDirection;
             }
             if(CanSee(s,target))
                 s.Shoot(elapsedTime);
@@ -267,10 +183,9 @@ namespace Sputnik {
         /// </summary>
         private bool CanSee(Entity s, Entity f)
         {
-            float theta = (float)(Math.Atan2(f.Position.Y - s.Position.Y, f.Position.X - s.Position.X));
-            if (theta < 0)
-                theta += MathHelper.TwoPi;
-            if (Math.Abs(theta - s.Rotation) < (MathHelper.ToRadians(20)))
+            float theta = Angle.Direction(s.Position, f.Position);
+
+			if (Angle.DistanceMag(theta, s.Rotation) < (MathHelper.ToRadians(20)))
             {
                 //TODO Im not quite sure why, but sometimes ships try to see null collisionbodys
                 if (s.CollisionBody == null || f.CollisionBody== null)

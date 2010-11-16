@@ -20,7 +20,6 @@ namespace Sputnik
 		protected BulletEmitter shooter = null;
 
 		public float maxSpeed = 200.0f;
-		public float maxTurn = 0.025f;
 
 		protected Rectangle m_patrolRect;
 
