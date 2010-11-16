@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Sputnik
 {
-	class Boss : Entity, TakesDamage
+	class Boss : GameEntity, TakesDamage
 	{
 		private int health = 100;
 		protected BulletEmitter bm1, bm2, bm3;
@@ -14,12 +14,12 @@ namespace Sputnik
 		public float maxSpeed = 50.0f;
 		public float maxTurn = 0.025f;
 
-		public Boss(GameEnvironment env) //: base(env)
+		public Boss(GameEnvironment env) : base(env)
 		{
 
 		}
 
-		public Boss(GameEnvironment env, SpawnPoint sp) //: base(env, sp)
+		public Boss(GameEnvironment env, SpawnPoint sp) : base(env, sp)
 		{
 			
 		}
@@ -52,11 +52,11 @@ namespace Sputnik
 			m_shouldCull = true;
 		}
 
-		/*public override bool ShouldCull()
+		public override bool ShouldCull()
 		{
 			if (m_shouldCull) return true;
 			return base.ShouldCull();
-		}*/
+		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture)
 		{
