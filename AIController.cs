@@ -83,14 +83,14 @@ namespace Sputnik {
                 goingStart = !goingStart;
                 s.DesiredVelocity = Vector2.Zero;
             }
-			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < 0.01)
+			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < s.MaxRotVel * elapsedTime)
 			{
 				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed;
 				s.DesiredRotation = wantedDirection;
 			}
             else
             {
-                s.DesiredVelocity = Vector2.Zero;
+                //s.DesiredVelocity = Vector2.Zero;
 				s.DesiredRotation = wantedDirection;
             }
             if (shotMe != null)
@@ -129,7 +129,7 @@ namespace Sputnik {
                 s.DesiredVelocity = Vector2.Zero;
 				s.DesiredRotation = wantedDirection;
             }
-			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < 0.01)
+			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < s.MaxRotVel * elapsedTime)
             {
 				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed;
 				s.DesiredRotation = wantedDirection;
@@ -177,7 +177,7 @@ namespace Sputnik {
             {
                 s.DesiredVelocity = Vector2.Zero;
             }
-			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < 0.01)
+			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < s.MaxRotVel * elapsedTime)
             {
 				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed;
 				s.DesiredRotation = wantedDirection;
