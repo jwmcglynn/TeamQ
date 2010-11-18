@@ -20,31 +20,31 @@
   <object name="" type="triangulus" x="441" y="259"/>
   <object name="" type="triangulus" x="355" y="408"/>
   <object name="startlevel" type="blackhole" x="844" y="945"/>
-  <object name="" type="circloid" x="581" y="1164" width="196" height="136"/>
-  <object name="" type="circloid" x="289" y="1120" width="197" height="143"/>
-  <object name="" type="circloid" x="544" y="865" width="192" height="218"/>
-  <object name="" type="circloid" x="201" y="839" width="288" height="213"/>
-  <object name="" type="circloid" x="818" y="1166" width="231" height="98"/>
-  <object name="" type="squaretopia" x="1137" y="415" width="78" height="117"/>
+  <object name="" type="circloid" x="558" y="1102" width="196" height="136"/>
+  <object name="" type="circloid" x="346" y="1043" width="197" height="143"/>
+  <object name="" type="circloid" x="589" y="812" width="192" height="218"/>
+  <object name="" type="circloid" x="324" y="826" width="227" height="140"/>
+  <object name="" type="circloid" x="801" y="1092" width="231" height="98"/>
+  <object name="" type="squaretopia" x="1019" y="473" width="78" height="117"/>
   <object name="" type="squaretopia" x="1122" y="1131" width="175" height="109"/>
   <object name="" type="squaretopia" x="1105" y="919" width="246" height="153"/>
   <object name="" type="squaretopia" x="1211" y="633" width="128" height="211"/>
   <object name="" type="squaretopia" x="988" y="684" width="177" height="179"/>
-  <object name="" type="squaretopia" x="859" y="324" width="235" height="302"/>
-  <object name="" type="triangulus" x="1829" y="358" width="259" height="178"/>
-  <object name="" type="triangulus" x="1771" y="759" width="523" height="383"/>
-  <object name="" type="triangulus" x="2283" y="350" width="198" height="194"/>
-  <object name="" type="triangulus" x="2642" y="287" width="211" height="156"/>
+  <object name="" type="squaretopia" x="757" y="464" width="235" height="302"/>
+  <object name="" type="triangulus" x="1716" y="500" width="259" height="178"/>
+  <object name="" type="triangulus" x="1758" y="737" width="397" height="285"/>
+  <object name="" type="triangulus" x="2129" y="460" width="198" height="194"/>
+  <object name="" type="triangulus" x="2378" y="347" width="211" height="156"/>
   <object name="" type="possibleBlackhole" x="1629" y="1637" width="59" height="53"/>
   <object name="" type="possibleBlackhole" x="1708" y="1944" width="59" height="53"/>
   <object name="" type="possibleBlackhole" x="1623" y="2225" width="59" height="53"/>
   <object name="" type="possibleBlackhole" x="1244" y="2533" width="59" height="53"/>
-  <object name="" type="possibleBlackhole" x="755" y="2609" width="59" height="53"/>
-  <object name="" type="possibleBlackhole" x="240" y="2423" width="59" height="53"/>
-  <object name="" type="possibleBlackhole" x="243" y="2015" width="59" height="53"/>
-  <object name="" type="possibleBlackhole" x="183" y="1593" width="59" height="53"/>
-  <object name="" type="possibleBlackhole" x="979" y="1539" width="59" height="53"/>
-  <object name="" type="possibleBlackhole" x="475" y="1689" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="668" y="2527" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="373" y="2405" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="400" y="2048" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="311" y="1758" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="1059" y="1652" width="59" height="53"/>
+  <object name="" type="possibleBlackhole" x="596" y="1726" width="59" height="53"/>
   <object name="BIG BOSS ALERT" type="boss" x="878" y="1994" width="302" height="274"/>
  </objectgroup>
 </map>

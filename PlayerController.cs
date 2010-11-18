@@ -27,7 +27,7 @@ namespace Sputnik
 			m_env = env;
         }
 
-		public void GotShotBy(Ship s, Ship f) 
+		public void GotShotBy(Ship s, GameEntity f) 
 		{
  			// Players dont do anything special when shot;
 		}

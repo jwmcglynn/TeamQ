@@ -15,12 +15,13 @@ namespace Sputnik {
         Vector2 start, finish;
         public GameEnvironment env;
         Vector2 positionHit;
-        Ship target, shotMe;
+        GameEntity target;
+		GameEntity shotMe;
         enum State { Allied, Neutral, Alert, Hostile, Confused};
         State nextState;
 		float startingAngle; //Used for confused
 		bool startedRotation;
-		Ship lookingFor;
+		GameEntity lookingFor;
 
         /// <summary>
         ///  Creates a new AI with given start and finish positions of patrol path and given environment
@@ -76,7 +77,8 @@ namespace Sputnik {
                 destination = finish;
             float wantedDirection = Angle.Direction(s.Position, destination);
 
-            if (Vector2.Distance(s.Position, destination) < s.maxSpeed/2 * elapsedTime) //This number needs tweaking, 0 does not work
+            if (Vector2.Distance(s.Position, destination) < s.maxSpeed * elapsedTime) //I Want this number to be speed per frame
+																		
             {
                 goingStart = !goingStart;
                 s.DesiredVelocity = Vector2.Zero;
@@ -84,7 +86,7 @@ namespace Sputnik {
 			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < 0.01)
 			{
 				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed;
-				s.DesiredRotation = wantedDirection;
+				//s.DesiredRotation = wantedDirection;
 			}
             else
             {
@@ -247,7 +249,7 @@ namespace Sputnik {
 			}
         }
 
-		public void GotShotBy(Ship s, Ship f)
+		public void GotShotBy(Ship s, GameEntity f)
 		{
 			if (CanSee(s, f))
 			{

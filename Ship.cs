@@ -88,7 +88,7 @@ namespace Sputnik
 			if (entB is Bullet)
 			{
 				//Horrible Casting makes me sad.
-				ai.GotShotBy(this, (Ship)((Bullet)entB).owner);
+				ai.GotShotBy(this, (GameEntity)((Bullet)entB).owner);
 			}
 			base.OnCollide(entB, contact);
 		}
