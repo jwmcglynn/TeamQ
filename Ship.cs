@@ -83,6 +83,16 @@ namespace Sputnik
 			return !(entB is Ship) || (entB is SputnikShip);
 		}
 
+		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+		{
+			if (entB is Bullet)
+			{
+				//Horrible Casting makes me sad.
+				ai.GotShotBy(this, (Ship)((Bullet)entB).owner);
+			}
+			base.OnCollide(entB, contact);
+		}
+
 		public override bool ShouldCull() {
 			if (m_shouldCull) return true;
 

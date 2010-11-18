@@ -27,6 +27,11 @@ namespace Sputnik
 			m_env = env;
         }
 
+		public void GotShotBy(Ship s, Ship f) 
+		{
+ 			// Players dont do anything special when shot;
+		}
+
         /// <summary>
         ///  Updates the State of a ship
         /// </summary>

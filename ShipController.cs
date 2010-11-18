@@ -8,5 +8,6 @@ namespace Sputnik
 	interface ShipController
 	{
 		void Update(Ship s, float elapsedTime);
+		void GotShotBy(Ship s, Ship f);
 	}
 }

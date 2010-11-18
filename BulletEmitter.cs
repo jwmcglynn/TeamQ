@@ -12,7 +12,7 @@ namespace Sputnik
 		public bool ShotByPlayer;
 		private float emitterDistance = 20.0f;
 		Random rand = new Random();
-        public Entity owner;
+        public GameEntity owner;
 
 		public enum BulletStrength {
 			Weak, 
@@ -29,7 +29,7 @@ namespace Sputnik
 
 		private float mediumBulletSpread = 10 * (float) Math.PI / 180;
 
-		public BulletEmitter(GameEnvironment e, Entity s, BulletStrength type, bool playerShotBullet)
+		public BulletEmitter(GameEnvironment e, GameEntity s, BulletStrength type, bool playerShotBullet)
 		{
             owner = s;
 			env = e;

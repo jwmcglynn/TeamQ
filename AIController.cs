@@ -15,10 +15,12 @@ namespace Sputnik {
         Vector2 start, finish;
         public GameEnvironment env;
         Vector2 positionHit;
-        Ship target;
-        enum State { Allied, Neutral, Alert, Hostile};
+        Ship target, shotMe;
+        enum State { Allied, Neutral, Alert, Hostile, Confused};
         State nextState;
-
+		float startingAngle; //Used for confused
+		bool startedRotation;
+		Ship lookingFor;
 
         /// <summary>
         ///  Creates a new AI with given start and finish positions of patrol path and given environment
@@ -30,6 +32,10 @@ namespace Sputnik {
             env = e;
             goingStart = true;
             nextState = State.Neutral;
+			target = null;
+			shotMe = null;
+			startedRotation = false;
+			lookingFor = null;
         }
 
         /// <summary>
@@ -50,11 +56,14 @@ namespace Sputnik {
             { 
                 Alert(s, elapsedTime);
             }
+			else if ((nextState == State.Confused))
+			{
+				Confused(s, elapsedTime);
+			}
             else 
             {
                 Hostile(s, elapsedTime);
             }
-
 			s.shooterRotation = s.Rotation;
         }
 
@@ -72,20 +81,21 @@ namespace Sputnik {
                 goingStart = !goingStart;
                 s.DesiredVelocity = Vector2.Zero;
             }
-            else if (Angle.DistanceMag(wantedDirection, s.Rotation) < s.MaxRotVel * elapsedTime)
-            {
-				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed / 2;
-            }
+			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < 0.01)
+			{
+				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed;
+				s.DesiredRotation = wantedDirection;
+			}
             else
             {
                 s.DesiredVelocity = Vector2.Zero;
 				s.DesiredRotation = wantedDirection;
             }
-            Ship newTarget = SawPlayerShoot(s);
-            if (newTarget != null)
+            if (shotMe != null)
             {
+				target = shotMe;
+				shotMe = null;
                 nextState = State.Alert;
-                target = newTarget;
             }
             else
             {
@@ -112,24 +122,33 @@ namespace Sputnik {
             Vector2 destination = target.Position;
             float wantedDirection = Angle.Direction(s.Position, destination);
 
-            if (Vector2.Distance(s.Position, destination) < 100)
+            if (Vector2.Distance(s.Position, destination) < 200)
             {
                 s.DesiredVelocity = Vector2.Zero;
+				s.DesiredRotation = wantedDirection;
             }
-            else if (Angle.DistanceMag(wantedDirection, s.Rotation) < s.MaxRotVel * elapsedTime)
+			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < 0.01)
             {
 				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed;
+				s.DesiredRotation = wantedDirection;
             }
             else
             {
                 s.DesiredVelocity = Vector2.Zero;
 				s.DesiredRotation = wantedDirection;
             }
-            Ship newTarget = SawPlayerShoot(s);
-            if (newTarget != null)
+            if (shotMe != null)
             {
-                nextState = State.Hostile;
-                target = newTarget;
+				if (shotMe == target)
+				{
+					nextState = State.Hostile;
+					target = shotMe;
+				}
+				else
+				{
+					nextState = State.Alert;
+					target = shotMe;
+				}
             }
             else
             {
@@ -152,13 +171,14 @@ namespace Sputnik {
             Vector2 destination = target.Position;
             float wantedDirection = Angle.Direction(s.Position, destination);
 
-            if (Vector2.Distance(s.Position, destination) < 100)
+            if (Vector2.Distance(s.Position, destination) < 200)
             {
                 s.DesiredVelocity = Vector2.Zero;
             }
-            else if (Angle.DistanceMag(wantedDirection, s.Rotation) < s.MaxRotVel * elapsedTime)
+			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < 0.01)
             {
 				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed;
+				s.DesiredRotation = wantedDirection;
             }
             else
             {
@@ -218,9 +238,63 @@ namespace Sputnik {
 
         public float RayCastHit(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
         {
-            positionHit = fixture.Body.Position;
-            return fraction;
+			if (fixture.Body.IsBullet)
+				return -1;
+			else
+			{
+				positionHit = fixture.Body.Position;
+				return fraction;
+			}
         }
+
+		public void GotShotBy(Ship s, Ship f)
+		{
+			if (CanSee(s, f))
+			{
+				shotMe = f;
+			}
+			else
+			{
+				lookingFor = f;
+				nextState = State.Confused;
+				startingAngle = s.Rotation;
+				startedRotation = true;
+			}
+		}
+
+
+
+		private void Confused(Ship s ,float elapsedTime)
+		{
+			s.DesiredVelocity = Vector2.Zero;
+			if (startedRotation)
+				s.DesiredRotation = s.Rotation + 1.0f;
+			else
+			{
+				//I don't like being unable to say turn right
+				if (Angle.Distance(s.Rotation, startingAngle) < MathHelper.Pi)
+					s.DesiredRotation = s.Rotation + 1.0f;
+				else
+					s.DesiredRotation = startingAngle;
+			}
+			if (CanSee(s,lookingFor))
+			{
+				target = lookingFor;
+				shotMe = null;
+				nextState = State.Alert;
+			}
+			else
+			{
+				if (Angle.DistanceMag(s.Rotation, startingAngle) < 0.01f && !startedRotation)
+				{
+					lookingFor = null;
+					nextState = State.Neutral;
+				}
+				else
+					nextState = State.Confused;
+			}
+			startedRotation = false;
+		}
 
     }
 }
