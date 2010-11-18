@@ -86,7 +86,7 @@ namespace Sputnik {
 			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < 0.01)
 			{
 				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed;
-				//s.DesiredRotation = wantedDirection;
+				s.DesiredRotation = wantedDirection;
 			}
             else
             {
