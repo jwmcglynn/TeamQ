@@ -24,11 +24,12 @@ namespace Sputnik
 
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
+
 			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true;
 
-			Vector2[] temp = { new Vector2(env.ScreenVirtualSize.X - 50, env.ScreenVirtualSize.Y - 50), new Vector2(50f, 50f) };
+			Vector2[] temp = { new Vector2(env.ScreenVirtualSize.X, env.ScreenVirtualSize.Y), new Vector2(0f, env.ScreenVirtualSize.Y), new Vector2(0,0), new Vector2(env.ScreenVirtualSize.X, 0) };
 
 			this.ai = new BossAI(env, this, temp);
 		}
@@ -36,7 +37,6 @@ namespace Sputnik
 		public SaphereBoss(GameEnvironment env, SpawnPoint sp) : base(env, sp)
 		{
 			LoadTexture(env.contentManager, "saphere");
-			//Position = sp.Position;
 
 			this.bm1 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
 			this.bm2 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
@@ -52,7 +52,7 @@ namespace Sputnik
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true;
 
-			Vector2[] temp = {new Vector2(env.ScreenVirtualSize.X - 50, env.ScreenVirtualSize.Y - 50), new Vector2(50f, 50f)};
+			Vector2[] temp = { new Vector2(env.ScreenVirtualSize.X, env.ScreenVirtualSize.Y), new Vector2(0f, env.ScreenVirtualSize.Y), new Vector2(0, 0), new Vector2(env.ScreenVirtualSize.X, 0) };
 
 			this.ai = new BossAI(env, this, temp);
 

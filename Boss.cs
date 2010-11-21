@@ -14,6 +14,7 @@ namespace Sputnik
 		protected BulletEmitter bm1, bm2, bm3;
 		protected BossAI ai;
 		private bool m_shouldCull = false;
+		private bool isSHooting = false;
 		public float maxSpeed = 50.0f;
 		public float maxTurn = 0.025f;
 		private Vector2 
@@ -24,12 +25,10 @@ namespace Sputnik
 
 		public Boss(GameEnvironment env) : base(env)
 		{
-
 		}
 
 		public Boss(GameEnvironment env, SpawnPoint sp) : base(env, sp)
 		{
-			
 		}
 
 		public override void Update(float elapsedTime)

@@ -27,52 +27,15 @@ namespace Sputnik
 		{
 			if (this.index >= points.Length)
 				index = 0;
-			
+
 			float wantedDirection = (float)Math.Atan2(points[index].Y - boss.Position.Y, points[index].X - boss.Position.X);
 			while (wantedDirection < 0)
 				wantedDirection += MathHelper.Pi * 2.0f;
-			while (boss.Rotation < 0)
-				boss.Rotation += MathHelper.Pi * 2.0f;
-			boss.Rotation %= MathHelper.Pi * 2.0f;
-			wantedDirection %= MathHelper.Pi * 2.0f;
 
-			if (Vector2.Distance(boss.Position, points[index]) < boss.maxSpeed * elapsedTime) //This number needs tweaking, 0 does not work
-			{
-				boss.DesiredVelocity = Vector2.Zero;
-			}
-			else if (Math.Abs(wantedDirection - boss.Rotation) < boss.maxTurn)
-			{
-				boss.DesiredVelocity = new Vector2((float)Math.Cos(boss.Rotation) * boss.maxSpeed, (float)Math.Sin(boss.Rotation) * boss.maxSpeed);
-			}
-			else
-			{
-				boss.DesiredVelocity = Vector2.Zero;
-				float counterclockwiseDistance = Math.Abs(wantedDirection - (boss.Rotation + boss.maxTurn) % (MathHelper.Pi * 2));
-				float clockwiseDistance = Math.Abs(wantedDirection - (boss.Rotation - boss.maxTurn + MathHelper.Pi * 2) % (MathHelper.Pi * 2));
-				if (counterclockwiseDistance < clockwiseDistance)
-				{
-					if (counterclockwiseDistance < boss.maxTurn)
-					{
-						boss.Rotation = wantedDirection;
-					}
-					else
-					{
-						boss.Rotation += boss.maxTurn;
-					}
-				}
-				else
-				{
-					if (clockwiseDistance < boss.maxTurn)
-					{
-						boss.Rotation = wantedDirection;
-					}
-					else
-					{
-						boss.Rotation -= boss.maxTurn;
-					}
-				}
-			} 
-			if(boss.Position.X == points[index].X && boss.Position.Y == points[index].Y)
+			boss.DesiredVelocity = new Vector2((float)Math.Cos(wantedDirection) * boss.maxSpeed, (float)Math.Sin(wantedDirection) * boss.maxSpeed);
+
+			Vector2 temp = boss.Position - points[index];
+			if (Math.Abs(temp.X) < 5 && Math.Abs(temp.Y) < 5)
 				index++;
 			boss.Shoot(elapsedTime);
 
