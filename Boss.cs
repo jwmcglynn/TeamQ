@@ -14,21 +14,45 @@ namespace Sputnik
 		protected BulletEmitter bm1, bm2, bm3;
 		protected BossAI ai;
 		private bool m_shouldCull = false;
-		private bool isSHooting = false;
+		protected bool isShooting = false;
 		public float maxSpeed = 50.0f;
 		public float maxTurn = 0.025f;
 		private Vector2 
 			top = new Vector2(0, -75),
 			left = new Vector2(-75, 40), 
 			right = new Vector2(75, 40);
+		protected float shooterRotation = 1.5f;
 
+		Fixture takesDamage, Sensor;
 
 		public Boss(GameEnvironment env) : base(env)
 		{
+			initialize(env);
 		}
 
 		public Boss(GameEnvironment env, SpawnPoint sp) : base(env, sp)
 		{
+			initialize(env);
+		}
+
+		protected virtual void initialize(GameEnvironment env)
+		{
+			this.bm1 = new BulletEmitter(env, this, BulletEmitter.BulletStrength.Medium, false);
+			this.bm2 = new BulletEmitter(env, this, BulletEmitter.BulletStrength.Medium, false);
+			this.bm3 = new BulletEmitter(env, this, BulletEmitter.BulletStrength.Medium, false);
+
+			AddChild(bm1);
+			AddChild(bm2);
+			AddChild(bm3);
+
+			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
+			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
+			
+			takesDamage = AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
+			Sensor = AddCollisionCircle(Texture.Width * 1.5f, Vector2.Zero);
+
+			CollisionBody.LinearDamping = 8.0f;
+			CollisionBody.IgnoreGravity = true;
 		}
 
 		public override void Update(float elapsedTime)
@@ -38,8 +62,19 @@ namespace Sputnik
 			base.Update(elapsedTime);
 
 			bm1.Position = this.Position + top;
+			bm1.Rotation = shooterRotation;
 			bm2.Position = this.Position + right;
+			bm2.Rotation = shooterRotation;
 			bm3.Position = this.Position + left;
+			bm3.Rotation = shooterRotation;
+		}
+
+		public bool Shooting
+		{
+			get
+			{
+				return this.isShooting;
+			}
 		}
 
 		public bool IsFriendly()
@@ -67,8 +102,29 @@ namespace Sputnik
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture)
 		{
-			return (entB is Bullet);
+			return ((fixture == takesDamage) && (entB is Bullet)) || ((entB is SputnikShip) && fixture == Sensor);
 		}
+
+		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+		{
+			base.OnCollide(entB, contact);
+
+			if (entB is SputnikShip)
+			{
+				isShooting = true;
+				shooterRotation = (float)Math.Atan2(entB.Position.Y - this.Position.Y, entB.Position.X - this.Position.X);
+			}
+		}
+
+		public override void OnSeparate(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+		{
+			if (entB is SputnikShip)
+			{
+				isShooting = false;
+			}
+			base.OnSeparate(entB, contact);
+		}
+
 
 		public void TakeHit(int damage)
 		{

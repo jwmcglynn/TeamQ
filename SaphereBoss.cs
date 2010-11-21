@@ -11,51 +11,21 @@ namespace Sputnik
 	{
 		public SaphereBoss(GameEnvironment env) : base(env) 
 		{
-			//LoadTexture(env.contentManager, "saphere");
-			LoadTexture(env.contentManager, "astroid_1");
-
-			this.bm1 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
-			this.bm2 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
-			this.bm3 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
-
-			AddChild(bm1);
-			AddChild(bm2);
-			AddChild(bm3);
-
-			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
-			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
-
-			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
-			CollisionBody.LinearDamping = 8.0f;
-			CollisionBody.IgnoreGravity = true;
-
-			Vector2[] temp = { new Vector2(env.ScreenVirtualSize.X, env.ScreenVirtualSize.Y), new Vector2(0f, env.ScreenVirtualSize.Y), new Vector2(0,0), new Vector2(env.ScreenVirtualSize.X, 0) };
-
-			this.ai = new BossAI(env, this, temp);
 		}
 
 		public SaphereBoss(GameEnvironment env, SpawnPoint sp) : base(env, sp)
 		{
+		}
+
+		protected override void initialize(GameEnvironment env)
+		{
 			LoadTexture(env.contentManager, "saphere");
 
-			this.bm1 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
-			this.bm2 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
-			this.bm3 = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Medium, false);
-
-			AddChild(bm1);
-			AddChild(bm2);
-			AddChild(bm3);
-
-			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
-			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
-			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
-			CollisionBody.LinearDamping = 8.0f;
-			CollisionBody.IgnoreGravity = true;
+			base.initialize(env);
 
 			Vector2[] temp = { new Vector2(env.ScreenVirtualSize.X, env.ScreenVirtualSize.Y), new Vector2(0f, env.ScreenVirtualSize.Y), new Vector2(0, 0), new Vector2(env.ScreenVirtualSize.X, 0) };
 
 			this.ai = new BossAI(env, this, temp);
-
 		}
 
 		public override void Update(float elapsedTime)

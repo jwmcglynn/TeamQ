@@ -37,7 +37,8 @@ namespace Sputnik
 			Vector2 temp = boss.Position - points[index];
 			if (Math.Abs(temp.X) < 5 && Math.Abs(temp.Y) < 5)
 				index++;
-			boss.Shoot(elapsedTime);
+			if(boss.Shooting)
+				boss.Shoot(elapsedTime);
 
 		}
 	}
