@@ -32,5 +32,15 @@ namespace Sputnik
 		{
 			base.Update(elapsedTime);
 		}
+
+		protected override void ShootSpecial(Vector2 position)
+		{
+			useSpecial = false;
+
+			//BlackHole b = new BlackHole(this.env, new SpawnPoint(env.SpawnController, "BossBlackHole", position));
+			//this.env.AddChild(b);
+
+			base.ShootSpecial(position);
+		}
 	}
 }

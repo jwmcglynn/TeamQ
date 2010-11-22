@@ -247,7 +247,7 @@ namespace FarseerPhysics.Dynamics
             Debug.Assert(!IsLocked);
             if (IsLocked)
             {
-                return null;
+				return null;
             }
 
             Body body = new Body(this);

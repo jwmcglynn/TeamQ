@@ -39,6 +39,8 @@ namespace Sputnik
 				index++;
 			if(boss.Shooting)
 				boss.Shoot(elapsedTime);
+			if (boss.Shooting && new Random().Next() % 100 < 5)
+				boss.useSpecial = true;
 
 		}
 	}

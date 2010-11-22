@@ -15,6 +15,7 @@ namespace Sputnik
 		protected BossAI ai;
 		private bool m_shouldCull = false;
 		protected bool isShooting = false;
+		public bool useSpecial = false;
 		public float maxSpeed = 50.0f;
 		public float maxTurn = 0.025f;
 		private Vector2 
@@ -22,8 +23,8 @@ namespace Sputnik
 			left = new Vector2(-75, 40), 
 			right = new Vector2(75, 40);
 		protected float shooterRotation = 1.5f;
-
-		Fixture takesDamage, Sensor;
+		protected GameEnvironment env;
+		Fixture takesDamage, sensor;
 
 		public Boss(GameEnvironment env) : base(env)
 		{
@@ -37,6 +38,7 @@ namespace Sputnik
 
 		protected virtual void initialize(GameEnvironment env)
 		{
+			this.env = env;
 			this.bm1 = new BulletEmitter(env, this, BulletEmitter.BulletStrength.Medium, false);
 			this.bm2 = new BulletEmitter(env, this, BulletEmitter.BulletStrength.Medium, false);
 			this.bm3 = new BulletEmitter(env, this, BulletEmitter.BulletStrength.Medium, false);
@@ -49,7 +51,7 @@ namespace Sputnik
 			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			
 			takesDamage = AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
-			Sensor = AddCollisionCircle(Texture.Width * 1.5f, Vector2.Zero);
+			sensor = AddCollisionCircle(Texture.Width * 1.5f, Vector2.Zero);
 
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true;
@@ -102,7 +104,7 @@ namespace Sputnik
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture)
 		{
-			return ((fixture == takesDamage) && (entB is Bullet)) || ((entB is SputnikShip) && fixture == Sensor);
+			return ((fixture == takesDamage) && (entB is Bullet)) || ((entB is SputnikShip) && fixture == sensor);
 		}
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
@@ -113,6 +115,9 @@ namespace Sputnik
 			{
 				isShooting = true;
 				shooterRotation = (float)Math.Atan2(entB.Position.Y - this.Position.Y, entB.Position.X - this.Position.X);
+
+				if (useSpecial)
+					ShootSpecial(entB.Position);
 			}
 		}
 
@@ -125,6 +130,10 @@ namespace Sputnik
 			base.OnSeparate(entB, contact);
 		}
 
+		protected virtual void ShootSpecial(Vector2 position)
+		{
+
+		}
 
 		public void TakeHit(int damage)
 		{
