@@ -21,11 +21,11 @@ namespace Sputnik
 			
 			this.maxSpeed = 200;
 
-			LoadTexture(env.contentManager, "Sputnik_Old");
-			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
+			LoadTexture(env.contentManager, "Sputnik");
+			Registration = new Vector2(70.0f, 33.0f);
 
 			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
-			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
+			AddCollisionCircle(20.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f; // This value causes a small amount of slowing before stop which looks nice.
 
 			ai = playerAI = new PlayerController(env);

@@ -23,9 +23,9 @@ namespace Sputnik
 
 			m_patrolRect = new Rectangle((int) patrolStart.X, (int) patrolEnd.Y, (int) (patrolEnd.X - patrolStart.X), (int) (patrolEnd.Y - patrolStart.Y));
 
-			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
+			Registration = new Vector2(117.0f, 101.0f);
 			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
-			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
+			AddCollisionCircle(60.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true; // The circloid will not be affected by its own black hole. 
 		}

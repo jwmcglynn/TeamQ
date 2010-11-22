@@ -81,7 +81,7 @@ namespace Sputnik
 		}
 
 		private void Initialize() {
-			LoadTexture(Environment.contentManager, "black_hole_small_old");
+			LoadTexture(Environment.contentManager, "blackhole/blackhole20");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			Zindex = 0.0f;
 

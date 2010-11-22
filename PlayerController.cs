@@ -96,9 +96,8 @@ namespace Sputnik
 			// if a blackhole has already been spawned this way, then the other one will be removed.
 			if(ms.RightButton == ButtonState.Pressed && !specialShot) {
 				if(s is CircloidShip) {
-					BlackHole.RemovePlayerCreatedBlackHoles(m_env);
-					BlackHole bh = new BlackHole(m_env, m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y)));
-					m_env.AddChild(bh);
+					if (m_playerBlackHoles != null) m_playerBlackHoles.Destroy();
+					m_playerBlackHoles = BlackHole.CreatePair(m_env, m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y)));
 				} else if(s is TriangulusShip) {
 					List<Entity> list = VisionHelper.FindAll(m_env, s.Position, s.shooterRotation, MathHelper.ToRadians(20.0f), 500.0f);
 					IOrderedEnumerable<Entity> sortedList = list.OrderBy(ent => Vector2.DistanceSquared(s.Position, ent.Position)); 

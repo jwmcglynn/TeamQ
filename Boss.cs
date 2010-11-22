@@ -49,10 +49,10 @@ namespace Sputnik
 			AddChild(bm2);
 			AddChild(bm3);
 
-			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
+			Registration = new Vector2(465.0f, 465.0f);
 			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			
-			takesDamage = AddCollisionCircle(125.0f, Vector2.Zero);
+			takesDamage = AddCollisionCircle(170.0f, Vector2.Zero);
 			sensor = AddCollisionCircle(Texture.Width * 0.75f, Vector2.Zero);
 			sensor.IsSensor = true;
 

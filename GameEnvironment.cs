@@ -24,7 +24,7 @@ namespace Sputnik {
 		public SpawnController SpawnController { get; private set; }
 
 		// Camera.
-		public static Vector2 k_maxVirtualSize { get { return new Vector2(1680, 1050); } }
+		public static Vector2 k_maxVirtualSize { get { return new Vector2(1680, 1050) * 1.25f; } }
 		public Vector2 ScreenVirtualSize = new Vector2(1680, 1050);
 		public Camera2D Camera;
 
@@ -50,6 +50,10 @@ namespace Sputnik {
 		public BlackHolePhysicsController BlackHoleController;
 		public List<SpawnPoint> PossibleBlackHoleLocations = new List<SpawnPoint>();
 		public List<SpawnPoint> SpawnedBlackHoles = new List<SpawnPoint>();
+
+		// TEMP: Level scale.
+		public const float k_levelScale = 2.0f;
+
 
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {
@@ -126,7 +130,8 @@ namespace Sputnik {
 			DestroyCollisionBody();
 			CreateCollisionBody(CollisionWorld, Physics.Dynamics.BodyType.Static);
 
-			Vector2 tileHalfSize = new Vector2(m_map.TileWidth, m_map.TileHeight) / 2;
+			Vector2 tileHalfSize = new Vector2(m_map.TileWidth, m_map.TileHeight) / 2 * k_levelScale;
+			Vector2 tileSize = new Vector2(m_map.TileWidth, m_map.TileHeight) * k_levelScale;
 
 			foreach (Tiled.Layer layer in m_map.Layers.Values) {
 				for (int x = 0; x < layer.Width; ++x)
@@ -137,7 +142,7 @@ namespace Sputnik {
 						case Tile.AsteroidWall:
 						case Tile.GreyBlock:
 							// Create collision.
-							AddCollisionRectangle(tileHalfSize, new Vector2(m_map.TileWidth * x, m_map.TileHeight * y) + tileHalfSize);
+							AddCollisionRectangle(tileHalfSize, new Vector2(tileSize.X * x, tileSize.Y * y) + tileHalfSize);
 							break;
 					}
 				}
@@ -203,8 +208,10 @@ namespace Sputnik {
 		public override void Draw() {
 			// Draw map.
 			if (m_map != null) {
-				m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
+				m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Matrix.CreateScale(k_levelScale) * Camera.Transform);
+				Camera.Position /= k_levelScale;
 				m_map.Draw(m_spriteBatch, Camera.Rect);
+				Camera.Position *= k_levelScale;
 				m_spriteBatch.End();
 			}
 
