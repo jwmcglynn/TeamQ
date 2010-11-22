@@ -13,8 +13,8 @@ using ProjectMercury.Emitters;
 using ProjectMercury.Modifiers;
 using ProjectMercury.Renderers;
 using System.IO;
-
 using FarseerPhysics.Controllers;
+
 
 namespace Sputnik {
 	public class GameEnvironment : Environment {
@@ -53,6 +53,12 @@ namespace Sputnik {
 
 		// TEMP: Level scale.
 		public const float k_levelScale = 2.0f;
+
+		//Shiplists
+		internal List<SquaretopiaShip> squares = new List<SquaretopiaShip>();
+		internal List<TriangulusShip> triangles = new List<TriangulusShip>();
+		internal List<CircloidShip> circles = new List<CircloidShip>();
+		internal SputnikShip sputnik = null;
 
 
 		public GameEnvironment(Controller ctrl)

@@ -18,6 +18,7 @@ namespace Sputnik
 			: base(env, pos)
 		{
 			Initialize(patrolStart, patrolEnd);
+			env.triangles.Add(this);
 		}
 
 		private void Initialize(Vector2 patrolStart, Vector2 patrolEnd) {
@@ -67,6 +68,12 @@ namespace Sputnik
 		public bool IsFrozen()
 		{
 			return isFrozen;
+		}
+
+		public override void OnCull()
+		{
+			Environment.triangles.Remove(this);
+			base.OnCull();
 		}
 	}
 }

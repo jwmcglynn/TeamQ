@@ -17,6 +17,9 @@ namespace Sputnik
 
 		public SputnikShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {
+					
+			env.sputnik = this;
+			Zindex = 0.0f;
 			Position = sp.Position;
 			
 			this.maxSpeed = 200;
@@ -115,5 +118,12 @@ namespace Sputnik
 			}
 			base.OnCollide(entB, contact);
         }
+
+		public override void OnCull()
+		{
+			Environment.sputnik = null;
+			base.OnCull();
+		}
+
 	}
 }

@@ -13,6 +13,7 @@ namespace Sputnik
 			: base(env, pos)
 		{
 			Initialize(patrolStart, patrolEnd);
+			env.circles.Add(this);
 		}
 
 		private void Initialize(Vector2 patrolStart, Vector2 patrolEnd) {
@@ -34,6 +35,12 @@ namespace Sputnik
 				: base(env, sp) {
 			Position = sp.Position;
 			Initialize(sp.TopLeft, sp.BottomRight); // FIXME: Find a better way to get positions.
+		}
+
+		public override void OnCull()
+		{
+			Environment.circles.Remove(this);
+			base.OnCull();
 		}
 	}
 }

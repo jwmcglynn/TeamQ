@@ -19,7 +19,6 @@ namespace Sputnik
 		public float shooterRotation;
 		protected BulletEmitter shooter = null;
 		protected Ship attachedShip = null;
-
 		public float maxSpeed = 200.0f;
 
 		protected Rectangle m_patrolRect;
@@ -83,8 +82,11 @@ namespace Sputnik
 		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
+			/*This results in silliness, we collide all the time now
 			if (fixture.IsSensor || entBFixture.IsSensor) return true;
 			return !(entB is Ship) || (entB is SputnikShip);
+			 */
+			return true;
 		}
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
