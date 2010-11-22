@@ -42,7 +42,8 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
-			ai.Update(this, elapsedTime);
+			if(!(this is SputnikShip))
+				ai.Update(this, elapsedTime);
 
 			if (shooter != null)
 			{

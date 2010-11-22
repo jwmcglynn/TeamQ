@@ -10,6 +10,7 @@ namespace Sputnik
 	class SputnikShip : Ship
 	{
 		public bool attached = false;
+		public bool attaching = false;
 		private Ship controlled = null;
 		private Ship recentlyControlled = null;
 
@@ -37,17 +38,25 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
+			ai.Update(this, elapsedTime);
+			
 			if ((controlled == null || controlled.health == 0) && attached)
 			{
 				Detatch();
 			}
-			else if (attached && controlled != null)
+			
+			if (attached && controlled != null)
 			{
-				this.Position = this.controlled.Position;
-				this.Rotation = this.controlled.Rotation;
+				if(Vector2.Distance(this.Position, this.controlled.Position) < (this.maxSpeed * 3) * elapsedTime || !attaching)
+				{
+					attaching = false;
+					this.Rotation = this.controlled.Rotation;
+					this.Position = this.controlled.Position;
+				} else {
+					this.DesiredRotation = Angle.Direction(this.Position, this.controlled.Position);
+					this.DesiredVelocity = Angle.Vector(this.DesiredRotation) * this.maxSpeed * 3;
+				}
 			}
-			else
-				ai.Update(this, elapsedTime);
 			base.Update(elapsedTime);
 		}
 
@@ -102,6 +111,7 @@ namespace Sputnik
 			if (entB is Ship && !attached && entB != recentlyControlled)
 			{
 				this.attached = true;
+				this.attaching = true;
 				((Ship)entB).Attach(this);
 				controlled = (Ship)entB;
 			}
