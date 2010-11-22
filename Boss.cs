@@ -121,8 +121,7 @@ namespace Sputnik
 				isShooting = true;
 				shooterRotation = (float)Math.Atan2(entB.Position.Y - this.Position.Y, entB.Position.X - this.Position.X);
 
-				if (useSpecial)
-					target = entB.Position;
+				target = entB.Position;
 			}
 		}
 

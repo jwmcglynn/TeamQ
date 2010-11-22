@@ -9,6 +9,8 @@ namespace Sputnik
 {
 	class SaphereBoss : Boss
 	{
+		private BlackHole.Pair m_blackHolePair;
+
 		public SaphereBoss(GameEnvironment env) : base(env) 
 		{
 		}
@@ -28,6 +30,11 @@ namespace Sputnik
 			this.ai = new BossAI(env, this, temp);
 		}
 
+		public override void Dispose() {
+			if (m_blackHolePair != null) m_blackHolePair.Destroy();
+			base.Dispose();
+		}
+
 		public override void Update(float elapsedTime)
 		{
 			base.Update(elapsedTime);
@@ -37,8 +44,8 @@ namespace Sputnik
 		{
 			useSpecial = false;
 
-			BlackHole b = new BlackHole(this.env, position);
-			this.env.AddChild(b);
+			if (m_blackHolePair != null) m_blackHolePair.Destroy();
+			m_blackHolePair = BlackHole.CreatePair(this.env, position);
 
 			base.ShootSpecial(position);
 		}

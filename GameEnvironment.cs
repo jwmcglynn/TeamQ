@@ -39,7 +39,6 @@ namespace Sputnik {
 
 		// Physics.
 		private Physics.DebugViewXNA m_debugView;
-		public Physics.Dynamics.World CollisionWorld = new Physics.Dynamics.World(Vector2.Zero);
 
 		public static float k_physicsScale = 1.0f / 50.0f; // 50 pixels = 1 meter.
 		public static float k_invPhysicsScale = 50.0f; // ^ must be inverse.
@@ -51,10 +50,11 @@ namespace Sputnik {
 		public BlackHolePhysicsController BlackHoleController;
 		public List<SpawnPoint> PossibleBlackHoleLocations = new List<SpawnPoint>();
 		public List<SpawnPoint> SpawnedBlackHoles = new List<SpawnPoint>();
-		public List<SpawnPoint> PlayerCreatedBlackHoles = new List<SpawnPoint>();
 
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {
+			
+			CollisionWorld = new Physics.Dynamics.World(Vector2.Zero);
 
 			Controller.Window.ClientSizeChanged += WindowSizeChanged;
 			Camera = new Camera2D(this);

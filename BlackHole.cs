@@ -9,30 +9,67 @@ namespace Sputnik
 {
 	class BlackHole : GameEntity
 	{
-		SpawnPoint wormHole;
+		public class Pair {
+			private GameEnvironment Environment;
+			public SpawnPoint First;
+			public SpawnPoint Second;
 
-		bool didTeleport = false;
-		
-		public BlackHole(GameEnvironment e, Vector2 pos)
-				: base(e)
-		{
-			SpawnPoint = new SpawnPoint(e.SpawnController, "blackhole", pos);
-			Environment.SpawnedBlackHoles.Add(SpawnPoint);
-			Environment.PlayerCreatedBlackHoles.Add(SpawnPoint);
-			SpawnPoint.Entity = this;
-			SpawnPoint.Name = "__player_created__";
+			internal Pair(GameEnvironment _env, SpawnPoint _first, SpawnPoint _second) {
+				Environment = _env;
+				First = _first;
+				Second = _second;
+			}
 
-			Position = pos;
-			Initialize();
+			public SpawnPoint Other(SpawnPoint current) {
+				if (current == First) return Second;
+				else return First;
+			}
+
+			public void Destroy() {
+				if (First.Entity != null) First.Entity.Dispose();
+				First.HasBeenOffscreen = true;
+				First.Properties.Remove("active");
+
+				Environment.SpawnedBlackHoles.Remove(First);
+				Environment.SpawnController.SpawnPoints.Remove(First);
+
+				///
+
+				if (Second.Entity != null) Second.Entity.Dispose();
+				Second.HasBeenOffscreen = true;
+				Second.Properties.Remove("active");
+
+				Environment.SpawnedBlackHoles.Remove(Second);
+				Environment.SpawnController.SpawnPoints.Remove(Second);
+			}
+		}
+
+		private static int s_uniqueId = 1;
+
+		public static Pair CreatePair(GameEnvironment env, Vector2 pos) {
+			SpawnPoint sp = new SpawnPoint(env.SpawnController, "blackhole", pos);
+			env.SpawnedBlackHoles.Add(sp);
+			sp.Name = "__blackhole_" + s_uniqueId;
+			++s_uniqueId;
 
 			// Create wormhole.
 			Random rand = new Random();
-			wormHole = Environment.PossibleBlackHoleLocations[rand.Next(0, Environment.PossibleBlackHoleLocations.Count)];
-			wormHole.Name = "__player_created__";
-			Environment.SpawnedBlackHoles.Add(wormHole);
-			Environment.PlayerCreatedBlackHoles.Add(wormHole);
-			Environment.SpawnController.SpawnPoints.Add(wormHole);
+			List<SpawnPoint> locs = env.PossibleBlackHoleLocations.FindAll(x => !x.Properties.ContainsKey("active"));
+
+			SpawnPoint wormHole = locs[rand.Next(0, locs.Count)];
+			wormHole.Properties.Add("active", "true");
+			if (wormHole.AllowRespawn)
+			wormHole.Name = sp.Name;
+			env.SpawnedBlackHoles.Add(wormHole);
+			env.SpawnController.SpawnPoints.Add(wormHole);
+
+			sp.Spawn();
+			return new Pair(env, sp, wormHole);
 		}
+
+		///
+
+		SpawnPoint wormHole;
 
 		public BlackHole(GameEnvironment e, SpawnPoint sp)
 				: base(e, sp) {
@@ -53,17 +90,6 @@ namespace Sputnik
 			circle.IsSensor = true;
 
 			Environment.BlackHoleController.AddBody(CollisionBody);
-		}
-
-		public static void RemovePlayerCreatedBlackHoles(GameEnvironment env) {
-			env.PlayerCreatedBlackHoles.RemoveAll(sp => {
-				if (sp.Entity != null) sp.Entity.Dispose();
-
-				sp.HasBeenOffscreen = true;
-				env.SpawnedBlackHoles.Remove(sp);
-				env.SpawnController.SpawnPoints.Remove(sp);
-				return true;
-			});
 		}
 
 		public override void Dispose()

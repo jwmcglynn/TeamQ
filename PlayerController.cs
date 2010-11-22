@@ -19,6 +19,8 @@ namespace Sputnik
 		private const float timeBetweenControls = 0.0f;
 		private bool specialShot = true;
 		private float lastSpace = 0.0f;
+		private BlackHole.Pair m_playerBlackHoles;
+
         /// <summary>
         ///  Creates a new Player
         /// </summary>
@@ -93,9 +95,8 @@ namespace Sputnik
 			// Will spawn a blackhole when we first pressdown our right mouse button.
 			// if a blackhole has already been spawned this way, then the other one will be removed.
 			if(ms.RightButton == ButtonState.Pressed && !specialShot) {
-				BlackHole.RemovePlayerCreatedBlackHoles(m_env);
-				BlackHole bh = new BlackHole(m_env, m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y)));
-				m_env.AddChild(bh);
+				if (m_playerBlackHoles != null) m_playerBlackHoles.Destroy();
+				m_playerBlackHoles = BlackHole.CreatePair(m_env, m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y)));
 				specialShot = true;
 			}
 			if(ms.RightButton == ButtonState.Released) {

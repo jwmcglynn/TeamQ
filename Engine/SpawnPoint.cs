@@ -51,7 +51,7 @@ namespace Sputnik {
 		public float RespawnCooldown;
 
 		// Arbitrary data added by level editor to initialize object.
-		public SortedList<string, string> Properties;
+		public SortedList<string, string> Properties = new SortedList<string, string>();
 
 
 		// Current progress on respawn time.

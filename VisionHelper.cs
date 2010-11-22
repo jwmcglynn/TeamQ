@@ -6,16 +6,6 @@ using Microsoft.Xna.Framework;
 
 namespace Sputnik {
 	class VisionHelper {
-		private class Match {
-			public Entity ent;
-			public Vector2 position;
-
-			public Match(Entity _ent, Vector2 _pos) {
-				ent = _ent;
-				position = _pos;
-			}
-		};
-
 		private static List<Entity> QueryAABB(FarseerPhysics.Dynamics.World world, FarseerPhysics.Collision.AABB aabb) {
 			List<Entity> all = new List<Entity>();
 
