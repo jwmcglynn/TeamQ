@@ -90,6 +90,9 @@
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
+    <Reference Include="ProjectMercury">
+      <HintPath>vendor\mercury\X86\ProjectMercury.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
@@ -123,6 +126,7 @@
     <Compile Include="Engine\SpawnController.cs" />
     <Compile Include="Engine\SpawnPoint.cs" />
     <Compile Include="Engine\OldKeyboard.cs" />
+    <Compile Include="Menus\DebugMenu.cs" />
     <Compile Include="Menus\MainMenu.cs" />
     <Compile Include="Menus\Menu.cs" />
     <Compile Include="Menus\TextWidget.cs" />
@@ -147,6 +151,7 @@
     <Compile Include="State.cs" />
     <Compile Include="TestLevelEnvironment.cs" />
     <Compile Include="TriangulusShip.cs" />
+    <Compile Include="VisionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BuildResources\Game.ico" />

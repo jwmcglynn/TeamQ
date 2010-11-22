@@ -26,7 +26,7 @@ namespace Sputnik {
 		public List<Entity> Children = new List<Entity>();
 
 		// Collision.
-		protected Physics.Dynamics.World m_collisionWorld;
+		public Physics.Dynamics.World CollisionWorld;
 		public Physics.Dynamics.Body CollisionBody;
 		private bool m_applyVelocity = false;
 		public bool VisualRotationOnly = false;
@@ -36,6 +36,10 @@ namespace Sputnik {
 
 		// Sound.
 		public AudioEmitter SoundEmitter;
+
+		// Update helper.
+		public delegate void UpdateTask();
+		public event UpdateTask OnNextUpdate;
 
 		/*************************************************************************/
 		// Entity tree.
@@ -200,7 +204,7 @@ namespace Sputnik {
 		/// <param name="flags">Flags.</param>
 		public void CreateCollisionBody(Physics.Dynamics.World world, Physics.Dynamics.BodyType type, CollisionFlags flags = CollisionFlags.Default) {
 			if (CollisionBody != null) throw new ArgumentException("CreateCollisionBody called on Entity where collision body already exists.");
-			m_collisionWorld = world;
+			CollisionWorld = world;
 
 			Physics.Dynamics.Body body = world.CreateBody();
 			
@@ -221,8 +225,8 @@ namespace Sputnik {
 		public void DestroyCollisionBody() {
 			if (CollisionBody == null) return;
 
-			m_collisionWorld.RemoveBody(CollisionBody);
-			m_collisionWorld = null;
+			CollisionWorld.RemoveBody(CollisionBody);
+			CollisionWorld = null;
 			CollisionBody = null;
 		}
 
@@ -315,6 +319,11 @@ namespace Sputnik {
 		/// </summary>
 		/// <param name="elapsedTime">How much time (in seconds) has passed since the last update?</param>
 		public virtual void Update(float elapsedTime) {
+			if (OnNextUpdate != null) {
+				OnNextUpdate();
+				OnNextUpdate = null;
+			}
+
 			if (m_applyVelocity) {
 				if (CollisionBody == null) {
 					m_position += m_velocity * elapsedTime;

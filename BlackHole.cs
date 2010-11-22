@@ -12,7 +12,6 @@ namespace Sputnik
 		SpawnPoint wormHole;
 
 		bool didTeleport = false;
-		private List<Entity> waitingToTeleport = new List<Entity>();
 		
 		public BlackHole(GameEnvironment e, Vector2 pos)
 				: base(e)
@@ -76,29 +75,20 @@ namespace Sputnik
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
 		{
 			if(entB is SputnikShip || entB is TriangulusShip || entB is Bullet) {
-				if (!didTeleport && entB.TimeSinceTeleport > 0.75f) {
-					waitingToTeleport.Add(entB);
-					entB.TimeSinceTeleport = 0.0f;
+				if (entB.TimeSinceTeleport > 0.75f) {
+					OnNextUpdate += () => {
+						Vector2 dir = Vector2.Normalize(Position - entB.Position);
+						entB.Position = wormHole.Position;
+
+						entB.TimeSinceTeleport = 0.0f;
+						entB.TeleportInertiaDir = dir;
+					};
 				}
 			} else if (entB is TakesDamage) {
 				((TakesDamage) entB).InstaKill();
 			}
 
 			base.OnCollide(entB, contact);
-		}
-
-		public override void Update(float elapsedTime)
-		{
-			waitingToTeleport.RemoveAll((Entity teleportingEntity) => {
-				Vector2 dir = Vector2.Normalize(Position - teleportingEntity.Position);
-				teleportingEntity.Position = wormHole.Position;
-
-				teleportingEntity.TimeSinceTeleport = 0.0f;
-				teleportingEntity.TeleportInertiaDir = dir;
-				return true;
-			});
-			
-			base.Update(elapsedTime);
 		}
 	}
 }

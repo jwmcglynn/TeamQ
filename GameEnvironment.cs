@@ -8,6 +8,10 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Input;
 using Tiled = Squared.Tiled;
+using ProjectMercury;
+using ProjectMercury.Emitters;
+using ProjectMercury.Modifiers;
+using ProjectMercury.Renderers;
 using System.IO;
 
 using FarseerPhysics.Controllers;
@@ -29,6 +33,9 @@ namespace Sputnik {
 		private Tiled.Map m_map;
 
 		private Matrix m_projection;
+
+		// Particles.
+		public SpriteBatchRenderer ParticleRenderer;
 
 		// Physics.
 		private Physics.DebugViewXNA m_debugView;
@@ -55,6 +62,10 @@ namespace Sputnik {
 
 			// Create a new SpriteBatch which can be used to draw textures.
 			m_spriteBatch = new SpriteBatch(ctrl.GraphicsDevice);
+
+			ParticleRenderer = new SpriteBatchRenderer {
+				GraphicsDeviceService = ctrl.Graphics
+			};
 
 			m_debugView = new Physics.DebugViewXNA(CollisionWorld);
 
@@ -173,7 +184,7 @@ namespace Sputnik {
 
 			// Main Menu = F2.
 			if (Keyboard.GetState().IsKeyDown(Keys.F2) && !OldKeyboard.GetState().IsKeyDown(Keys.F2)) {
-				Controller.ChangeEnvironment(new Menus.MainMenu(Controller));
+				Controller.ChangeEnvironment(new Menus.DebugMenu(Controller));
 			}
 
 

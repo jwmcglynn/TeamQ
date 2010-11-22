@@ -19,9 +19,6 @@ namespace Sputnik
 			Position = sp.Position;
 			
 			this.maxSpeed = 200;
-			
-			shooter = new BulletEmitter(env, this,BulletEmitter.BulletStrength.Weak, IsFriendly());
-			AddChild(shooter);
 
 			LoadTexture(env.contentManager, "Sputnik_Old");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;

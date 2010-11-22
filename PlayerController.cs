@@ -101,6 +101,24 @@ namespace Sputnik
 			if(ms.RightButton == ButtonState.Released) {
 				specialShot = false;
 			}
+
+			// Debug test for VisionHelper.
+			if (kb.IsKeyDown(Keys.Q) && !OldKeyboard.GetState().IsKeyDown(Keys.Q)) {
+				List<Entity> list = VisionHelper.FindAll(m_env, s.Position, s.shooterRotation, MathHelper.ToRadians(20.0f), 2000.0f);
+				IOrderedEnumerable<Entity> sortedList = list.OrderBy(ent => Vector2.DistanceSquared(s.Position, ent.Position));
+				
+				try {
+					Entity collided = sortedList.First(ent => {
+						if (ent is Ship && ((Ship) ent).IsFriendly()) return false;
+						if (ent is Environment) return false;
+						return true;
+					});
+
+					collided.Dispose();
+				} catch (InvalidOperationException e) {
+					// Entity not found.
+				}
+			}
 		}
     }
 }

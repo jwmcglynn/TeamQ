@@ -35,6 +35,7 @@ namespace Sputnik
 		public Boss(GameEnvironment env, SpawnPoint sp) : base(env, sp)
 		{
 			initialize(env);
+			Position = sp.Position;
 		}
 
 		protected virtual void initialize(GameEnvironment env)
@@ -51,8 +52,9 @@ namespace Sputnik
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			
-			takesDamage = AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
-			sensor = AddCollisionCircle(Texture.Width * 1.5f, Vector2.Zero);
+			takesDamage = AddCollisionCircle(125.0f, Vector2.Zero);
+			sensor = AddCollisionCircle(Texture.Width * 0.75f, Vector2.Zero);
+			sensor.IsSensor = true;
 
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true;
