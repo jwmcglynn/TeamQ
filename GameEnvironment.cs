@@ -56,6 +56,7 @@ namespace Sputnik {
 
 		//Shiplists
 		internal List<SquaretopiaShip> squares = new List<SquaretopiaShip>();
+		
 		internal List<TriangulusShip> triangles = new List<TriangulusShip>();
 		internal List<CircloidShip> circles = new List<CircloidShip>();
 		internal SputnikShip sputnik = null;
@@ -65,7 +66,6 @@ namespace Sputnik {
 				: base(ctrl) {
 			
 			CollisionWorld = new Physics.Dynamics.World(Vector2.Zero);
-
 			Controller.Window.ClientSizeChanged += WindowSizeChanged;
 			Camera = new Camera2D(this);
 			WindowSizeChanged(null, null);

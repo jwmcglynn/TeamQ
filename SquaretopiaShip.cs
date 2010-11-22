@@ -36,6 +36,7 @@ namespace Sputnik
 				: base(env, sp) {
 			Position = sp.Position;
 			Initialize(sp.TopLeft, sp.BottomRight); // FIXME: Find a better way to get positions.
+			env.squares.Add(this);
 		}
 
 		public void Freeze() {
@@ -54,6 +55,17 @@ namespace Sputnik
 		{
 			Environment.squares.Remove(this);
 			base.OnCull();
+		}
+
+		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+		{
+			if (entB is Bullet)
+			{
+				//Horrible Casting makes me sad.
+				foreach (SquaretopiaShip s in Environment.squares)
+					s.ai.GotShotBy(s, (GameEntity)((Bullet)entB).owner);
+			}
+			base.OnCollide(entB, contact);
 		}
 	}
 }

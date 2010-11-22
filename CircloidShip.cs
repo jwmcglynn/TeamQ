@@ -35,12 +35,24 @@ namespace Sputnik
 				: base(env, sp) {
 			Position = sp.Position;
 			Initialize(sp.TopLeft, sp.BottomRight); // FIXME: Find a better way to get positions.
+			env.circles.Add(this);
 		}
 
 		public override void OnCull()
 		{
 			Environment.circles.Remove(this);
 			base.OnCull();
+		}
+
+		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+		{
+			if (entB is Bullet)
+			{
+				//Horrible Casting makes me sad.
+				foreach (CircloidShip c in Environment.circles)
+					c.ai.GotShotBy(c, (GameEntity)((Bullet)entB).owner);
+			}
+			base.OnCollide(entB, contact);
 		}
 	}
 }

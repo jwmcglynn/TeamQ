@@ -39,14 +39,7 @@ namespace Sputnik
 				: base(env, sp) {
 			Position = sp.Position;
 			Initialize(sp.TopLeft, sp.BottomRight); // FIXME: Find a better way to get positions.
-		}
-
-		public override void OnCollide(Entity entB, Physics.Dynamics.Contacts.Contact contact)
-		{
-			if(contact.FixtureA.IsSensor && (entB is Tractorable)) {
-				
-			}
-			base.OnCollide(entB, contact);
+			env.triangles.Add(this);
 		}
 
 		public override bool ShouldCollide(Entity entB, Fixture fixture, Fixture entBFixture)
@@ -74,6 +67,21 @@ namespace Sputnik
 		{
 			Environment.triangles.Remove(this);
 			base.OnCull();
+		}
+
+		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+		{
+			if (contact.FixtureA.IsSensor && (entB is Tractorable))
+			{
+
+			}
+			else if (entB is Bullet)
+			{
+				//Horrible Casting makes me sad.
+				foreach (TriangulusShip t in Environment.triangles)
+					t.ai.GotShotBy(t, (GameEntity)((Bullet)entB).owner);
+			}
+			base.OnCollide(entB, contact);
 		}
 	}
 }
