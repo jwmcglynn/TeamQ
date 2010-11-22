@@ -45,6 +45,11 @@ namespace Sputnik {
 
         public void Update(Ship s, float elapsedTime)
         {
+			if(s is Freezable) {
+				if(((Freezable)s).IsFrozen()) {
+					return;
+				}
+			}
             if (nextState == State.Allied)
             {
                 //Not implemented

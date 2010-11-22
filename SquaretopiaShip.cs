@@ -7,8 +7,10 @@ using Microsoft.Xna.Framework;
 
 namespace Sputnik
 {
-	class SquaretopiaShip : Ship
+	class SquaretopiaShip : Ship, Freezable
 	{
+		bool isFrozen;
+
 		public SquaretopiaShip(GameEnvironment env, Vector2 pos, Vector2 patrolStart, Vector2 patrolEnd)
 			: base(env, pos)
 		{
@@ -33,6 +35,18 @@ namespace Sputnik
 				: base(env, sp) {
 			Position = sp.Position;
 			Initialize(sp.TopLeft, sp.BottomRight); // FIXME: Find a better way to get positions.
+		}
+
+		public void Freeze() {
+		
+		}
+
+		public void Unfreeze() {
+		
+		}
+
+		public bool IsFrozen() {
+			return isFrozen;
 		}
 	}
 }

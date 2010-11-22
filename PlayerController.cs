@@ -56,7 +56,7 @@ namespace Sputnik
 
 			if (kb.IsKeyDown(Keys.Space) && !OldKeyboard.GetState().IsKeyDown(Keys.Space))
 			{
-				s.Detatch();
+				s.Detach();
 			}
 			
             if (kb.IsKeyDown(Keys.W))
@@ -95,8 +95,24 @@ namespace Sputnik
 			// Will spawn a blackhole when we first pressdown our right mouse button.
 			// if a blackhole has already been spawned this way, then the other one will be removed.
 			if(ms.RightButton == ButtonState.Pressed && !specialShot) {
-				if (m_playerBlackHoles != null) m_playerBlackHoles.Destroy();
-				m_playerBlackHoles = BlackHole.CreatePair(m_env, m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y)));
+				if(s is CircloidShip) {
+					BlackHole.RemovePlayerCreatedBlackHoles(m_env);
+					BlackHole bh = new BlackHole(m_env, m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y)));
+					m_env.AddChild(bh);
+				} else if(s is TriangulusShip) {
+					List<Entity> list = VisionHelper.FindAll(m_env, s.Position, s.shooterRotation, MathHelper.ToRadians(20.0f), 500.0f);
+					IOrderedEnumerable<Entity> sortedList = list.OrderBy(ent => Vector2.DistanceSquared(s.Position, ent.Position)); 
+
+					Entity collided = sortedList.FirstOrDefault(ent =>
+					{
+						if (ent is Ship && ((Ship)ent).IsFriendly()) return false;
+						return (ent is Tractorable);
+					});
+				} else if(s is SquaretopiaShip) {
+					ForceField ff = new ForceField(m_env, s.Position, s.shooterRotation);
+					m_env.AddChild(ff);
+				}
+
 				specialShot = true;
 			}
 			if(ms.RightButton == ButtonState.Released) {
@@ -107,18 +123,14 @@ namespace Sputnik
 			if (kb.IsKeyDown(Keys.Q) && !OldKeyboard.GetState().IsKeyDown(Keys.Q)) {
 				List<Entity> list = VisionHelper.FindAll(m_env, s.Position, s.shooterRotation, MathHelper.ToRadians(20.0f), 2000.0f);
 				IOrderedEnumerable<Entity> sortedList = list.OrderBy(ent => Vector2.DistanceSquared(s.Position, ent.Position));
-				
-				try {
-					Entity collided = sortedList.First(ent => {
-						if (ent is Ship && ((Ship) ent).IsFriendly()) return false;
-						if (ent is Environment) return false;
-						return true;
-					});
 
-					collided.Dispose();
-				} catch (InvalidOperationException e) {
-					// Entity not found.
-				}
+				Entity collided = sortedList.FirstOrDefault(ent => {
+					if (ent is Ship && ((Ship) ent).IsFriendly()) return false;
+					if (ent is Environment) return false;
+					return true;
+				});
+
+				if (collided != null) collided.Dispose();
 			}
 		}
     }

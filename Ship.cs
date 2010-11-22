@@ -18,6 +18,7 @@ namespace Sputnik
 		private bool m_shouldCull = false;
 		public float shooterRotation;
 		protected BulletEmitter shooter = null;
+		protected Ship attachedShip = null;
 
 		public float maxSpeed = 200.0f;
 
@@ -42,8 +43,7 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
-			if(!(this is SputnikShip))
-				ai.Update(this, elapsedTime);
+			if (ai != null) ai.Update(this, elapsedTime);
 
 			if (shooter != null)
 			{
@@ -72,11 +72,14 @@ namespace Sputnik
 		{
 			this.previousAI = this.ai;
 			this.ai = sp.GetAI();
+			this.attachedShip = sp;
 		}
 
-		public virtual void Detatch()
+		public virtual void Detach()
 		{
 			this.ai = this.previousAI;
+			this.attachedShip.Detach();
+			this.attachedShip = null;
 		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {

@@ -127,6 +127,8 @@
     <Compile Include="Engine\SpawnPoint.cs" />
     <Compile Include="Engine\OldKeyboard.cs" />
     <Compile Include="Menus\DebugMenu.cs" />
+    <Compile Include="ForceField.cs" />
+    <Compile Include="Freezable.cs" />
     <Compile Include="Menus\MainMenu.cs" />
     <Compile Include="Menus\Menu.cs" />
     <Compile Include="Menus\TextWidget.cs" />
@@ -149,6 +151,7 @@
     <Compile Include="ShipController.cs" />
     <Compile Include="SpecialAbility.cs" />
     <Compile Include="TestLevelEnvironment.cs" />
+    <Compile Include="Tractorable.cs" />
     <Compile Include="TriangulusShip.cs" />
     <Compile Include="VisionHelper.cs" />
   </ItemGroup>

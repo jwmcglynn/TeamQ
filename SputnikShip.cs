@@ -13,6 +13,7 @@ namespace Sputnik
 		public bool attaching = false;
 		private Ship controlled = null;
 		private Ship recentlyControlled = null;
+		private ShipController playerAI = null;
 
 		public SputnikShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {
@@ -27,7 +28,7 @@ namespace Sputnik
 			AddCollisionCircle(Texture.Width * 0.5f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f; // This value causes a small amount of slowing before stop which looks nice.
 
-			ai = new PlayerController(env);
+			ai = playerAI = new PlayerController(env);
 
 			// Adjust camera.
 			env.Camera.TeleportAndFocus(this);
@@ -35,11 +36,9 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
-			ai.Update(this, elapsedTime);
-			
 			if ((controlled == null || controlled.health == 0) && attached)
 			{
-				Detatch();
+				Detach();
 			}
 			
 			if (attached && controlled != null)
@@ -76,11 +75,12 @@ namespace Sputnik
 			return this.ai;
 		}
 
-		public override void Detatch()
+		public override void Detach()
 		{
 			recentlyControlled = controlled;
 			attached = false;
 			controlled = null;
+			ai = playerAI;
 		}
 
 		public override bool IsFriendly() {
@@ -110,6 +110,7 @@ namespace Sputnik
 				this.attached = true;
 				this.attaching = true;
 				((Ship)entB).Attach(this);
+				this.ai = null;
 				controlled = (Ship)entB;
 			}
 			base.OnCollide(entB, contact);

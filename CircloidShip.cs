@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace Sputnik
 {
-	class CircloidShip : Ship
+	class CircloidShip : Ship, Tractorable
 	{
 		public CircloidShip(GameEnvironment env, Vector2 pos, Vector2 patrolStart, Vector2 patrolEnd) 
 			: base(env, pos)

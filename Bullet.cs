@@ -36,25 +36,6 @@ namespace Sputnik
 			SetPhysicsVelocityOnce(new Vector2(k_speed * (float) Math.Cos(angle), k_speed * (float) Math.Sin(angle)));
 		}
 
-		// 1 is for weak bullet, 3 is for strong bullet.
-		public bool setBulletStrength(int strength) 
-		{
-			if (strength == 1 || strength == 2 || strength == 3)
-			{
-				bulletStrength = strength;
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		public int getBulletStrength()
-		{
-			return bulletStrength;
-		}
-
 		public override void Update(float elapsedTime)
 		{
 			m_lifetime += elapsedTime;
