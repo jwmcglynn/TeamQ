@@ -35,13 +35,13 @@ namespace Sputnik
 			boss.DesiredVelocity = new Vector2((float)Math.Cos(wantedDirection) * boss.maxSpeed, (float)Math.Sin(wantedDirection) * boss.maxSpeed);
 
 			Vector2 temp = boss.Position - points[index];
-			if (Math.Abs(temp.X) < 5 && Math.Abs(temp.Y) < 5)
+			if (Math.Abs(temp.X) < 5 && Math.Abs(temp.Y) < 5)  
 				index++;
 			if(boss.Shooting)
 				boss.Shoot(elapsedTime);
-			if (boss.Shooting && new Random().Next() % 100 < 5)
+			if (boss.Shooting && new Random().Next() % 500 < 2)
 				boss.useSpecial = true;
-
+			
 		}
 	}
 }

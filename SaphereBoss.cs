@@ -37,8 +37,8 @@ namespace Sputnik
 		{
 			useSpecial = false;
 
-			//BlackHole b = new BlackHole(this.env, new SpawnPoint(env.SpawnController, "BossBlackHole", position));
-			//this.env.AddChild(b);
+			BlackHole b = new BlackHole(this.env, position);
+			this.env.AddChild(b);
 
 			base.ShootSpecial(position);
 		}

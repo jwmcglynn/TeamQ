@@ -25,6 +25,7 @@ namespace Sputnik
 		protected float shooterRotation = 1.5f;
 		protected GameEnvironment env;
 		Fixture takesDamage, sensor;
+		protected Vector2 target;
 
 		public Boss(GameEnvironment env) : base(env)
 		{
@@ -59,6 +60,8 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
+			if (useSpecial)
+				ShootSpecial(target);
 			ai.Update(elapsedTime);
 
 			base.Update(elapsedTime);
@@ -117,7 +120,7 @@ namespace Sputnik
 				shooterRotation = (float)Math.Atan2(entB.Position.Y - this.Position.Y, entB.Position.X - this.Position.X);
 
 				if (useSpecial)
-					ShootSpecial(entB.Position);
+					target = entB.Position;
 			}
 		}
 
@@ -132,7 +135,6 @@ namespace Sputnik
 
 		protected virtual void ShootSpecial(Vector2 position)
 		{
-
 		}
 
 		public void TakeHit(int damage)
