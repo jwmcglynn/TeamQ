@@ -17,11 +17,12 @@ namespace Sputnik {
         Vector2 positionHit;
         GameEntity target;
 		GameEntity shotMe;
-        enum State { Allied, Neutral, Alert, Hostile, Confused};
-        State nextState;
+        public enum State{ Allied, Neutral, Alert, Hostile, Confused };
+        State oldState,currentState,nextState;
 		float startingAngle; //Used for confused
 		bool startedRotation;
 		GameEntity lookingFor;
+		Ship currentShip;
 
         /// <summary>
         ///  Creates a new AI with given start and finish positions of patrol path and given environment
@@ -33,10 +34,12 @@ namespace Sputnik {
             env = e;
             goingStart = true;
             nextState = State.Neutral;
+			currentState = State.Neutral;
 			target = null;
 			shotMe = null;
 			startedRotation = false;
 			lookingFor = null;
+			currentShip = null;
         }
 
         /// <summary>
@@ -45,58 +48,60 @@ namespace Sputnik {
 
         public void Update(Ship s, float elapsedTime)
         {
+			currentShip = s;
 			if(s is Freezable) {
 				if(((Freezable)s).IsFrozen()) {
 					return;
 				}
 			}
+			currentState = nextState;
             if (nextState == State.Allied)
             {
                 //Not implemented
             }
             else if((nextState == State.Neutral))
             {
-                Neutral(s, elapsedTime);
+                Neutral(elapsedTime);
             }
             else if ((nextState == State.Alert)) 
             { 
-                Alert(s, elapsedTime);
+                Alert(elapsedTime);
             }
 			else if ((nextState == State.Confused))
 			{
-				Confused(s, elapsedTime);
+				Confused(elapsedTime);
 			}
             else 
             {
-                Hostile(s, elapsedTime);
+                Hostile(elapsedTime);
             }
 			s.shooterRotation = s.Rotation;
         }
 
-        private void Neutral(Ship s, float elapsedTime)
+        private void Neutral(float elapsedTime)
         {
             Vector2 destination;
             if (goingStart)
                 destination = start;
             else
                 destination = finish;
-            float wantedDirection = Angle.Direction(s.Position, destination);
+            float wantedDirection = Angle.Direction(currentShip.Position, destination);
 
-            if (Vector2.Distance(s.Position, destination) < s.maxSpeed * elapsedTime) //I Want this number to be speed per frame
+            if (Vector2.Distance(currentShip.Position, destination) < currentShip.maxSpeed * elapsedTime) //I Want this number to be speed per frame
 																		
             {
                 goingStart = !goingStart;
-                s.DesiredVelocity = Vector2.Zero;
+                currentShip.DesiredVelocity = Vector2.Zero;
             }
-			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < s.MaxRotVel * elapsedTime)
+			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime)
 			{
-				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed;
-				s.DesiredRotation = wantedDirection;
+				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
+				currentShip.DesiredRotation = wantedDirection;
 			}
             else
             {
                 //s.DesiredVelocity = Vector2.Zero;
-				s.DesiredRotation = wantedDirection;
+				currentShip.DesiredRotation = wantedDirection;
             }
             if (shotMe != null)
             {
@@ -124,25 +129,25 @@ namespace Sputnik {
             return null;
         }
 
-        private void Alert(Ship s, float elapsedTime)
+        private void Alert(float elapsedTime)
         {
             Vector2 destination = target.Position;
-            float wantedDirection = Angle.Direction(s.Position, destination);
+            float wantedDirection = Angle.Direction(currentShip.Position, destination);
 
-            if (Vector2.Distance(s.Position, destination) < 200)
+            if (Vector2.Distance(currentShip.Position, destination) < 200)
             {
-                s.DesiredVelocity = Vector2.Zero;
-				s.DesiredRotation = wantedDirection;
+                currentShip.DesiredVelocity = Vector2.Zero;
+				currentShip.DesiredRotation = wantedDirection;
             }
-			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < s.MaxRotVel * elapsedTime)
+			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime)
             {
-				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed;
-				s.DesiredRotation = wantedDirection;
+				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
+				currentShip.DesiredRotation = wantedDirection;
             }
             else
             {
-                s.DesiredVelocity = Vector2.Zero;
-				s.DesiredRotation = wantedDirection;
+                currentShip.DesiredVelocity = Vector2.Zero;
+				currentShip.DesiredRotation = wantedDirection;
             }
             if (shotMe != null)
             {
@@ -173,27 +178,27 @@ namespace Sputnik {
             return null;
         }
 
-        private void Hostile(Ship s, float elapsedTime)
+        private void Hostile(float elapsedTime)
         {
             Vector2 destination = target.Position;
-            float wantedDirection = Angle.Direction(s.Position, destination);
+            float wantedDirection = Angle.Direction(currentShip.Position, destination);
 
-            if (Vector2.Distance(s.Position, destination) < 200)
+            if (Vector2.Distance(currentShip.Position, destination) < 200)
             {
-                s.DesiredVelocity = Vector2.Zero;
+                currentShip.DesiredVelocity = Vector2.Zero;
             }
-			else if (Angle.DistanceMag(s.Rotation, wantedDirection) < s.MaxRotVel * elapsedTime)
+			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime)
             {
-				s.DesiredVelocity = Angle.Vector(wantedDirection) * s.maxSpeed;
-				s.DesiredRotation = wantedDirection;
+				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
+				currentShip.DesiredRotation = wantedDirection;
             }
             else
             {
-                s.DesiredVelocity = Vector2.Zero;
-				s.DesiredRotation = wantedDirection;
+                currentShip.DesiredVelocity = Vector2.Zero;
+				currentShip.DesiredRotation = wantedDirection;
             }
-            if(CanSee(s,target))
-                s.Shoot(elapsedTime);
+            if(CanSee(currentShip,target))
+                currentShip.Shoot(elapsedTime);
             //Did i Kill the target
             if (target.ShouldCull())
             {
@@ -210,7 +215,7 @@ namespace Sputnik {
         /// </summary>
         private bool CanSee(Entity s, Entity f)
         {
-            float theta = Angle.Direction(s.Position, f.Position);
+            
             //TODO Im not quite sure why, but sometimes ships try to see null collisionbodys
             if (s.CollisionBody == null || f.CollisionBody == null)
             {
@@ -221,21 +226,11 @@ namespace Sputnik {
                 //This case would only occur if the ai for the player controlled ship tries to see things.
                 return false;
             }
+			float theta = Angle.Direction(s.Position, f.Position);
 			if (Angle.DistanceMag(theta, s.Rotation) < (MathHelper.ToRadians(20)))
             {
-                
-
-                //Why do I have to use the collision Body's Position.  Does it relate to our relative positions?
-                //env.CollisionWorld.RayCast(RayCastHit, s.Position, f.Position);
                 env.CollisionWorld.RayCast(RayCastHit, s.CollisionBody.Position, f.CollisionBody.Position);
-                if (positionHit.Equals(f.CollisionBody.Position))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+				return (positionHit.Equals(f.CollisionBody.Position));
             }
             else
             {
@@ -245,7 +240,11 @@ namespace Sputnik {
 
         public float RayCastHit(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
         {
-			if (fixture.Body.IsBullet)
+			//Faction ships can see through their own faction, unless we happen to be looking at our target
+			if (currentShip.GetType() == fixture.Body.UserData.GetType() && fixture.Body.UserData != lookingFor)
+				return -1;
+			//Ignore Bullets
+			else if (fixture.Body.IsBullet)
 				return -1;
 			else
 			{
@@ -256,35 +255,39 @@ namespace Sputnik {
 
 		public void GotShotBy(Ship s, GameEntity f)
 		{
+			lookingFor = f;
 			if (CanSee(s, f))
 			{
 				shotMe = f;
 			}
 			else
 			{
-				lookingFor = f;
-				nextState = State.Confused;
-				startingAngle = s.Rotation;
-				startedRotation = true;
+				if (currentState != State.Confused && currentState != State.Hostile)
+				{
+					oldState = currentState;
+					nextState = State.Confused;
+					startingAngle = s.Rotation;
+					startedRotation = true;
+				}
 			}
 		}
 
 
 
-		private void Confused(Ship s ,float elapsedTime)
+		private void Confused(float elapsedTime)
 		{
-			s.DesiredVelocity = Vector2.Zero;
+			currentShip.DesiredVelocity = Vector2.Zero;
 			if (startedRotation)
-				s.DesiredRotation = s.Rotation + 1.0f;
+				currentShip.DesiredRotation = currentShip.Rotation + 1.0f;
 			else
 			{
 				//I don't like being unable to say turn right
-				if (Angle.Distance(s.Rotation, startingAngle) < MathHelper.Pi)
-					s.DesiredRotation = s.Rotation + 1.0f;
+				if (Angle.Distance(currentShip.Rotation, startingAngle) < MathHelper.Pi)
+					currentShip.DesiredRotation = currentShip.Rotation + 1.0f;
 				else
-					s.DesiredRotation = startingAngle;
+					currentShip.DesiredRotation = startingAngle;
 			}
-			if (CanSee(s,lookingFor))
+			if (CanSee(currentShip,lookingFor))
 			{
 				target = lookingFor;
 				shotMe = null;
@@ -292,10 +295,10 @@ namespace Sputnik {
 			}
 			else
 			{
-				if (Angle.DistanceMag(s.Rotation, startingAngle) < 0.01f && !startedRotation)
+				if (Angle.DistanceMag(currentShip.Rotation, startingAngle) < 0.03f && !startedRotation) // Find a good value for this
 				{
 					lookingFor = null;
-					nextState = State.Neutral;
+					nextState = oldState;
 				}
 				else
 					nextState = State.Confused;

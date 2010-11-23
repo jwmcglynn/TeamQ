@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
-using Physics = FarseerPhysics;
 using FarseerPhysics.Common;
+using FarseerPhysics.Collision.Shapes;
 
 namespace Sputnik
 {
@@ -33,6 +33,14 @@ namespace Sputnik
 			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(40.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
+			/*
+			List<Vector2> vertices = new List<Vector2>();
+			vertices.Add(new Vector2(0, 0));
+			vertices.Add(new Vector2(20, -(float)(Math.Tan(MathHelper.ToRadians(20)) * 20)));
+			vertices.Add(new Vector2(20, (float)(Math.Tan(MathHelper.ToRadians(20)) * 20)));
+			Fixture sensor = CollisionBody.CreateFixture(new PolygonShape(new Vertices(vertices)), 0);
+			sensor.IsSensor = true;
+			 */
 		}
 
 		public TriangulusShip(GameEnvironment env, SpawnPoint sp)
