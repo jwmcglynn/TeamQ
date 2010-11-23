@@ -34,6 +34,16 @@ namespace Sputnik
  			// Players dont do anything special when shot;
 		}
 
+		public bool Turning()
+		{
+			return false;
+			// Who cares
+		}
+
+		public void HitWall()
+		{
+			//Players dont care if they hit the wall
+		}
         /// <summary>
         ///  Updates the State of a ship
         /// </summary>

@@ -23,6 +23,7 @@ namespace Sputnik {
 		bool startedRotation;
 		GameEntity lookingFor;
 		Ship currentShip;
+		bool turning;
 
         /// <summary>
         ///  Creates a new AI with given start and finish positions of patrol path and given environment
@@ -40,6 +41,7 @@ namespace Sputnik {
 			startedRotation = false;
 			lookingFor = null;
 			currentShip = null;
+			turning = false;
         }
 
         /// <summary>
@@ -87,21 +89,23 @@ namespace Sputnik {
                 destination = finish;
             float wantedDirection = Angle.Direction(currentShip.Position, destination);
 
-            if (Vector2.Distance(currentShip.Position, destination) < currentShip.maxSpeed * elapsedTime) //I Want this number to be speed per frame
-																		
+            if (Vector2.Distance(currentShip.Position, destination) < currentShip.maxSpeed * elapsedTime) //I Want this number to be speed per frame																	
             {
                 goingStart = !goingStart;
                 currentShip.DesiredVelocity = Vector2.Zero;
+				turning = true; 
             }
 			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime)
 			{
 				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
 				currentShip.DesiredRotation = wantedDirection;
+				turning = false; 
 			}
             else
             {
-                //s.DesiredVelocity = Vector2.Zero;
+                currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection;
+				turning = true;
             }
             if (shotMe != null)
             {
@@ -129,6 +133,10 @@ namespace Sputnik {
             return null;
         }
 
+		public bool Turning()
+		{
+			return turning;
+		}
         private void Alert(float elapsedTime)
         {
             Vector2 destination = target.Position;
@@ -138,16 +146,19 @@ namespace Sputnik {
             {
                 currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection;
+				turning = false;
             }
 			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime)
             {
 				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
 				currentShip.DesiredRotation = wantedDirection;
+				turning = false;
             }
             else
             {
                 currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection;
+				turning = true;
             }
             if (shotMe != null)
             {
@@ -186,16 +197,20 @@ namespace Sputnik {
             if (Vector2.Distance(currentShip.Position, destination) < 200)
             {
                 currentShip.DesiredVelocity = Vector2.Zero;
+				currentShip.DesiredRotation = wantedDirection;
+				turning = true;
             }
 			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime)
             {
 				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
 				currentShip.DesiredRotation = wantedDirection;
+				turning = false;
             }
             else
             {
                 currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection;
+				turning = true;
             }
             if(CanSee(currentShip,target))
                 currentShip.Shoot(elapsedTime);
@@ -272,16 +287,12 @@ namespace Sputnik {
 			}
 		}
 
-		//If I ever figure out how to tell if I hit a wall, cant use past position
-		//Turning around in circles, past position == current position
-		public void hitWall()
+		public void HitWall()
 		{
 			if (currentState == State.Neutral)
 			{
-				if (goingStart)
-					start = currentShip.Position;
-				else
-					finish = currentShip.Position;
+				//This works as long as both the start and finish position aren't on the other side of the wall
+				goingStart = !goingStart;
 			}
 			else
 			{
@@ -293,6 +304,7 @@ namespace Sputnik {
 		private void Confused(float elapsedTime)
 		{
 			currentShip.DesiredVelocity = Vector2.Zero;
+			turning = true;
 			if (startedRotation)
 				currentShip.DesiredRotation = currentShip.Rotation + 1.0f;
 			else
