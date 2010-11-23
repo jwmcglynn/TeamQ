@@ -272,7 +272,23 @@ namespace Sputnik {
 			}
 		}
 
-
+		//If I ever figure out how to tell if I hit a wall, cant use past position
+		//Turning around in circles, past position == current position
+		public void hitWall()
+		{
+			if (currentState == State.Neutral)
+			{
+				if (goingStart)
+					start = currentShip.Position;
+				else
+					finish = currentShip.Position;
+			}
+			else
+			{
+				//There is no pathfinding, might as well give up
+				nextState = State.Neutral;
+			}
+		}
 
 		private void Confused(float elapsedTime)
 		{
