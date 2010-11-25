@@ -20,7 +20,8 @@ namespace Sputnik
 		public GymEnvironment(Controller ctrl)
 			: base(ctrl)
 		{
-			for (int i = 0; i < 20; i++)
+			//Dont do this anymore, we use the testLevel more anyways
+			/*for (int i = 0; i < 20; i++)
 			{
 				Ship s = new CircloidShip(
 					this, randomPosition(), randomPosition(), randomPosition()
@@ -28,7 +29,7 @@ namespace Sputnik
 
 				AddChild(s);
 			}
-
+			*/
 			Entity e = new SaphereBoss(this);
 			AddChild(e);
 

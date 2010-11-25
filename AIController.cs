@@ -11,6 +11,7 @@ using System.IO;
 namespace Sputnik {
     class AIController : ShipController
     {
+		SpawnPoint spawn;
         bool goingStart;
         Vector2 start, finish;
         public GameEnvironment env;
@@ -28,10 +29,11 @@ namespace Sputnik {
         /// <summary>
         ///  Creates a new AI with given start and finish positions of patrol path and given environment
         /// </summary>
-        public AIController(Vector2 s, Vector2 f, GameEnvironment e)
+        public AIController(SpawnPoint sp, GameEnvironment e)
         {
-            start = s;
-            finish = f;
+			spawn = sp;
+            start = spawn.TopLeft;
+            finish = spawn.BottomRight;
             env = e;
             goingStart = true;
             nextState = State.Neutral;

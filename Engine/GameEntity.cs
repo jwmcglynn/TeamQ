@@ -26,7 +26,9 @@ namespace Sputnik {
 
 		public override void Dispose() {
 			if (SpawnPoint != null) {
-				SpawnPoint.Position = Position;
+				//Updated spawn points makes me sad
+				//If we really want it, I'll update it in the AI
+				//SpawnPoint.Position = Position;
 				OnCull();
 			}
 

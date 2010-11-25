@@ -99,7 +99,6 @@ namespace Sputnik
 			if (entB is Environment && !ai.Turning())
 			{
 				ai.HitWall();
-				DesiredVelocity = Vector2.Zero;
 			}
 				
 			base.OnCollide(entB, contact);

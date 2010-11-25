@@ -11,20 +11,20 @@ namespace Sputnik
 {
 	class CircloidShip : Ship, Tractorable
 	{
-		public CircloidShip(GameEnvironment env, Vector2 pos, Vector2 patrolStart, Vector2 patrolEnd) 
+		public CircloidShip(GameEnvironment env, Vector2 pos, SpawnPoint sp) 
 			: base(env, pos)
 		{
-			Initialize(patrolStart, patrolEnd);
+			Initialize(sp);
 			env.circles.Add(this);
 		}
 
-		private void Initialize(Vector2 patrolStart, Vector2 patrolEnd) {
+		private void Initialize(SpawnPoint sp) {
 			shooter = new BulletEmitter(Environment, this, BulletEmitter.BulletStrength.Medium, IsFriendly());
 			AddChild(shooter);
-			ai = new AIController(patrolStart, patrolEnd, Environment);
+			ai = new AIController(sp, Environment);
 			LoadTexture(Environment.contentManager, "circloid");
 
-			m_patrolRect = new Rectangle((int) patrolStart.X, (int) patrolEnd.Y, (int) (patrolEnd.X - patrolStart.X), (int) (patrolEnd.Y - patrolStart.Y));
+			m_patrolRect = new Rectangle((int) sp.TopLeft.X, (int) sp.BottomRight.Y, (int) (sp.BottomRight.X - sp.TopLeft.X), (int) (sp.BottomRight.Y - sp.TopLeft.Y));
 
 			Registration = new Vector2(117.0f, 101.0f);
 			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
@@ -38,13 +38,13 @@ namespace Sputnik
 			vertices.Add(new Vector2(20, (float)(Math.Tan(MathHelper.ToRadians(20)) * 20)));
 			Fixture sensor = CollisionBody.CreateFixture(new PolygonShape(new Vertices(vertices)), 0);
 			sensor.IsSensor = true;
-			 */
+			*/ 
 		}
 
 		public CircloidShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {
 			Position = sp.Position;
-			Initialize(sp.TopLeft, sp.BottomRight); // FIXME: Find a better way to get positions.
+			Initialize(sp); // FIXME: Find a better way to get positions.
 			env.circles.Add(this);
 		}
 
