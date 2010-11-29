@@ -22,6 +22,7 @@ namespace Sputnik
 		private BlackHole.Pair m_playerBlackHoles;
 		private bool isTractoringItem;
 		private Entity itemBeingTractored;
+		private Ship controlled;
 
         /// <summary>
         ///  Creates a new Player
@@ -33,13 +34,48 @@ namespace Sputnik
 
 		public void GotShotBy(Ship s, GameEntity f) 
 		{
- 			// Players dont do anything special when shot;
+			if (controlled is TriangulusShip)
+			{
+				foreach (TriangulusShip t in m_env.triangles)
+				{
+					t.ai.DistressCall(controlled);
+				}
+			}
+			else if (controlled is SquaretopiaShip)
+			{
+				foreach (SquaretopiaShip sq in m_env.squares)
+				{
+					sq.ai.DistressCall(controlled);
+				}
+			}
+			else if (controlled is CircloidShip)
+			{
+				foreach (CircloidShip c in m_env.circles)
+				{
+					c.ai.DistressCall(controlled);
+				}
+			}
+		}
+
+		public void GotTractored()
+		{
+			//Chaos
+		}
+
+		public void GotFrozen()
+		{
+			//Chaos
 		}
 
 		public bool Turning()
 		{
 			return false;
 			// Who cares
+		}
+
+		public void DistressCall(Ship s)
+		{
+			//Player doesn't care about distress calls
 		}
 
 		public void HitWall()
@@ -52,6 +88,7 @@ namespace Sputnik
 
         public void Update(Ship s, float elapsedTime)
         {
+			controlled = s;
             Vector2 temp = Vector2.Zero;
             KeyboardState kb = Keyboard.GetState();
             MouseState ms = Mouse.GetState();

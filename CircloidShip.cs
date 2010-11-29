@@ -52,6 +52,7 @@ namespace Sputnik
 		{
 			tractoringShip = shipTractoring;
 			isTractored = true;
+			ai.GotTractored();
 		}
 
 		public void TractorReleased()

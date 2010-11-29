@@ -11,5 +11,8 @@ namespace Sputnik
 		void Update(Ship s, float elapsedTime);
 		void GotShotBy(Ship s, GameEntity f);
 		void HitWall();
+		void GotTractored();
+		void GotFrozen();
+		void DistressCall(Ship s);
 	}
 }

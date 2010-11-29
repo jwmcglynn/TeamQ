@@ -11,7 +11,7 @@ namespace Sputnik
 	{
 		public bool attached = false;
 		public bool attaching = false;
-		private Ship controlled = null;
+		private Ship controlled = null; 
 		private Ship recentlyControlled = null;
 		private ShipController playerAI = null;
 

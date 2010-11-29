@@ -12,15 +12,15 @@ namespace Sputnik
 {
 	class Ship : GameEntity, TakesDamage
 	{
-		protected ShipController ai;
+		internal ShipController ai;
 		private ShipController previousAI = null;
-		public int health = 10;
+		public int health = 100;
 		private bool m_shouldCull = false;
 		public float shooterRotation;
 		protected BulletEmitter shooter = null;
 		protected Ship attachedShip = null;
 		public float maxSpeed = 200.0f;
-
+		public bool isShooting;
 		public bool isFrozen;
 		public bool isTractored;
 		public Ship tractoringShip;
@@ -46,8 +46,10 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
-			if (ai != null) ai.Update(this, elapsedTime);
-
+			if (ai != null)
+			{
+				ai.Update(this, elapsedTime);
+			}
 			if (shooter != null && !isFrozen)
 			{
 				// Update emitter position.
@@ -66,7 +68,8 @@ namespace Sputnik
 				if (Math.Abs(del) > Math.Abs(distPos)) del = distPos;
 				Rotation += del;
 			}
-
+			shooterRotation = Rotation;
+			isShooting = false;
 			base.Update(elapsedTime);
 		}
 
@@ -102,7 +105,7 @@ namespace Sputnik
 				//Horrible Casting makes me sad.
 				ai.GotShotBy(this, (GameEntity)((Bullet)entB).owner);
 			}
-			if (entB is Environment && !ai.Turning())
+			else if (entB is Environment)
 			{
 				ai.HitWall();
 			}
@@ -131,6 +134,7 @@ namespace Sputnik
 		public virtual void Shoot(float elapsedTime)
 		{
 			shooter.Shoot(elapsedTime, IsFriendly());
+			isShooting = true;
 		}
 
 		public bool isSputnik()
