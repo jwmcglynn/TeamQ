@@ -26,6 +26,7 @@ namespace Sputnik
 		protected GameEnvironment env;
 		Fixture takesDamage, sensor;
 		protected Vector2 target;
+		protected SpawnPoint sp = null;
 
 		public Boss(GameEnvironment env) : base(env)
 		{
@@ -35,6 +36,7 @@ namespace Sputnik
 		public Boss(GameEnvironment env, SpawnPoint sp) : base(env, sp)
 		{
 			initialize(env);
+			this.sp = sp;
 			Position = sp.Position;
 		}
 
@@ -58,6 +60,15 @@ namespace Sputnik
 
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true;
+			if (sp == null)
+			{
+				Vector2[] temp = { new Vector2(env.ScreenVirtualSize.X, env.ScreenVirtualSize.Y), new Vector2(0f, env.ScreenVirtualSize.Y), new Vector2(0, 0), new Vector2(env.ScreenVirtualSize.X, 0) };
+				this.ai = new BossAI(env, this, temp);
+			}
+			else
+			{
+				this.ai = new BossAI(env, this, sp.Patrol);
+			}
 		}
 
 		public override void Update(float elapsedTime)
