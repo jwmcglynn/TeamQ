@@ -11,7 +11,6 @@ namespace Sputnik
 {
 	class TriangulusShip : Ship, Tractorable, Freezable
 	{
-		bool isFrozen;
 		private float tractorBeamSpread = 20 * (float)Math.PI / 180;
 
 		public TriangulusShip(GameEnvironment env, Vector2 pos, SpawnPoint sp)
@@ -66,9 +65,14 @@ namespace Sputnik
 			isFrozen = false;
 		}
 
-		public bool IsFrozen()
+		public void Tractored(Ship shipTractoring)
 		{
-			return isFrozen;
+			tractoringShip = shipTractoring;
+			isTractored = true;
+		}
+
+		public void TractorReleased() {
+			isTractored = false;
 		}
 
 		public override void OnCull()

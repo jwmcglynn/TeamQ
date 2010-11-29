@@ -48,6 +48,17 @@ namespace Sputnik
 			env.circles.Add(this);
 		}
 
+		public void Tractored(Ship shipTractoring)
+		{
+			tractoringShip = shipTractoring;
+			isTractored = true;
+		}
+
+		public void TractorReleased()
+		{
+			isTractored = false;
+		}
+
 		public override void OnCull()
 		{
 			Environment.circles.Remove(this);

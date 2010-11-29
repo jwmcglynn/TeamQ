@@ -11,8 +11,6 @@ namespace Sputnik
 {
 	class SquaretopiaShip : Ship, Freezable
 	{
-		bool isFrozen;
-
 		public SquaretopiaShip(GameEnvironment env, Vector2 pos, SpawnPoint sp)
 			: base(env, pos)
 		{
@@ -50,15 +48,12 @@ namespace Sputnik
 		}
 
 		public void Freeze() {
-		
+			isFrozen = true;
 		}
 
-		public void Unfreeze() {
-		
-		}
-
-		public bool IsFrozen() {
-			return isFrozen;
+		public void Unfreeze()
+		{
+			isFrozen = false;
 		}
 
 		public override void OnCull()
@@ -66,6 +61,7 @@ namespace Sputnik
 			Environment.squares.Remove(this);
 			base.OnCull();
 		}
+		
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
 		{

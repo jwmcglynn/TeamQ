@@ -21,6 +21,10 @@ namespace Sputnik
 		protected Ship attachedShip = null;
 		public float maxSpeed = 200.0f;
 
+		public bool isFrozen;
+		public bool isTractored;
+		public Ship tractoringShip;
+
 		protected Rectangle m_patrolRect;
 
 		// Smooth rotation.
@@ -44,14 +48,14 @@ namespace Sputnik
 		{
 			if (ai != null) ai.Update(this, elapsedTime);
 
-			if (shooter != null)
+			if (shooter != null && !isFrozen)
 			{
 				// Update emitter position.
 				shooter.Rotation = shooterRotation;
 				shooter.Position = Position;
 			}
 
-			if (Rotation != DesiredRotation) {
+			if (Rotation != DesiredRotation && !isFrozen) {
 				float distPos = Angle.Distance(DesiredRotation, Rotation);
 				float dir = Math.Sign(distPos);
 
@@ -72,6 +76,8 @@ namespace Sputnik
 			this.previousAI = this.ai;
 			this.ai = sp.GetAI();
 			this.attachedShip = sp;
+			isFrozen = false;
+			isTractored = false;
 		}
 
 		public virtual void Detach()

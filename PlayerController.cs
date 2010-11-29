@@ -20,6 +20,8 @@ namespace Sputnik
 		private bool specialShot = true;
 		private float lastSpace = 0.0f;
 		private BlackHole.Pair m_playerBlackHoles;
+		private bool isTractoringItem;
+		private Entity itemBeingTractored;
 
         /// <summary>
         ///  Creates a new Player
@@ -67,6 +69,13 @@ namespace Sputnik
 			if (kb.IsKeyDown(Keys.Space) && !OldKeyboard.GetState().IsKeyDown(Keys.Space))
 			{
 				s.Detach();
+				// If i am tractoring something, and i detach from it, then they should go back to normal.
+				if(isTractoringItem) {
+					if(itemBeingTractored is Ship) {
+						((Ship) itemBeingTractored).isTractored = false;
+						isTractoringItem = false;
+					}
+				}
 			}
 			
             if (kb.IsKeyDown(Keys.W))
@@ -109,14 +118,34 @@ namespace Sputnik
 					if (m_playerBlackHoles != null) m_playerBlackHoles.Destroy();
 					m_playerBlackHoles = BlackHole.CreatePair(m_env, m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y)));
 				} else if(s is TriangulusShip) {
-					List<Entity> list = VisionHelper.FindAll(m_env, s.Position, s.shooterRotation, MathHelper.ToRadians(20.0f), 500.0f);
-					IOrderedEnumerable<Entity> sortedList = list.OrderBy(ent => Vector2.DistanceSquared(s.Position, ent.Position)); 
+					
+					// if we are tractoring something right now, then we arent allowed to tractor anything else
+					// we can shoot now.
+					if(!isTractoringItem) {
+						List<Entity> list = VisionHelper.FindAll(m_env, s.Position, s.shooterRotation, MathHelper.ToRadians(20.0f), 500.0f);
+						IOrderedEnumerable<Entity> sortedList = list.OrderBy(ent => Vector2.DistanceSquared(s.Position, ent.Position)); 
 
-					Entity collided = sortedList.FirstOrDefault(ent =>
-					{
-						if (ent is Ship && ((Ship)ent).IsFriendly()) return false;
-						return (ent is Tractorable);
-					});
+						Entity collided = sortedList.FirstOrDefault(ent =>
+						{
+							if (ent is Ship && ((Ship)ent).IsFriendly()) return false;
+							return (ent is Tractorable);
+						});
+
+						if(collided is Tractorable) {
+							((Tractorable)collided).Tractored(s); // Disable ship
+							itemBeingTractored = collided;
+							isTractoringItem = true;
+						}
+					} else {
+						// Shoot the tractored item
+						// After the ship has reached its destination, then it should proceed as normal.
+						
+						// add this code after collision with a wall?
+						if(itemBeingTractored is Ship) {
+							((Ship)itemBeingTractored).isTractored = false;
+						}
+						isTractoringItem = false;
+					}
 				} else if(s is SquaretopiaShip) {
 					ForceField ff = new ForceField(m_env, s.Position, s.shooterRotation);
 					m_env.AddChild(ff);

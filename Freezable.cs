@@ -9,6 +9,5 @@ namespace Sputnik
 	{
 		void Freeze();
 		void Unfreeze();
-		bool IsFrozen();
 	}
 }

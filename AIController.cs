@@ -18,7 +18,7 @@ namespace Sputnik {
         Vector2 positionHit;
         GameEntity target;
 		GameEntity shotMe;
-        public enum State{ Allied, Neutral, Alert, Hostile, Confused };
+        public enum State{ Allied, Neutral, Alert, Hostile, Confused, Disabled, Enabled };
         State oldState,currentState,nextState;
 		float startingAngle; //Used for confused
 		bool startedRotation;
@@ -53,12 +53,21 @@ namespace Sputnik {
         public void Update(Ship s, float elapsedTime)
         {
 			currentShip = s;
-			if(s is Freezable) {
-				if(((Freezable)s).IsFrozen()) {
-					return;
-				}
+
+			if(s.isFrozen || s.isTractored) {
+				nextState = State.Disabled;
+			} else {
+				if(nextState == State.Disabled)
+					nextState = State.Neutral;
 			}
+
+			if(s.isTractored) {
+				// determine the position of the tractored item.
+				s.Position = s.tractoringShip.Position + new Vector2(100, 100);
+			}
+
 			currentState = nextState;
+
             if (nextState == State.Allied)
             {
                 //Not implemented
@@ -75,7 +84,11 @@ namespace Sputnik {
 			{
 				Confused(elapsedTime);
 			}
-            else 
+			else if(nextState == State.Disabled) {
+				s.DesiredVelocity = Vector2.Zero;
+				s.DesiredRotation = 0.0f;
+			}
+            else // Enabled == Hostile?
             {
                 Hostile(elapsedTime);
             }
@@ -139,6 +152,7 @@ namespace Sputnik {
 		{
 			return turning;
 		}
+
         private void Alert(float elapsedTime)
         {
             Vector2 destination = target.Position;
