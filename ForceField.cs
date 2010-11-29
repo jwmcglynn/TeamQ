@@ -10,6 +10,7 @@ namespace Sputnik
 	{
 		const float k_speed = 600.0f; // pixels per second
 		float m_angle;
+		float timeElapsed;
 
 		// Create force field dynamically.
 		public ForceField(GameEnvironment env, Vector2 pos, float angle)
@@ -22,7 +23,7 @@ namespace Sputnik
 
 		private void Initialize()
 		{
-			LoadTexture(Environment.contentManager, "freeze/freeze10");
+			LoadTexture(Environment.contentManager, "freeze/freeze1");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			Zindex = 0.0f;
 
@@ -40,6 +41,26 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
+			if(timeElapsed > 0.9 ) {
+				LoadTexture(Environment.contentManager, "freeze/freeze10");
+			} else if(timeElapsed > 0.8) {
+				LoadTexture(Environment.contentManager, "freeze/freeze9");
+			} else if (timeElapsed > 0.7) {
+				LoadTexture(Environment.contentManager, "freeze/freeze8");
+			} else if (timeElapsed > 0.6) {
+				LoadTexture(Environment.contentManager, "freeze/freeze7");
+			} else if (timeElapsed > 0.5) {
+				LoadTexture(Environment.contentManager, "freeze/freeze6");
+			} else if (timeElapsed > 0.4) {
+				LoadTexture(Environment.contentManager, "freeze/freeze5");
+			} else if (timeElapsed > 0.3) {
+				LoadTexture(Environment.contentManager, "freeze/freeze4");
+			} else if (timeElapsed > 0.2) {
+				LoadTexture(Environment.contentManager, "freeze/freeze3");
+			} else if (timeElapsed > 0.1) {
+				LoadTexture(Environment.contentManager, "freeze/freeze2");
+			}
+
 			if(entityCollidedWith != null && !hasFrozen) {
 				CollisionBody.LinearVelocity = Vector2.Zero;
 				Position = posOfCollision;
@@ -50,6 +71,8 @@ namespace Sputnik
 					((Freezable)entityCollidedWith).Freeze();
 				}
 			}
+			timeElapsed += elapsedTime;
+
 			base.Update(elapsedTime);
 		}
 		

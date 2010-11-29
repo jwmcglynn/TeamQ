@@ -44,6 +44,9 @@ namespace Sputnik
 			}
 		}
 
+
+		private float timeElapsed;
+
 		private static int s_uniqueId = 1;
 
 		public static Pair CreatePair(GameEnvironment env, Vector2 pos) {
@@ -67,8 +70,6 @@ namespace Sputnik
 			return new Pair(env, sp, wormHole);
 		}
 
-		///
-
 		SpawnPoint wormHole;
 
 		public BlackHole(GameEnvironment e, SpawnPoint sp)
@@ -81,13 +82,14 @@ namespace Sputnik
 		}
 
 		private void Initialize() {
-			LoadTexture(Environment.contentManager, "blackhole/blackhole20");
+			LoadTexture(Environment.contentManager, "blackhole/blackhole00");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			Zindex = 0.0f;
 
 			CreateCollisionBody(Environment.CollisionWorld, FarseerPhysics.Dynamics.BodyType.Static, CollisionFlags.Default);
 			var circle = AddCollisionCircle(Texture.Height / 12, Vector2.Zero); // Using 12 here as an arbitrary value. Reason: Want the black hole to have a small collis
 			circle.IsSensor = true;
+			CollisionBody.Active = false;
 
 			Environment.BlackHoleController.AddBody(CollisionBody);
 		}
@@ -96,6 +98,40 @@ namespace Sputnik
 		{
 			Environment.BlackHoleController.RemoveBody(CollisionBody);
 			base.Dispose();
+		}
+
+		public override void Update(float elapsedTime)
+		{
+			if(timeElapsed > 2.0) {
+				Rotation -= 1.0f;
+				CollisionBody.Active = true;
+			} else if (timeElapsed > 1.9) {
+				LoadTexture(Environment.contentManager, "blackhole/blackhole20");
+			} else if (timeElapsed > 1.8) {
+				LoadTexture(Environment.contentManager, "blackhole/blackhole11");
+			} else if (timeElapsed > 1.6) {
+				LoadTexture(Environment.contentManager, "blackhole/blackhole10");
+			} else if (timeElapsed > 1.4) {
+				LoadTexture(Environment.contentManager, "blackhole/blackhole09");
+			} else if (timeElapsed > 1.2) {
+				LoadTexture(Environment.contentManager, "blackhole/blackhole08");
+			} else if (timeElapsed > 1.0) {
+				LoadTexture(Environment.contentManager, "blackhole/blackhole07");
+			} else if (timeElapsed > .8) {
+				LoadTexture(Environment.contentManager, "blackhole/blackhole06");
+			} else if (timeElapsed > .6) {
+				LoadTexture(Environment.contentManager, "blackhole/blackhole05");
+			} else if (timeElapsed > .4) {
+				LoadTexture(Environment.contentManager, "blackhole/blackhole04");
+			} else if (timeElapsed > .3) {
+				LoadTexture(Environment.contentManager, "blackhole/blackhole03");
+			} else if (timeElapsed > .2) {
+				LoadTexture(Environment.contentManager, "blackhole/blackhole02");
+			} else if (timeElapsed > .1) {
+				LoadTexture(Environment.contentManager, "blackhole/blackhole01");
+			}
+			timeElapsed += elapsedTime;
+			base.Update(elapsedTime);
 		}
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)

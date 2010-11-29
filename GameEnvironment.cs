@@ -84,8 +84,8 @@ namespace Sputnik {
 			CollisionWorld.ContactManager.EndContact += EndContact;
 			CollisionWorld.ContactManager.ContactFilter += ContactFilter;
 
-			BlackHoleController = new BlackHolePhysicsController(300.0f, 100.0f * k_physicsScale, 9.0f * k_physicsScale); // 300 controls how strong the pull is towards the black hole.
-																									// 100.0 determines the radius fore which black hole will have an effect on.
+			// first parameter controls how strong the pull is; the second parameter controls the radius of the pull.
+			BlackHoleController = new BlackHolePhysicsController(300.0f, 200.0f * k_physicsScale, 9.0f * k_physicsScale);
 			CollisionWorld.AddController(BlackHoleController);
 
 			// Farseer freaks out unless we call Update here when changing Environments.  FIXME: Why?
