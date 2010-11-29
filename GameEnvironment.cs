@@ -56,7 +56,6 @@ namespace Sputnik {
 
 		//Shiplists
 		internal List<SquaretopiaShip> squares = new List<SquaretopiaShip>();
-		
 		internal List<TriangulusShip> triangles = new List<TriangulusShip>();
 		internal List<CircloidShip> circles = new List<CircloidShip>();
 		internal SputnikShip sputnik = null;
