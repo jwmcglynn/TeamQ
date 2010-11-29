@@ -68,6 +68,8 @@ namespace Sputnik
 
 			base.Update(elapsedTime);
 
+			shooterRotation = (float)Math.Atan2(env.sputnik.Position.Y - this.Position.Y, env.sputnik.Position.X - this.Position.X);
+
 			bm1.Position = this.Position + top;
 			bm1.Rotation = shooterRotation;
 			bm2.Position = this.Position + right;
