@@ -18,8 +18,8 @@ namespace Sputnik {
         Vector2 positionHit;
         GameEntity target;
 		GameEntity shotMe;
-        public enum State{ Allied, Neutral, Alert, Hostile, Confused, Disabled, Enabled };
-        State oldState,currentState,nextState;
+        enum State{ Allied, Neutral, Alert, Hostile, Confused, Disabled };
+        private State oldState,currentState,nextState;
 		float startingAngle; //Used for confused
 		bool startedRotation;
 		GameEntity lookingFor;
@@ -53,19 +53,6 @@ namespace Sputnik {
         public void Update(Ship s, float elapsedTime)
         {
 			currentShip = s;
-
-			if(s.isFrozen || s.isTractored) {
-				nextState = State.Disabled;
-			} else {
-				if(nextState == State.Disabled)
-					nextState = State.Neutral;
-			}
-
-			if(s.isTractored) {
-				// determine the position of the tractored item.
-				s.Position = s.tractoringShip.Position + new Vector2(100, 100);
-			}
-
 			currentState = nextState;
 
             if (nextState == State.Allied)
@@ -85,10 +72,9 @@ namespace Sputnik {
 				Confused(elapsedTime);
 			}
 			else if(nextState == State.Disabled) {
-				s.DesiredVelocity = Vector2.Zero;
-				s.DesiredRotation = 0.0f;
+				Disabled(elapsedTime);
 			}
-            else // Enabled == Hostile?
+            else
             {
                 Hostile(elapsedTime);
             }
@@ -132,20 +118,6 @@ namespace Sputnik {
             {
                 nextState = State.Neutral;
             }
-        }
-
-        /// <summary>
-        ///  For Testing purposes, finds Sputnik's ship
-        /// </summary>
-
-        private Ship FindSputnik()
-        {
-            foreach (Entity e in env.Children)
-            {
-                if (e is SputnikShip)
-                    return (Ship)e;
-            }
-            return null;
         }
 
 		public bool Turning()
@@ -195,16 +167,6 @@ namespace Sputnik {
             }
         }
 
-        private Ship SawPlayerShoot(Ship s)
-        {
-            foreach (Entity b in env.Children)
-            {
-                if(b is Bullet && ((Bullet)b).ShotByPlayer && CanSee(s, b))
-                    return (Ship)(((Bullet)b).owner);
-            }
-            return null;
-        }
-
         private void Hostile(float elapsedTime)
         {
             Vector2 destination = target.Position;
@@ -240,6 +202,74 @@ namespace Sputnik {
                 nextState = State.Hostile;
             }
         }
+
+		private void Confused(float elapsedTime)
+		{
+			currentShip.DesiredVelocity = Vector2.Zero;
+			turning = true;
+			if (startedRotation)
+				currentShip.DesiredRotation = currentShip.Rotation + 1.0f;
+			else
+			{
+				//I don't like being unable to say turn right
+				if (Angle.Distance(currentShip.Rotation, startingAngle) < MathHelper.Pi)
+					currentShip.DesiredRotation = currentShip.Rotation + 1.0f;
+				else
+					currentShip.DesiredRotation = startingAngle;
+			}
+			if (CanSee(currentShip, lookingFor))
+			{
+				target = lookingFor;
+				shotMe = null;
+				nextState = State.Alert;
+			}
+			else
+			{
+				if (Angle.DistanceMag(currentShip.Rotation, startingAngle) < 0.03f && !startedRotation) // Find a good value for this
+				{
+					lookingFor = null;
+					nextState = oldState;
+				}
+				else
+					nextState = State.Confused;
+			}
+			startedRotation = false;
+		}
+
+		private void Disabled(float elapsedTime)
+		{
+			currentShip.DesiredVelocity = Vector2.Zero;
+			//s.DesiredRotation = 0.0f; You probably dont want to make the ship turn towards 0 radians
+			if (currentShip.isTractored)
+			{
+				// determine the position of the tractored item.
+				currentShip.Position = currentShip.tractoringShip.Position + new Vector2(100, 100);
+			}
+			if (currentShip.isFrozen || currentShip.isTractored)
+			{
+				nextState = State.Disabled;
+			}
+			else
+			{
+				nextState = oldState;
+			}
+		}
+
+		public void GotFrozen()
+		{
+			currentShip.DesiredVelocity = Vector2.Zero;
+			//s.DesiredRotation = 0.0f; You probably dont want to make the ship turn towards 0 radians
+			oldState = currentState;
+			nextState = State.Disabled;
+		}
+
+		public void GotTractored()
+		{
+			currentShip.DesiredVelocity = Vector2.Zero;
+			//s.DesiredRotation = 0.0f; You probably dont want to make the ship turn towards 0 radians
+			oldState = currentState;
+			nextState = State.Disabled;
+		}
 
         /// <summary>
         /// Preliminary Vision, given starting Ship s and target Ship f, can s see f 
@@ -317,38 +347,7 @@ namespace Sputnik {
 			}
 		}
 
-		private void Confused(float elapsedTime)
-		{
-			currentShip.DesiredVelocity = Vector2.Zero;
-			turning = true;
-			if (startedRotation)
-				currentShip.DesiredRotation = currentShip.Rotation + 1.0f;
-			else
-			{
-				//I don't like being unable to say turn right
-				if (Angle.Distance(currentShip.Rotation, startingAngle) < MathHelper.Pi)
-					currentShip.DesiredRotation = currentShip.Rotation + 1.0f;
-				else
-					currentShip.DesiredRotation = startingAngle;
-			}
-			if (CanSee(currentShip,lookingFor))
-			{
-				target = lookingFor;
-				shotMe = null;
-				nextState = State.Alert;
-			}
-			else
-			{
-				if (Angle.DistanceMag(currentShip.Rotation, startingAngle) < 0.03f && !startedRotation) // Find a good value for this
-				{
-					lookingFor = null;
-					nextState = oldState;
-				}
-				else
-					nextState = State.Confused;
-			}
-			startedRotation = false;
-		}
+		
 
     }
 }

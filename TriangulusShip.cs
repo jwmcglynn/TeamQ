@@ -58,6 +58,7 @@ namespace Sputnik
 		public void Freeze()
 		{
 			isFrozen = true;
+			ai.GotFrozen();
 		}
 
 		public void Unfreeze()
@@ -69,6 +70,7 @@ namespace Sputnik
 		{
 			tractoringShip = shipTractoring;
 			isTractored = true;
+			ai.GotTractored();
 		}
 
 		public void TractorReleased() {

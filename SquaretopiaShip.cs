@@ -49,6 +49,7 @@ namespace Sputnik
 
 		public void Freeze() {
 			isFrozen = true;
+			ai.GotFrozen();
 		}
 
 		public void Unfreeze()

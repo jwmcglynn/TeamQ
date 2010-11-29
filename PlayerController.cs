@@ -36,6 +36,16 @@ namespace Sputnik
  			// Players dont do anything special when shot;
 		}
 
+		public void GotTractored()
+		{
+			//Chaos
+		}
+
+		public void GotFrozen()
+		{
+			//Chaos
+		}
+
 		public bool Turning()
 		{
 			return false;
