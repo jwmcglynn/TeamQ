@@ -11,6 +11,7 @@ namespace Sputnik
 {
 	class SquaretopiaShip : Ship, Freezable
 	{
+
 		public SquaretopiaShip(GameEnvironment env, Vector2 pos, SpawnPoint sp)
 			: base(env, pos)
 		{
@@ -30,6 +31,8 @@ namespace Sputnik
 			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(50.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
+
+			passiveShield = 20.0f;
 			/*
 			List<Vector2> vertices = new List<Vector2>();
 			vertices.Add(new Vector2(0, 0));

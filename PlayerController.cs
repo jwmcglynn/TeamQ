@@ -24,6 +24,8 @@ namespace Sputnik
 		private Entity itemBeingTractored;
 		private Ship controlled;
 
+		const float k_speed = 600.0f; // pixels per second
+
         /// <summary>
         ///  Creates a new Player
         /// </summary>
@@ -172,14 +174,23 @@ namespace Sputnik
 							((Tractorable)collided).Tractored(s); // Disable ship
 							itemBeingTractored = collided;
 							isTractoringItem = true;
+
+							if(itemBeingTractored is Asteroid) {
+								((Asteroid)itemBeingTractored).CollisionBody.IsStatic = false;
+							}
 						}
 					} else {
-						// Shoot the tractored item
-						// After the ship has reached its destination, then it should proceed as normal.
+						if(itemBeingTractored.CollisionBody != null) { // case where what is being tractored dies before we can shoot it.
+							itemBeingTractored.CollisionBody.LinearDamping = 0.0f;
+							itemBeingTractored.SetPhysicsVelocityOnce(new Vector2(k_speed * (float)Math.Cos(s.shooterRotation), k_speed * (float)Math.Sin(s.shooterRotation)));
 						
-						// add this code after collision with a wall?
-						if(itemBeingTractored is Ship) {
-							((Ship)itemBeingTractored).isTractored = false;
+							// add this code after ship collides with a wall?
+							if(itemBeingTractored is Ship) {
+								((Ship)itemBeingTractored).isTractored = false;
+							} else if(itemBeingTractored is Asteroid) {
+								((Asteroid) itemBeingTractored).CollisionBody.IsStatic = true;
+								((Asteroid)itemBeingTractored).TractorReleased();
+							}
 						}
 						isTractoringItem = false;
 					}

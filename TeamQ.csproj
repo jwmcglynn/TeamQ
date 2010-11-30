@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AIController.cs" />
+    <Compile Include="Asteroid.cs" />
     <Compile Include="BlackHole.cs" />
     <Compile Include="BlackHolePhysicsController.cs" />
     <Compile Include="Boss.cs" />

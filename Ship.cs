@@ -24,6 +24,7 @@ namespace Sputnik
 		public bool isFrozen;
 		public bool isTractored;
 		public Ship tractoringShip;
+		protected float passiveShield;
 
 		protected Rectangle m_patrolRect;
 
@@ -115,6 +116,7 @@ namespace Sputnik
 
 		public override bool ShouldCull() {
 			if (m_shouldCull) return true;
+			if (attachedShip != null && this is TriangulusShip) return false;
 
 			if (m_patrolRect != null) {
 				return !InsideCullRect(Rectangle.Union(VisibleRect, m_patrolRect));
@@ -125,9 +127,17 @@ namespace Sputnik
 
 		public virtual void TakeHit(int damage)
 		{
-			this.health -= damage;
-			if(this.health < 1) {
-				this.InstaKill();
+			if(this is SquaretopiaShip) {
+				if(passiveShield > 0) {
+					passiveShield -= damage;
+				} else {
+					health -= damage;
+				}
+			} else {
+				health -= damage;
+			}
+			if (health < 1) {
+				InstaKill();
 			}
 		}
 

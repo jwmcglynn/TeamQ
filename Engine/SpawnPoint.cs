@@ -132,6 +132,9 @@ namespace Sputnik {
 				case "boss":
 					Entity = new SaphereBoss(SpawnController.Environment, this);
 					break;
+				case "asteroid":
+					Entity = new Asteroid(SpawnController.Environment, this);
+					break;
 				default:
 					throw new InvalidOperationException("Invalid entity type.");
 			}

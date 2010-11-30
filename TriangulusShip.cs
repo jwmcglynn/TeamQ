@@ -52,6 +52,9 @@ namespace Sputnik
 		public override bool ShouldCollide(Entity entB, Fixture fixture, Fixture entBFixture)
 		{
 			if (fixture.IsSensor && !(entB is Tractorable)) return false;
+			if(entB is Tractorable && entB is Ship) {
+				if(((Ship) entB).isTractored) return false;
+			}
 			return base.ShouldCollide(entB, fixture, entBFixture);
 		}
 

@@ -46,5 +46,6 @@
   <object name="" type="possibleBlackhole" x="1059" y="1652" width="59" height="53"/>
   <object name="" type="possibleBlackhole" x="596" y="1726" width="59" height="53"/>
   <object name="BIG BOSS ALERT" type="boss" x="878" y="1994" width="302" height="274"/>
+  <object name="" type="asteroid" x="575" y="224" width="33" height="30"/>
  </objectgroup>
 </map>

@@ -75,13 +75,13 @@ namespace Sputnik
 		public BlackHole(GameEnvironment e, SpawnPoint sp)
 				: base(e, sp) {
 			Position = sp.Position;
-			Initialize();
+			initialize();
 
 			// Find where wormhole points.
 			wormHole = Environment.SpawnedBlackHoles.Find(spawn => spawn.Name == SpawnPoint.Name && spawn != SpawnPoint);
 		}
 
-		private void Initialize() {
+		private void initialize() {
 			LoadTexture(Environment.contentManager, "blackhole/blackhole00");
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			Zindex = 0.0f;
