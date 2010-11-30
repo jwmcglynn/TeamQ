@@ -13,6 +13,6 @@ namespace Sputnik
 		void HitWall();
 		void GotTractored();
 		void GotFrozen();
-		void DistressCall(Ship s);
+		void DistressCall(Ship s, GameEntity f);
 	}
 }

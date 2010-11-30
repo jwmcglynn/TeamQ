@@ -92,7 +92,7 @@ namespace Sputnik
 			{
 
 			}
-			else if (entB is Bullet)
+			else if (entB is Bullet && attachedShip == null) //Don't make faction ships respond when shot if controlled
 			{
 				//Horrible Casting makes me sad.
 				foreach (TriangulusShip t in Environment.triangles)

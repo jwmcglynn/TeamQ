@@ -69,7 +69,7 @@ namespace Sputnik
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
 		{
-			if (entB is Bullet)
+			if (entB is Bullet && attachedShip == null)
 			{
 				//Horrible Casting makes me sad.
 				foreach (SquaretopiaShip s in Environment.squares)

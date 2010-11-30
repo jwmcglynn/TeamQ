@@ -17,7 +17,6 @@ namespace Sputnik {
         public GameEnvironment env;  //Game Environment reference
         Vector2 hitBodyPosition;  //Position of the body hit by a raycast
         GameEntity target; //Current target of attention
-		GameEntity shotMe; //Entity that shot me
 		GameEntity lookingFor; //Entity that I can't see but I'm looking for
         enum State{ Allied, Neutral, Alert, Hostile, Confused, Disabled }; //All possible states
         private State oldState,currentState,nextState; // Used to control AI's FSM
@@ -25,7 +24,7 @@ namespace Sputnik {
 		bool startedRotation; //Used for making a ship rotate once
 		Ship currentShip;  //Current ship I'm controlling
 		private bool turning;  //Used to tell if a ship is turning, still somewhat buggy
-		private bool answeringDistressCall;
+		private bool answeringDistressCall;  //Used to help Confused State transition
 
         /// <summary>
         ///  Creates a new AI with given spawnpoint and given environment
@@ -42,7 +41,6 @@ namespace Sputnik {
             nextState = State.Neutral;
 			currentState = State.Neutral;
 			target = null;
-			shotMe = null;
 			answeringDistressCall = false;
 			startedRotation = false;
 			lookingFor = null;
@@ -83,8 +81,8 @@ namespace Sputnik {
 
 		/// <summary>
 		///  AI behavior for Neutral State
-		///  Sets nextState
-		///  If nextState is Alert, also sets target and then resets shotMe to null
+		///  Inputs : goingStart, currentShip
+		///  Outputs : nextState
 		/// </summary>
         private void Neutral(float elapsedTime)
         {
@@ -112,31 +110,13 @@ namespace Sputnik {
 				currentShip.DesiredRotation = wantedDirection;
 				turning = true;
             }
-			if (shotMe != null) //Currently I only become un-neutral when shot
-            {
-				target = shotMe;
-				shotMe = null; //Make shotMe null for Alert to use correctly
-				//Im sorta confused as to why this works, if target = shotme, and shotme = null, target should be nul
-                nextState = State.Alert;
-            }
-            else //Nothing happened
-            {
-                nextState = State.Neutral;
-            }
+            nextState = State.Neutral; //I stay in neutral now
         }
 
 		/// <summary>
-		///  Tells if the AI thinks that it is turning 
-		/// </summary>
-		public bool Turning()
-		{
-			return turning;
-		}
-
-		/// <summary>
 		///  AI behavior for Alert State
-		///  Sets nextState
-		///  If nextState is Hostile, also sets target and then resets shotMe to null
+		///  Inputs : target, currentShip
+		///  Outputs : nextState
 		/// </summary>
         private void Alert(float elapsedTime)
         {
@@ -165,35 +145,16 @@ namespace Sputnik {
 				currentShip.DesiredRotation = wantedDirection;
 				turning = true;
             }
-            if (shotMe != null) //Someone shot me, time to do something
-            {
-				if (shotMe == target) //My target shot me, not Im mad
-				{
-					nextState = State.Hostile;
-					target = shotMe;
-					shotMe = null;
-				}
-				else  //Someone else shot me, time to get suspicious of them
-				{
-					//I actually might want to make this behavior more faction like
-					//If whowever shotme is the same faction as my previous target, I might just go hostile
-					//Take this up to the game creator gods.
-					nextState = State.Alert;
-					target = shotMe;
-					shotMe = null;
-				}
-            }
-            else //Nothing out of the ordinary happened
-				//Might want to make the ship stop following after a certain amount of time / distance
-				//Might also change if I can't see my target
-            {
-                nextState = State.Alert;
-            }
+			//Nothing out of the ordinary happened
+			//Might want to make the ship stop following after a certain amount of time / distance
+			//Might also change if I can't see my target
+            nextState = State.Alert;
         }
 
 		/// <summary>
 		///  AI behavior for Hostile State
-		///  Sets nextState
+		///  Inputs : target, currentShip
+		///  Outputs : nextState
 		/// </summary>
         private void Hostile(float elapsedTime)
         {
@@ -229,6 +190,7 @@ namespace Sputnik {
             //Did i Kill the target
             if (target.ShouldCull())
             {
+				target = null;
                 nextState = State.Neutral;  //If I did, back to default state
             }
             else
@@ -240,7 +202,8 @@ namespace Sputnik {
 		/// <summary>
 		///  AI behavior for Confused State
 		///  Looks around for lookingFor
-		///  Sets nextState
+		///  Inputs : lookingFor, currentShip , startedRotation, startingAngle, answeringDistressCall
+		///  Outputs : target, nextState
 		/// </summary>
 		/// Maybe I should rotate in the direction I was shot in, NOT IMPLEMENTED
 		/// Always turning CounterClockwise is fun 
@@ -263,20 +226,19 @@ namespace Sputnik {
 				if (answeringDistressCall)
 				{
 					answeringDistressCall = false;
-					nextState = State.Allied;
 					target = lookingFor;
+					nextState = State.Allied;
 				}
 				else
 				{
 					target = lookingFor;
-					shotMe = null;  // Im not quite sure if this is needed but it cant hurt
 					nextState = State.Alert;
 				}
 			}
 			else
 			{
 				if (Angle.DistanceMag(currentShip.Rotation, startingAngle) < currentShip.MaxRotVel * elapsedTime / 2 && !startedRotation) // I made a complete Revolution
-					//I added in the /2 just because it wouldn't work otherwse
+					//I added in the /2 just because it wouldn't work otherwse, maybe use a different value
 				{
 					lookingFor = null;
 					nextState = oldState;
@@ -289,8 +251,8 @@ namespace Sputnik {
 
 		/// <summary>
 		///  AI behavior for Disabled State
-		///  Still a work in progress
-		///  Sets nextState
+		///  Inputs : currentShip, oldState
+		///  Outputs : nextState
 		/// </summary>
 		private void Disabled(float elapsedTime)
 		{
@@ -315,7 +277,8 @@ namespace Sputnik {
 
 		/// <summary>
 		///  AI behavior for Allied State
-		///  Sets nextState
+		///  Inputs : currentShip, target
+		///  Outputs : nextState
 		/// </summary>
 		private void Allied(float elapsedTime)
 		{
@@ -351,6 +314,7 @@ namespace Sputnik {
 			//Is my target dead
 			if (target.ShouldCull())
 			{
+				target = null;
 				nextState = State.Neutral;  //If I did, back to default state
 			}
 			else
@@ -361,7 +325,6 @@ namespace Sputnik {
 
 		/// <summary>
 		///  Call when controlled ship gets frozen
-		///  Alternativly, this could be done in ship if Jared wanted to
 		/// </summary>
 		public void GotFrozen()
 		{
@@ -373,7 +336,6 @@ namespace Sputnik {
 
 		/// <summary>
 		///  Call when controlled ship gets tractored
-		///  Alternativly, this could be done in ship if Jared wanted to
 		/// </summary>
 		public void GotTractored()
 		{
@@ -388,8 +350,12 @@ namespace Sputnik {
         /// </summary>
 		private bool CanSee(GameEntity s, GameEntity f)
         {
-            
-            //TODO Im not quite sure why, but sometimes ships try to see null collisionbodys
+			//TODO For some reason this case happens, evidently something is going wrong somewhere
+			if (s == null || f == null)
+			{
+				return false;
+			}
+			//TODO Im not quite sure why, but sometimes ships try to see null collisionbodys
             if (s.CollisionBody == null || f.CollisionBody == null)
             {
                 return false;
@@ -434,26 +400,56 @@ namespace Sputnik {
 		/// </summaryd>
 		public void GotShotBy(Ship s, GameEntity f)
 		{
-			if (CanSee(currentShip, f)) //If I can see the shooter and I was the shot ship
+			if (CanSee(currentShip, f)) //If I can see the shooter
 			{
-				shotMe = f;	
+				switch (currentState)
+				{
+					case State.Neutral: //Currently I only become un-neutral when shot
+						target = f;
+						nextState = State.Alert;
+						break;
+					case State.Alert:  //Someone shot me, time to do something
+							if (f == target) //My target shot me, now Im mad
+							{
+								nextState = State.Hostile;
+								target = f;
+							}
+							else  //Someone else shot me, time to get suspicious of them
+							{
+								//I actually might want to make this behavior more faction like
+								//If whoever shot me is the same faction as my previous target, I might just go hostile
+								//Take this up to the game creator gods.
+								nextState = State.Alert;
+								target = f;
+							}
+							break;
+					case State.Allied:
+						//Do I want to do something if the shooting ship is of the same faction?
+							break;
+					default:
+							//current do nothing if in Disabled or Hostile when shot
+							break;
+				}
 			}
 			else
 			{
-				lookingFor = f;
 				if (currentState == State.Confused) //If Im confused, I don't make my oldState Confused,
 					//but I do become more confused
 				{
+					lookingFor = f;
 					nextState = State.Confused;
 					startingAngle = currentShip.Rotation;
 					startedRotation = true;
+					answeringDistressCall = false;
 				}
 				else if (currentState != State.Hostile) //I don't become confused if im hostile
 				{
+					lookingFor = f;
 					oldState = currentState;
 					nextState = State.Confused;
 					startingAngle = currentShip.Rotation;
 					startedRotation = true;
+					answeringDistressCall = false;
 				}
 			}
 		}
@@ -470,32 +466,49 @@ namespace Sputnik {
 					//This works as long as both the start and finish position aren't on the other side of the wall
 					//With no pathfinding, this is probably the best I can do
 					goingStart = !goingStart;
+					turning = true;
 				}
 				else
 				{
 					//There is no pathfinding, might as well give up
 					nextState = State.Neutral;
+					target = null;
+					turning = true;
 				}
 			}
 		}
 
-		public void DistressCall(Ship s)
+		/// <summary>
+		///  Tells if the AI thinks that it is turning 
+		/// </summary>
+		public bool Turning()
 		{
-			/*if (currentState != State.Allied)
+			return turning;
+		}
+
+		/// <summary>
+		///  Call when sputnik's controlled ship gets shot by f
+		/// </summary>
+		public void DistressCall(Ship s, GameEntity f)
+		{
+			if (currentState == State.Neutral) //Only non busy ships (neutral) answer
 			{
-				if (CanSee(currentShip, s))
+				if (CanSee(currentShip, s) && !s.GetType().Equals(f.GetType()))//If i can see sputniks ship, go help him 
+					//if there isnt some civil war going on
 				{
 					target = s;
 					nextState = State.Allied;
 				}
-				else
+				else  //If I can't see Sputnik's ship, go look for it.
 				{
 					answeringDistressCall = true;
 					lookingFor = s;
+					oldState = currentState;
 					nextState = State.Confused;
+					startingAngle = currentShip.Rotation;
+					startedRotation = true;
 				}
 			}
-			 */
 		}
     }
 }

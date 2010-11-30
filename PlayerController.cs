@@ -40,21 +40,21 @@ namespace Sputnik
 			{
 				foreach (TriangulusShip t in m_env.triangles)
 				{
-					t.ai.DistressCall(controlled);
+					t.ai.DistressCall(controlled, f);
 				}
 			}
 			else if (controlled is SquaretopiaShip)
 			{
 				foreach (SquaretopiaShip sq in m_env.squares)
 				{
-					sq.ai.DistressCall(controlled);
+					sq.ai.DistressCall(controlled, f);
 				}
 			}
 			else if (controlled is CircloidShip)
 			{
 				foreach (CircloidShip c in m_env.circles)
 				{
-					c.ai.DistressCall(controlled);
+					c.ai.DistressCall(controlled, f);
 				}
 			}
 		}
@@ -75,7 +75,7 @@ namespace Sputnik
 			// Who cares
 		}
 
-		public void DistressCall(Ship s)
+		public void DistressCall(Ship s, GameEntity f)
 		{
 			//Player doesn't care about distress calls
 		}

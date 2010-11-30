@@ -14,7 +14,7 @@ namespace Sputnik
 	{
 		internal ShipController ai;
 		private ShipController previousAI = null;
-		public int health = 100;
+		public int health = 10;
 		private bool m_shouldCull = false;
 		public float shooterRotation;
 		protected BulletEmitter shooter = null;
@@ -47,6 +47,7 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
+			isShooting = false;
 			if (ai != null)
 			{
 				ai.Update(this, elapsedTime);
@@ -70,7 +71,6 @@ namespace Sputnik
 				Rotation += del;
 			}
 			shooterRotation = Rotation;
-			isShooting = false;
 			base.Update(elapsedTime);
 		}
 
