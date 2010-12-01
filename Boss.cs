@@ -60,8 +60,24 @@ namespace Sputnik
 
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true;
-			
-			Vector2[] temp = { new Vector2(env.ScreenVirtualSize.X, env.ScreenVirtualSize.Y), new Vector2(0f, env.ScreenVirtualSize.Y), new Vector2(0, 0), new Vector2(env.ScreenVirtualSize.X, 0) };
+
+			Vector2[] temp;
+
+			if (env.SpawnedBossPatrolPoints.Count == 0)
+			{
+				temp = new Vector2[4];
+				temp[0] = new Vector2(env.ScreenVirtualSize.X, env.ScreenVirtualSize.Y);
+				temp[1] = new Vector2(0f, env.ScreenVirtualSize.Y);
+				temp[2] = new Vector2(0, 0);
+				temp[3] = new Vector2(env.ScreenVirtualSize.X, 0);
+			}
+			else
+			{
+				temp = new Vector2[env.SpawnedBossPatrolPoints.Count];
+				for (int i = 0; i < temp.Length; ++i)
+					temp[i] = env.SpawnedBossPatrolPoints.ElementAt(i).Position;
+
+			}
 			this.ai = new BossAI(env, this, temp);
 		}
 
