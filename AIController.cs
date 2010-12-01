@@ -496,8 +496,10 @@ namespace Sputnik {
 		/// </summary>
 		public void HitWall()
 		{
-			//if (!turning) //Dont do anything if I'm turning, current model of AI assumes you don't move and turn
-		//	{
+			if (currentState != State.Allied) //Allied ships blindly follow leader
+			{
+				//if (!turning) //Dont do anything if I'm turning, current model of AI assumes you don't move and turn
+				//	{
 				if (currentState == State.Neutral)
 				{
 					//This works as long as both the start and finish position aren't on the other side of the wall
@@ -513,6 +515,7 @@ namespace Sputnik {
 					target = null;
 					turning = true;
 				}
+			}
 			//}
 		}
 
