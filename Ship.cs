@@ -181,8 +181,8 @@ namespace Sputnik
 		{
 			if (this.Equals(s)) //Im always friendly to myself
 				return true;
-			else if (s == Environment.sputnik.controlled) //Nobody is ever friendly to Sputnik's ship
-				return false;
+			else if (s == Environment.sputnik.controlled ) //Nobody is ever friendly to Sputnik's ship unless they are allied
+				return ai.IsAlliedWithPlayer();
 			else if (Environment.sputnik.controlled == this) //Sputnik is friendly to nobody
 				return false;
 			else {

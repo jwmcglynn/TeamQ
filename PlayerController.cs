@@ -78,6 +78,14 @@ namespace Sputnik
 		{
 			//Players dont care if they hit the wall
 		}
+
+		public bool IsAlliedWithPlayer()
+		{
+			//Of coruse the player is allied with the player
+			return true;
+		}
+
+
         /// <summary>
         ///  Updates the State of a ship
         /// </summary>

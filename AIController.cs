@@ -26,6 +26,7 @@ namespace Sputnik {
 		private bool turning;  //Used to tell if a ship is turning, still somewhat buggy
 		private bool answeringDistressCall;  //Used to help Confused State transition
 		private float timeSinceLastStateChange;
+		private GameEntity rayCastTarget;
 
         /// <summary>
         ///  Creates a new AI with given spawnpoint and given environment
@@ -392,6 +393,7 @@ namespace Sputnik {
 			float theta = Angle.Direction(s.Position, f.Position); //Angle that I want to see
 			if (Angle.DistanceMag(theta, s.Rotation) < (MathHelper.ToRadians(20))) // If within cone of vision (20 degrees), raycast
             {
+				rayCastTarget = f;
                 env.CollisionWorld.RayCast(RayCastHit, s.CollisionBody.Position, f.CollisionBody.Position);
 				return (hitBodyPosition.Equals(f.CollisionBody.Position));
             }
@@ -411,6 +413,9 @@ namespace Sputnik {
 				return -1;
 			//Ignore Bullets
 			else if (fixture.Body.IsBullet)
+				return -1;
+			//Ignore Ships, weird things happen when ships block the way
+			else if (fixture.Body.UserData is Ship && fixture.Body.UserData != rayCastTarget)
 				return -1;
 			else //look for closest, sets current GameEntity hit as the Body hit's postion
 			{
@@ -489,7 +494,7 @@ namespace Sputnik {
 		public void HitWall()
 		{
 			//if (!turning) //Dont do anything if I'm turning, current model of AI assumes you don't move and turn
-			{
+		//	{
 				if (currentState == State.Neutral)
 				{
 					//This works as long as both the start and finish position aren't on the other side of the wall
@@ -505,7 +510,7 @@ namespace Sputnik {
 					target = null;
 					turning = true;
 				}
-			}
+			//}
 		}
 
 		/// <summary>
@@ -533,6 +538,11 @@ namespace Sputnik {
 					timeSinceLastStateChange = 0;
 				}
 			}
+		}
+
+		public bool IsAlliedWithPlayer()
+		{
+			return currentState == State.Allied;
 		}
     }
 }
