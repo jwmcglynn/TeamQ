@@ -218,6 +218,7 @@ namespace Sputnik {
 		{
 			currentShip.DesiredVelocity = Vector2.Zero;  //I don't move while spinning
 			turning = true;  //Im spinning!
+			/*
 			if (startedRotation) //If I just started rotating, rotate right
 				currentShip.DesiredRotation = currentShip.Rotation + 1.0f;
 			else
@@ -228,6 +229,8 @@ namespace Sputnik {
 				else
 					currentShip.DesiredRotation = startingAngle;
 			}
+			 */
+			currentShip.DesiredRotation = currentShip.Rotation + 1.0f; //I always turn now
 			if (CanSee(currentShip, lookingFor))  //I found who shot someone, time to do something
 			{
 				if (answeringDistressCall)
@@ -246,8 +249,9 @@ namespace Sputnik {
 			}
 			else
 			{
-				if (Angle.DistanceMag(currentShip.Rotation, startingAngle) < currentShip.MaxRotVel * elapsedTime / 2 && !startedRotation) // I made a complete Revolution
+				//if (Angle.DistanceMag(currentShip.Rotation, startingAngle) < currentShip.MaxRotVel * elapsedTime / 2 && !startedRotation) // I made a complete Revolution
 					//I added in the /2 just because it wouldn't work otherwse, maybe use a different value
+				if(timeSinceLastStateChange > 1) //I spin for 2 seconds now
 				{
 					lookingFor = null;
 					nextState = oldState;
