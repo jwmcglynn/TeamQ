@@ -51,6 +51,8 @@ namespace Sputnik {
 		public List<SpawnPoint> PossibleBlackHoleLocations = new List<SpawnPoint>();
 		public List<SpawnPoint> SpawnedBlackHoles = new List<SpawnPoint>();
 
+		public List<SpawnPoint> SpawnedBossPatrolPoints = new List<SpawnPoint>();
+
 		// TEMP: Level scale.
 		public const float k_levelScale = 2.0f;
 

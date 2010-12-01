@@ -27,7 +27,9 @@ namespace Sputnik {
 						SpawnPoint sp = new SpawnPoint(this, obj);
 						if (sp.Entity == null) SpawnPoints.Add(sp);
 
-						if (obj.Type == "blackhole") {
+						if (obj.Type == "BossPatrolPoint")
+							Environment.SpawnedBossPatrolPoints.Add(sp);
+						else if (obj.Type == "blackhole") {
 							Environment.SpawnedBlackHoles.Add(sp);
 						}
 
