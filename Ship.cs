@@ -185,8 +185,17 @@ namespace Sputnik
 				return false;
 			else if (Environment.sputnik.controlled == this) //Sputnik is friendly to nobody
 				return false;
-			else
-				return (s.sputnikDetached && s.timeSinceDetached > 3) || (this.GetType().Equals(s.GetType())); //Otherwise friendly to own faction ships
+			else {
+				if (this.GetType().Equals(s.GetType()))
+				{
+					if (s.sputnikDetached)
+						return s.timeSinceDetached > 3;
+					else
+						return true;
+				}
+				else
+					return false;
+			}
 		}
 	}
 }

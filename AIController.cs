@@ -488,7 +488,7 @@ namespace Sputnik {
 		/// </summary>
 		public void HitWall()
 		{
-			if (!turning) //Dont do anything if I'm turning, current model of AI assumes you don't move and turn
+			//if (!turning) //Dont do anything if I'm turning, current model of AI assumes you don't move and turn
 			{
 				if (currentState == State.Neutral)
 				{
