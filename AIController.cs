@@ -11,20 +11,21 @@ using System.IO;
 namespace Sputnik {
     class AIController : ShipController
     {
-		SpawnPoint spawn;  //Used fpr spawnpoint manipulation
-        bool goingStart;  //Way to determine direction of patrol behavior
-        Vector2 start, finish;  //Endpoints of patrol
-        public GameEnvironment env;  //Game Environment reference
-        Vector2 hitBodyPosition;  //Position of the body hit by a raycast
-        GameEntity target; //Current target of attention
-		GameEntity lookingFor; //Entity that I can't see but I'm looking for
-        enum State{ Allied, Neutral, Alert, Hostile, Confused, Disabled }; //All possible states
+		private SpawnPoint spawn;  //Used for spawnpoint manipulation
+		private bool goingStart;  //Way to determine direction of patrol behavior
+		private Vector2 start, finish;  //Endpoints of patrol
+		private GameEnvironment env;  //Game Environment reference
+		private Vector2 hitBodyPosition;  //Position of the body hit by a raycast
+		private GameEntity target; //Current target of attention
+		private GameEntity lookingFor; //Entity that I can't see but I'm looking for
+		private enum State { Allied, Neutral, Alert, Hostile, Confused, Disabled }; //All possible states
         private State oldState,currentState,nextState; // Used to control AI's FSM
-		float startingAngle; //Used for confused
-		bool startedRotation; //Used for making a ship rotate once
-		Ship currentShip;  //Current ship I'm controlling
+		private float startingAngle; //Used for confused
+		private bool startedRotation; //Used for making a ship rotate once
+		private Ship currentShip;  //Current ship I'm controlling
 		private bool turning;  //Used to tell if a ship is turning, still somewhat buggy
 		private bool answeringDistressCall;  //Used to help Confused State transition
+		private float timeSinceLastStateChange;
 
         /// <summary>
         ///  Creates a new AI with given spawnpoint and given environment
@@ -33,6 +34,7 @@ namespace Sputnik {
         /// </summary>
         public AIController(SpawnPoint sp, GameEnvironment e)
         {
+			timeSinceLastStateChange = 0;
 			spawn = sp;
             start = spawn.TopLeft;
             finish = spawn.BottomRight;
@@ -54,6 +56,7 @@ namespace Sputnik {
 
         public void Update(Ship s, float elapsedTime)
         {
+			timeSinceLastStateChange += elapsedTime;
 			currentShip = s;
 			currentState = nextState;
 			switch(currentState)
@@ -148,7 +151,10 @@ namespace Sputnik {
 			//Nothing out of the ordinary happened
 			//Might want to make the ship stop following after a certain amount of time / distance
 			//Might also change if I can't see my target
-            nextState = State.Alert;
+			if (timeSinceLastStateChange < 5)
+				nextState = State.Alert;
+			else
+				nextState = State.Neutral;
         }
 
 		/// <summary>
@@ -192,6 +198,7 @@ namespace Sputnik {
             {
 				target = null;
                 nextState = State.Neutral;  //If I did, back to default state
+				timeSinceLastStateChange = 0;
             }
             else
             {
@@ -228,11 +235,13 @@ namespace Sputnik {
 					answeringDistressCall = false;
 					target = lookingFor;
 					nextState = State.Allied;
+					timeSinceLastStateChange = 0;
 				}
 				else
 				{
 					target = lookingFor;
 					nextState = State.Alert;
+					timeSinceLastStateChange = 0;
 				}
 			}
 			else
@@ -242,6 +251,7 @@ namespace Sputnik {
 				{
 					lookingFor = null;
 					nextState = oldState;
+					timeSinceLastStateChange = 0;
 				}
 				else //Nothing happened, Im still confused
 					nextState = State.Confused;
@@ -269,6 +279,7 @@ namespace Sputnik {
 			}
 			else
 			{
+				timeSinceLastStateChange = 0;
 				nextState = oldState; // I would like to do something else here
 				//Id like to up the alertness level, ie, if you tractor or freeze me, i become alert or hostile
 				//I can currently do this for tractor due to knowing the tractoring ship, but can't for freezing.
@@ -316,6 +327,7 @@ namespace Sputnik {
 			{
 				target = null;
 				nextState = State.Neutral;  //If I did, back to default state
+				timeSinceLastStateChange = 0;
 			}
 			else
 			{
@@ -332,6 +344,7 @@ namespace Sputnik {
 			//s.DesiredRotation = 0.0f; You probably dont want to make the ship turn towards 0 radians
 			oldState = currentState;
 			nextState = State.Disabled;
+			timeSinceLastStateChange = 0;// Shouldnt matter
 		}
 
 		/// <summary>
@@ -343,6 +356,7 @@ namespace Sputnik {
 			//s.DesiredRotation = 0.0f; You probably dont want to make the ship turn towards 0 radians
 			oldState = currentState;
 			nextState = State.Disabled;
+			timeSinceLastStateChange = 0;// Shouldnt matter
 		}
 
         /// <summary>
@@ -380,7 +394,7 @@ namespace Sputnik {
 		/// <summary>
 		/// RayCast method
 		/// </summary>
-        public float RayCastHit(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
+        private float RayCastHit(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
         {
 			//Faction ships can see through their own faction, unless we happen to be looking at our target
 			if (currentShip.GetType() == fixture.Body.UserData.GetType() && fixture.Body.UserData != lookingFor)
@@ -407,12 +421,14 @@ namespace Sputnik {
 					case State.Neutral: //Currently I only become un-neutral when shot
 						target = f;
 						nextState = State.Alert;
+						timeSinceLastStateChange = 0;
 						break;
 					case State.Alert:  //Someone shot me, time to do something
 							if (f == target) //My target shot me, now Im mad
 							{
 								nextState = State.Hostile;
 								target = f;
+								timeSinceLastStateChange = 0;
 							}
 							else  //Someone else shot me, time to get suspicious of them
 							{
@@ -421,6 +437,7 @@ namespace Sputnik {
 								//Take this up to the game creator gods.
 								nextState = State.Alert;
 								target = f;
+								timeSinceLastStateChange = 0; //I mean to do this
 							}
 							break;
 					case State.Allied:
@@ -438,6 +455,7 @@ namespace Sputnik {
 				{
 					lookingFor = f;
 					nextState = State.Confused;
+					timeSinceLastStateChange = 0; //I mean to do this
 					startingAngle = currentShip.Rotation;
 					startedRotation = true;
 					answeringDistressCall = false;
@@ -447,6 +465,7 @@ namespace Sputnik {
 					lookingFor = f;
 					oldState = currentState;
 					nextState = State.Confused;
+					timeSinceLastStateChange = 0;
 					startingAngle = currentShip.Rotation;
 					startedRotation = true;
 					answeringDistressCall = false;
@@ -472,18 +491,11 @@ namespace Sputnik {
 				{
 					//There is no pathfinding, might as well give up
 					nextState = State.Neutral;
+					timeSinceLastStateChange = 0;
 					target = null;
 					turning = true;
 				}
 			}
-		}
-
-		/// <summary>
-		///  Tells if the AI thinks that it is turning 
-		/// </summary>
-		public bool Turning()
-		{
-			return turning;
 		}
 
 		/// <summary>
@@ -498,6 +510,7 @@ namespace Sputnik {
 				{
 					target = s;
 					nextState = State.Allied;
+					timeSinceLastStateChange = 0;
 				}
 				else  //If I can't see Sputnik's ship, go look for it.
 				{
@@ -507,6 +520,7 @@ namespace Sputnik {
 					nextState = State.Confused;
 					startingAngle = currentShip.Rotation;
 					startedRotation = true;
+					timeSinceLastStateChange = 0;
 				}
 			}
 		}

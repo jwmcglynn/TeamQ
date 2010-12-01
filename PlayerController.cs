@@ -69,12 +69,6 @@ namespace Sputnik
 			//Chaos
 		}
 
-		public bool Turning()
-		{
-			return false;
-			// Who cares
-		}
-
 		public void DistressCall(Ship s, GameEntity f)
 		{
 			//Player doesn't care about distress calls
