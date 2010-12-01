@@ -13,7 +13,6 @@ namespace Sputnik {
 
 		// Position.
 		public Vector2 Position;
-		private Vector2[] patrolPoints;
 
 		// Size.
 		public Vector2 Size;
@@ -33,14 +32,6 @@ namespace Sputnik {
 		public Rectangle Rect {
 			get {
 				return new Rectangle((int) TopLeft.X, (int) TopLeft.Y, (int) Size.X, (int) Size.Y);
-			}
-		}
-
-		public Vector2[] Patrol
-		{
-			get
-			{
-				return patrolPoints;
 			}
 		}
 
@@ -75,11 +66,6 @@ namespace Sputnik {
 			SpawnController = spawner;
 			EntityType = type;
 			Position = position;
-		}
-
-		public SpawnPoint(SpawnController spawner, string type, Vector2 position, Vector2[] patrol) : this(spawner, type, position)
-		{
-			this.patrolPoints = patrol;
 		}
 
 		internal SpawnPoint(SpawnController spawner, Squared.Tiled.Object obj) {

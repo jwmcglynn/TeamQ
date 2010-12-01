@@ -26,6 +26,9 @@ namespace Sputnik
 		public Ship tractoringShip;
 		protected float passiveShield;
 
+		protected float vulnCounter;
+		protected bool vulnToNPC;
+
 		protected Rectangle m_patrolRect;
 
 		// Smooth rotation.
@@ -59,6 +62,14 @@ namespace Sputnik
 				shooter.Position = Position;
 			}
 
+			if (this.vulnToNPC && !(this.ai is PlayerController))
+			{
+				if (this.vulnCounter > 0)
+					this.vulnCounter -= elapsedTime;
+				else
+					this.vulnToNPC = false;
+			}
+
 			if (Rotation != DesiredRotation && !isFrozen) {
 				float distPos = Angle.Distance(DesiredRotation, Rotation);
 				float dir = Math.Sign(distPos);
@@ -82,6 +93,7 @@ namespace Sputnik
 			this.attachedShip = sp;
 			isFrozen = false;
 			isTractored = false;
+			this.vulnToNPC = true;
 		}
 
 		public virtual void Detach()
@@ -89,6 +101,7 @@ namespace Sputnik
 			this.ai = this.previousAI;
 			this.attachedShip.Detach();
 			this.attachedShip = null;
+			this.vulnCounter = 3.0f;
 		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
@@ -165,7 +178,7 @@ namespace Sputnik
 
 		public virtual bool IsFriendly()
 		{
-			return (this.ai is PlayerController);
+			return (this.ai is PlayerController) || this.vulnToNPC;
 		}
 	}
 }

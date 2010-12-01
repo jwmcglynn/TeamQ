@@ -60,15 +60,9 @@ namespace Sputnik
 
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true;
-			if (sp == null)
-			{
-				Vector2[] temp = { new Vector2(env.ScreenVirtualSize.X, env.ScreenVirtualSize.Y), new Vector2(0f, env.ScreenVirtualSize.Y), new Vector2(0, 0), new Vector2(env.ScreenVirtualSize.X, 0) };
-				this.ai = new BossAI(env, this, temp);
-			}
-			else
-			{
-				this.ai = new BossAI(env, this, sp.Patrol);
-			}
+			
+			Vector2[] temp = { new Vector2(env.ScreenVirtualSize.X, env.ScreenVirtualSize.Y), new Vector2(0f, env.ScreenVirtualSize.Y), new Vector2(0, 0), new Vector2(env.ScreenVirtualSize.X, 0) };
+			this.ai = new BossAI(env, this, temp);
 		}
 
 		public override void Update(float elapsedTime)
