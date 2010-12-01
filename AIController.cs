@@ -457,8 +457,10 @@ namespace Sputnik {
 								timeSinceLastStateChange = 0; //I mean to do this
 							}
 							break;
-						case State.Allied:
-							//Do I want to do something if the shooting ship is of the same faction?
+						case State.Hostile:
+							nextState = State.Hostile;
+							target = f;
+							timeSinceLastStateChange = 0;
 							break;
 						default:
 							//current do nothing if in Disabled or Hostile when shot
