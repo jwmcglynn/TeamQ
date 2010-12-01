@@ -169,6 +169,7 @@ namespace Sputnik
 						Entity collided = sortedList.FirstOrDefault(ent =>
 						{
 							if (ent is Ship && controlled.IsFriendly((Ship)ent)) return false;
+							else if (ent is Boss && controlled.IsFriendly((Boss)ent)) return false;
 							return (ent is Tractorable);
 						});
 
@@ -214,6 +215,7 @@ namespace Sputnik
 
 				Entity collided = sortedList.FirstOrDefault(ent => {
 					if (ent is Ship && controlled.IsFriendly((Ship)ent)) return false;
+					else if (ent is Boss && controlled.IsFriendly((Boss)ent)) return false;
 					if (ent is Environment) return false;
 					return true;
 				});

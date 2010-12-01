@@ -207,6 +207,12 @@ namespace Sputnik {
 				target = null;
 				timeSinceLastStateChange = 0;
 			}
+			else if (target is Boss && currentShip.IsFriendly((Boss)target)) //Darn, I can't kill my target anymore
+			{	//I dont think this case ever happens, but might as well include it
+				nextState = State.Neutral;
+				target = null;
+				timeSinceLastStateChange = 0;
+			}
 			else
 			{
 				nextState = State.Hostile;  //More killing

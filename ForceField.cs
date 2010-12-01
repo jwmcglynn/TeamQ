@@ -92,6 +92,10 @@ namespace Sputnik
 			if(entB is Ship && (owner.IsFriendly((Ship)entB))) {
 				return false;
 			}
+			else if (entB is Boss && (owner.IsFriendly((Boss)entB)))
+			{
+				return false;
+			}
 	
 			return true;
 		}

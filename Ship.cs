@@ -197,5 +197,11 @@ namespace Sputnik
 					return false;
 			}
 		}
+
+		public virtual bool IsFriendly(Boss s)
+		{
+			//Current hack, might want to update this if we ever get more than one boss
+			return this is CircloidShip;
+		}
 	}
 }
