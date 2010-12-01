@@ -9,10 +9,9 @@ namespace Sputnik
 	class BulletEmitter : Entity
 	{
 		private GameEnvironment env; 
-		public bool ShotByPlayer;
 		private float emitterDistance = 20.0f;
 		Random rand = new Random();
-        public GameEntity owner;
+        public TakesDamage owner;
 
 		public enum BulletStrength {
 			Weak, 
@@ -29,21 +28,19 @@ namespace Sputnik
 
 		private float mediumBulletSpread = 10 * (float) Math.PI / 180;
 
-		public BulletEmitter(GameEnvironment e, GameEntity s, BulletStrength type, bool playerShotBullet)
+		public BulletEmitter(GameEnvironment e, TakesDamage s, BulletStrength type)
 		{
             owner = s;
 			env = e;
 			strength = type;
-			ShotByPlayer = playerShotBullet;
 		}
 
-		public void Shoot(float elapsedTime, bool isPlayer)
+		public void Shoot(float elapsedTime)
 		{
 			// time that has passed since last bullet and if its passed a certain threshold we will shoot a bullet
 			// after a bullet is shot, we must subtract from our cooldowntime the threshold, so we can continue using
 			// time spent so far. 
 			updateAccum += elapsedTime;
-			ShotByPlayer = isPlayer;
 
 			// determines how often the bullets will be shot
 			switch (strength) {
@@ -53,9 +50,9 @@ namespace Sputnik
 						updateAccum -= weakBulletInterval;
 
 						// Spawn a bullet
-						if (ShotByPlayer) Sound.PlayCue("bullet_fire");
+						if (owner == env.sputnik.controlled) Sound.PlayCue("bullet_fire");
 						else Sound.PlayCue("bullet_fire", this);
-						Bullet bullet = new Bullet(env, owner, Position, (double)Rotation, ShotByPlayer);
+						Bullet bullet = new Bullet(env, owner, Position, (double)Rotation);
 						env.AddChild(bullet);
 					}
 					break;						
@@ -67,9 +64,9 @@ namespace Sputnik
 						// BulletAngle will be randomized across a spread of mediumBulletSpread degrees.
 						double randAngle = Rotation + (rand.NextDouble() - 0.5f) * mediumBulletSpread;
 
-						if (ShotByPlayer) Sound.PlayCue("bullet_fire");
+						if (owner == env.sputnik.controlled) Sound.PlayCue("bullet_fire");
 						else Sound.PlayCue("bullet_fire", this);
-						Bullet bullet = new Bullet(env, owner, Position, (double) randAngle, ShotByPlayer);
+						Bullet bullet = new Bullet(env, owner, Position, (double) randAngle);
 						env.AddChild(bullet);
 					}
 					break;
@@ -86,12 +83,12 @@ namespace Sputnik
 						Vector2 rightBulletPos = Position + horizontalDistance;
 						Vector2 leftBulletPos = Position - horizontalDistance;
 
-						if (ShotByPlayer) Sound.PlayCue("bullet_fire");
+						if (owner == env.sputnik.controlled) Sound.PlayCue("bullet_fire");
 						else Sound.PlayCue("bullet_fire", this);
-						Bullet rightBullet = new Bullet(env, owner, rightBulletPos, (double)Rotation, ShotByPlayer);
+						Bullet rightBullet = new Bullet(env, owner, rightBulletPos, (double)Rotation);
 						env.AddChild(rightBullet);
 
-						Bullet leftBullet = new Bullet(env, owner, leftBulletPos, (double)Rotation, ShotByPlayer);
+						Bullet leftBullet = new Bullet(env, owner, leftBulletPos, (double)Rotation);
 						env.AddChild(leftBullet);
 					}
 					break;

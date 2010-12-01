@@ -19,7 +19,7 @@ namespace Sputnik
 		}
 
 		private void Initialize(SpawnPoint sp) {
-			shooter = new BulletEmitter(Environment, this, BulletEmitter.BulletStrength.Medium, IsFriendly());
+			shooter = new BulletEmitter(Environment, this, BulletEmitter.BulletStrength.Medium);
 			AddChild(shooter);
 			ai = new AIController(sp, Environment);
 			LoadTexture(Environment.contentManager, "circloid");

@@ -11,7 +11,7 @@ namespace Sputnik
 	{
 		public bool attached = false;
 		public bool attaching = false;
-		private Ship controlled = null; 
+		public Ship controlled = null; 
 		private Ship recentlyControlled = null;
 		private ShipController playerAI = null;
 
@@ -84,10 +84,6 @@ namespace Sputnik
 			attached = false;
 			controlled = null;
 			ai = playerAI;
-		}
-
-		public override bool IsFriendly() {
-			return true;
 		}
 
 		public override void OnSeparate(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)

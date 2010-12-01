@@ -20,7 +20,7 @@ namespace Sputnik
 		}
 
 		private void Initialize(SpawnPoint sp) {
-			shooter = new BulletEmitter(Environment, this,BulletEmitter.BulletStrength.Strong, IsFriendly());
+			shooter = new BulletEmitter(Environment, this,BulletEmitter.BulletStrength.Strong);
 			AddChild(shooter);
 			ai = new AIController(sp, Environment);
 			LoadTexture(Environment.contentManager, "squaretopia");

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Sputnik {
 	interface TakesDamage {
-		bool IsFriendly();
+		bool IsFriendly(Ship s);
 		void TakeHit(int damage);
 		void InstaKill();
 	}

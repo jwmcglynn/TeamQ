@@ -14,7 +14,7 @@ namespace Sputnik
 	{
 		internal ShipController ai;
 		private ShipController previousAI = null;
-		public int health = 10;
+		public int health = 100;
 		private bool m_shouldCull = false;
 		public float shooterRotation;
 		protected BulletEmitter shooter = null;
@@ -25,10 +25,6 @@ namespace Sputnik
 		public bool isTractored;
 		public Ship tractoringShip;
 		protected float passiveShield;
-
-		protected float vulnCounter;
-		protected bool vulnToNPC;
-
 		protected Rectangle m_patrolRect;
 
 		// Smooth rotation.
@@ -36,20 +32,30 @@ namespace Sputnik
 		private float m_lastRotDir = 1.0f;
 		public float MaxRotVel = 3.0f * (float) Math.PI; // Up to 1.5 rotations per second.
 
+		//Used for friendliness
+		bool sputnikDetached;
+		float timeSinceDetached;
+
 		public Ship(GameEnvironment env, Vector2 pos)
 				: base(env)
 		{
 			Position = pos;
 			shooterRotation = Rotation;
+			sputnikDetached = false;
+			timeSinceDetached = 0;
 		}
 
 		public Ship(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp)
 		{
+			sputnikDetached = false;
+			timeSinceDetached = 0;
 		}
 
 		public override void Update(float elapsedTime)
 		{
+			if (sputnikDetached)
+				timeSinceDetached += elapsedTime;
 			isShooting = false;
 			if (ai != null)
 			{
@@ -60,14 +66,6 @@ namespace Sputnik
 				// Update emitter position.
 				shooter.Rotation = shooterRotation;
 				shooter.Position = Position;
-			}
-
-			if (this.vulnToNPC && !(this.ai is PlayerController))
-			{
-				if (this.vulnCounter > 0)
-					this.vulnCounter -= elapsedTime;
-				else
-					this.vulnToNPC = false;
 			}
 
 			if (Rotation != DesiredRotation && !isFrozen) {
@@ -93,7 +91,8 @@ namespace Sputnik
 			this.attachedShip = sp;
 			isFrozen = false;
 			isTractored = false;
-			this.vulnToNPC = true;
+			sputnikDetached = false;
+			timeSinceDetached = 0;
 		}
 
 		public virtual void Detach()
@@ -101,7 +100,8 @@ namespace Sputnik
 			this.ai = this.previousAI;
 			this.attachedShip.Detach();
 			this.attachedShip = null;
-			this.vulnCounter = 3.0f;
+			sputnikDetached = true;
+			timeSinceDetached = 0;
 		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
@@ -156,7 +156,7 @@ namespace Sputnik
 
 		public virtual void Shoot(float elapsedTime)
 		{
-			shooter.Shoot(elapsedTime, IsFriendly());
+			shooter.Shoot(elapsedTime);
 			isShooting = true;
 		}
 
@@ -176,9 +176,17 @@ namespace Sputnik
 			m_shouldCull = true;
 		}
 
-		public virtual bool IsFriendly()
+		//Tells if this is friendly to s
+		public virtual bool IsFriendly(Ship s)
 		{
-			return (this.ai is PlayerController) || this.vulnToNPC;
+			if (this.Equals(s)) //Im always friendly to myself
+				return true;
+			else if (s == Environment.sputnik.controlled) //Nobody is ever friendly to Sputnik's ship
+				return false;
+			else if (Environment.sputnik.controlled == this) //Sputnik is friendly to nobody
+				return false;
+			else
+				return (s.sputnikDetached && s.timeSinceDetached > 3) || (this.GetType().Equals(s.GetType())); //Otherwise friendly to own faction ships
 		}
 	}
 }

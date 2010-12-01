@@ -160,7 +160,7 @@ namespace Sputnik
 
 						Entity collided = sortedList.FirstOrDefault(ent =>
 						{
-							if (ent is Ship && ((Ship)ent).IsFriendly()) return false;
+							if (ent is Ship && controlled.IsFriendly((Ship)ent)) return false;
 							return (ent is Tractorable);
 						});
 
@@ -189,7 +189,7 @@ namespace Sputnik
 						isTractoringItem = false;
 					}
 				} else if(s is SquaretopiaShip) {
-					ForceField ff = new ForceField(m_env, s.Position, s.shooterRotation);
+					ForceField ff = new ForceField(m_env, s.Position, s.shooterRotation, controlled);
 					m_env.AddChild(ff);
 				}
 
@@ -205,7 +205,7 @@ namespace Sputnik
 				IOrderedEnumerable<Entity> sortedList = list.OrderBy(ent => Vector2.DistanceSquared(s.Position, ent.Position));
 
 				Entity collided = sortedList.FirstOrDefault(ent => {
-					if (ent is Ship && ((Ship) ent).IsFriendly()) return false;
+					if (ent is Ship && controlled.IsFriendly((Ship)ent)) return false;
 					if (ent is Environment) return false;
 					return true;
 				});

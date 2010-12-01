@@ -43,9 +43,9 @@ namespace Sputnik
 		protected virtual void initialize(GameEnvironment env)
 		{
 			this.env = env;
-			this.bm1 = new BulletEmitter(env, this, BulletEmitter.BulletStrength.Medium, false);
-			this.bm2 = new BulletEmitter(env, this, BulletEmitter.BulletStrength.Medium, false);
-			this.bm3 = new BulletEmitter(env, this, BulletEmitter.BulletStrength.Medium, false);
+			this.bm1 = new BulletEmitter(env, this, BulletEmitter.BulletStrength.Medium);
+			this.bm2 = new BulletEmitter(env, this, BulletEmitter.BulletStrength.Medium);
+			this.bm3 = new BulletEmitter(env, this, BulletEmitter.BulletStrength.Medium);
 
 			AddChild(bm1);
 			AddChild(bm2);
@@ -91,16 +91,16 @@ namespace Sputnik
 			}
 		}
 
-		public bool IsFriendly()
+		public bool IsFriendly(Ship s)
 		{
-			return false;
+			return false;  //Evidently the boss hates everything
 		}
 
 		public void Shoot(float elapsedTime)
 		{
-			bm1.Shoot(elapsedTime, false);
-			bm2.Shoot(elapsedTime, false);
-			bm3.Shoot(elapsedTime, false);
+			bm1.Shoot(elapsedTime);
+			bm2.Shoot(elapsedTime);
+			bm3.Shoot(elapsedTime);
 		}
 
 		public void InstaKill()

@@ -11,14 +11,16 @@ namespace Sputnik
 		const float k_speed = 600.0f; // pixels per second
 		float m_angle;
 		float timeElapsed;
+		TakesDamage owner;
 
 		// Create force field dynamically.
-		public ForceField(GameEnvironment env, Vector2 pos, float angle)
+		public ForceField(GameEnvironment env, Vector2 pos, float angle, TakesDamage o)
 			: base(env)
 		{
 			Position = pos;
 			m_angle = angle;
 			Initialize();
+			owner = o;
 		}
 
 		private void Initialize()
@@ -87,7 +89,7 @@ namespace Sputnik
 		// Collide with non-circloid bullets and non-circloid ships.
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
 			if(entB is CircloidShip || entB is Boss || entB is Bullet) return false;
-			if(entB is Ship && ((Ship)entB).IsFriendly()) {
+			if(entB is Ship && (owner.IsFriendly((Ship)entB))) {
 				return false;
 			}
 	

@@ -200,10 +200,16 @@ namespace Sputnik {
                 nextState = State.Neutral;  //If I did, back to default state
 				timeSinceLastStateChange = 0;
             }
-            else
-            {
-                nextState = State.Hostile;  //More killing
-            }
+			else if (target is Ship && currentShip.IsFriendly((Ship)target)) //Darn, I can't kill my target anymore
+			{
+				nextState = State.Neutral;
+				target = null;
+				timeSinceLastStateChange = 0;
+			}
+			else
+			{
+				nextState = State.Hostile;  //More killing
+			}
         }
 
 		/// <summary>
@@ -251,7 +257,7 @@ namespace Sputnik {
 			{
 				//if (Angle.DistanceMag(currentShip.Rotation, startingAngle) < currentShip.MaxRotVel * elapsedTime / 2 && !startedRotation) // I made a complete Revolution
 					//I added in the /2 just because it wouldn't work otherwse, maybe use a different value
-				if(timeSinceLastStateChange > 1) //I spin for 2 seconds now
+				if(timeSinceLastStateChange > 1) //I spin for 1 second now
 				{
 					lookingFor = null;
 					nextState = oldState;
