@@ -429,16 +429,18 @@ namespace Sputnik {
 		/// </summaryd>
 		public void GotShotBy(Ship s, GameEntity f)
 		{
-			if (CanSee(currentShip, f)) //If I can see the shooter
+			if (currentState != State.Allied) //Allied ships do nothing if shot
 			{
-				switch (currentState)
+				if (CanSee(currentShip, f)) //If I can see the shooter
 				{
-					case State.Neutral: //Currently I only become un-neutral when shot
-						target = f;
-						nextState = State.Alert;
-						timeSinceLastStateChange = 0;
-						break;
-					case State.Alert:  //Someone shot me, time to do something
+					switch (currentState)
+					{
+						case State.Neutral: //Currently I only become un-neutral when shot
+							target = f;
+							nextState = State.Alert;
+							timeSinceLastStateChange = 0;
+							break;
+						case State.Alert:  //Someone shot me, time to do something
 							if (f == target) //My target shot me, now Im mad
 							{
 								nextState = State.Hostile;
@@ -455,35 +457,36 @@ namespace Sputnik {
 								timeSinceLastStateChange = 0; //I mean to do this
 							}
 							break;
-					case State.Allied:
-						//Do I want to do something if the shooting ship is of the same faction?
+						case State.Allied:
+							//Do I want to do something if the shooting ship is of the same faction?
 							break;
-					default:
+						default:
 							//current do nothing if in Disabled or Hostile when shot
 							break;
+					}
 				}
-			}
-			else
-			{
-				if (currentState == State.Confused) //If Im confused, I don't make my oldState Confused,
+				else
+				{
+					if (currentState == State.Confused) //If Im confused, I don't make my oldState Confused,
 					//but I do become more confused
-				{
-					lookingFor = f;
-					nextState = State.Confused;
-					timeSinceLastStateChange = 0; //I mean to do this
-					startingAngle = currentShip.Rotation;
-					startedRotation = true;
-					answeringDistressCall = false;
-				}
-				else if (currentState != State.Hostile) //I don't become confused if im hostile
-				{
-					lookingFor = f;
-					oldState = currentState;
-					nextState = State.Confused;
-					timeSinceLastStateChange = 0;
-					startingAngle = currentShip.Rotation;
-					startedRotation = true;
-					answeringDistressCall = false;
+					{
+						lookingFor = f;
+						nextState = State.Confused;
+						timeSinceLastStateChange = 0; //I mean to do this
+						startingAngle = currentShip.Rotation;
+						startedRotation = true;
+						answeringDistressCall = false;
+					}
+					else if (currentState != State.Hostile) //I don't become confused if im hostile
+					{
+						lookingFor = f;
+						oldState = currentState;
+						nextState = State.Confused;
+						timeSinceLastStateChange = 0;
+						startingAngle = currentShip.Rotation;
+						startedRotation = true;
+						answeringDistressCall = false;
+					}
 				}
 			}
 		}
