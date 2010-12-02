@@ -63,6 +63,8 @@ namespace Sputnik {
 		internal SputnikShip sputnik = null;
 
 
+		public Menus.HUD HUD;
+
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {
 			
@@ -78,8 +80,6 @@ namespace Sputnik {
 				GraphicsDeviceService = ctrl.Graphics
 			};
 
-			m_debugView = new Physics.DebugViewXNA(CollisionWorld);
-
 			// Create collision notification callbacks.
 			CollisionWorld.ContactManager.PreSolve += PreSolve;
 			CollisionWorld.ContactManager.BeginContact += BeginContact;
@@ -93,6 +93,9 @@ namespace Sputnik {
 			ShipCollisionAvoidanceController shipAvoid = new ShipCollisionAvoidanceController(150.0f * k_physicsScale);
 			shipAvoid.MaxRadius = 80.0f * k_physicsScale;
 			CollisionWorld.AddController(shipAvoid);
+
+			// HUD.
+			HUD = new Menus.HUD(ctrl);
 
 			// Farseer freaks out unless we call Update here when changing Environments.  FIXME: Why?
 			Update(0.0f);
@@ -183,6 +186,7 @@ namespace Sputnik {
 				// Update entities.
 				base.Update(k_physicsStep);
 				Camera.Update(k_physicsStep);
+				HUD.Update(k_physicsStep);
 			}
 
 			if (!didUpdate) {
@@ -190,6 +194,7 @@ namespace Sputnik {
 				if (SpawnController != null) SpawnController.Update(0.0f);
 				base.Update(0.0f);
 				Camera.Update(0.0f);
+				HUD.Update(0.0f);
 			}
 
 			// Toggle debug view.
@@ -236,6 +241,9 @@ namespace Sputnik {
 				Matrix debugMatrix = Matrix.CreateScale(k_invPhysicsScale) * Camera.Transform;
 				m_debugView.RenderDebugData(ref m_projection, ref debugMatrix);
 			}
+
+			// Draw HUD.
+			HUD.Draw();
 		}
 
 		/// <summary>

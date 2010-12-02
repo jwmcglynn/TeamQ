@@ -128,13 +128,18 @@ namespace Sputnik
 
 				// Aiming.  TODO: Direction, not position.
 				Vector2 mousePos = m_env.Camera.ScreenToWorld(new Vector2(mouse.X, mouse.Y)) - m_env.Camera.Position;
-				mousePos /= k_aimRadius;
-				if (mousePos.Length() > 1.0f) mousePos.Normalize();
-				mousePos *= k_aimRadius;
+				if (mousePos.Length() > k_aimRadius) {
+					mousePos.Normalize();
+					mousePos *= k_aimRadius;
+				}
 
 				specialPosition = Vector2.Normalize(mousePos) * k_aimRadius + s.Position;
 				aimDirection = Angle.Direction(Vector2.Zero, mousePos);
 				specialDirection = aimDirection;
+
+				m_env.HUD.Rotation = specialDirection;
+				m_env.HUD.Cursor.Position = mousePos / 3.0f + m_env.Camera.WorldToScreen(s.Position);
+				m_env.HUD.Cursor.Visible = true;
 
 				{
 					// Reset mouse position to center.
@@ -162,6 +167,9 @@ namespace Sputnik
 				specialPosition = Angle.Vector(s.DesiredRotation) * k_aimRadius + s.Position;
 				specialDirection = s.DesiredRotation;
 
+				m_env.HUD.Rotation = aimDirection;
+				m_env.HUD.Cursor.Position = Angle.Vector(aimDirection) * k_aimRadius / 3.0f + m_env.Camera.WorldToScreen(s.Position);
+
 				// Detach.
 				detachPressed = (gamepad.IsButtonDown(Buttons.LeftShoulder) && !oldGamepad.IsButtonDown(Buttons.LeftShoulder))
 									|| (gamepad.IsButtonDown(Buttons.RightShoulder) && !oldGamepad.IsButtonDown(Buttons.RightShoulder));
@@ -172,6 +180,7 @@ namespace Sputnik
 
 				// Shoot.
 				shoot = (gamepad.ThumbSticks.Right.Length() > 0.1f);
+				m_env.HUD.Cursor.Visible = shoot;
 			}
 
 			// Act on input.
