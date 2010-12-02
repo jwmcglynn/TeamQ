@@ -41,6 +41,8 @@ namespace Sputnik {
 		public delegate void UpdateTask();
 		public event UpdateTask OnNextUpdate;
 
+		public float Alpha = 1.0f;
+
 		/*************************************************************************/
 		// Entity tree.
 
@@ -88,7 +90,7 @@ namespace Sputnik {
 				ent.Dispose();
 			});
 		}
-
+		
 		/*************************************************************************/
 		// State.
 
@@ -354,7 +356,7 @@ namespace Sputnik {
 		/// <param name="spriteBatch">SpriteBatch to render to.</param>
 		public virtual void Draw(SpriteBatch spriteBatch) {
 			if (Texture != null) {
-				spriteBatch.Draw(Texture, Position, null, Color.White, Rotation, Registration, 1.0f, SpriteEffects.None, Zindex);
+				spriteBatch.Draw(Texture, Position, null, new Color(1.0f, 1.0f, 1.0f, Alpha), Rotation, Registration, 1.0f, SpriteEffects.None, Zindex);
 			}
 
 			foreach (Entity ent in Children) {

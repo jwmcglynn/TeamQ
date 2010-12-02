@@ -115,10 +115,6 @@ namespace Sputnik
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
 			return !(entB is Ship) || (entB is SputnikShip);
-
-			 if(isFrozen && !(entB is SputnikShip)) return false;
-
-			return true;
 		}
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)

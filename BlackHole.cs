@@ -104,7 +104,7 @@ namespace Sputnik
 			// Load textures.
 			for (int i = 0; i < m_textures.Length; i++)
 			{
-				String assetName = String.Format("blackhole/blackhole{0:00}", i);
+				String assetName = String.Format("blackhole/black_hole{0:00}", i);
 				m_textures[i] = Environment.contentManager.Load<Texture2D>(assetName);
 			}
 
@@ -134,9 +134,9 @@ namespace Sputnik
 		
 		public override void Update(float elapsedTime)
 		{
+			Rotation -= .005f;
 			if(!animate || timeElapsed > 2.0) {
 				Texture = m_textures[m_textures.Length-1];
-				Rotation -= .005f;
 				CollisionBody.Active = true;
 
 				if (animate) {
@@ -149,7 +149,7 @@ namespace Sputnik
 
 			if(beginDestruction) {
 				if(timeElapsed > 2.0) {
-					this.Dispose();
+					Dispose();
 				} else {
 					Texture = m_textures[m_textures.Length - 1 - (int)(timeElapsed * 20 / 2)];
 				}

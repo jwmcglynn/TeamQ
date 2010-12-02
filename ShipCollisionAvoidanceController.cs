@@ -21,10 +21,10 @@ namespace Sputnik {
 			Vector2 f = Vector2.Zero;
 
 			foreach (Body body1 in World.BodyList) {
-				if (!(body1.UserData is Ship) || (body1.UserData is SputnikShip)) continue;
+				if (!(body1.UserData is Ship) || (body1.UserData is SputnikShip) || ((Ship) body1.UserData).isFrozen) continue;
 
 				foreach (Body body2 in World.BodyList) {
-					if ((body1 == body2) || !(body2.UserData is Ship) || (body2.UserData is SputnikShip)) continue;
+					if ((body1 == body2) || !(body2.UserData is Ship) || (body2.UserData is SputnikShip) || ((Ship) body2.UserData).isFrozen) continue;
 
 					Vector2 d = body2.Position - body1.Position;
 					float r2 = d.LengthSquared();
