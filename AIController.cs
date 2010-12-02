@@ -28,6 +28,8 @@ namespace Sputnik {
 		private List<Vector2> patrolPoints;
 		private float timeSinceHitWall;
 		private bool recentlyHitWall;
+		private float timeSinceChangedTargets;
+		private bool recentlyChangedTargets;
 
         /// <summary>
         ///  Creates a new AI with given spawnpoint and given environment
@@ -54,6 +56,8 @@ namespace Sputnik {
 			patrolPoints.Add(spawn.BottomLeft);
 			timeSinceHitWall = 0; ;
 			recentlyHitWall = false;
+			timeSinceChangedTargets = 0;
+			recentlyChangedTargets = false;
         }
 
         /// <summary>
@@ -67,8 +71,15 @@ namespace Sputnik {
 				recentlyHitWall = false;
 				timeSinceHitWall = 0;
 			}
+			if (timeSinceChangedTargets > 3) //I consider recent 3 seconds
+			{
+				recentlyChangedTargets = false;
+				timeSinceChangedTargets = 0;
+			}
 			if (recentlyHitWall)
 				timeSinceHitWall += elapsedTime;
+			if (recentlyChangedTargets)
+				timeSinceChangedTargets += elapsedTime;
 			timeSinceLastStateChange += elapsedTime;
 			currentShip = s;
 			currentState = nextState;
@@ -473,9 +484,13 @@ namespace Sputnik {
 							}
 							break;
 						case State.Hostile:
-							nextState = State.Hostile;
-							target = f;
-							timeSinceLastStateChange = 0;
+							if (!recentlyChangedTargets)
+							{
+								nextState = State.Hostile;
+								target = f;
+								timeSinceLastStateChange = 0;
+								recentlyChangedTargets = true;
+							}
 							break;
 						default:
 							//current do nothing if in Disabled or Hostile when shot
