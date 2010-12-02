@@ -85,6 +85,10 @@ namespace Sputnik
 			return true;
 		}
 
+		public void gotDetached()
+		{
+			//Sputnik no care
+		}
 
         /// <summary>
         ///  Updates the State of a ship

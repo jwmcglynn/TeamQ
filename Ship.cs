@@ -26,6 +26,7 @@ namespace Sputnik
 		public Ship tractoringShip;
 		protected float passiveShield;
 		protected Rectangle m_patrolRect;
+		protected SpawnPoint spawn;
 
 		// Smooth rotation.
 		public float DesiredRotation;
@@ -50,6 +51,7 @@ namespace Sputnik
 		{
 			sputnikDetached = false;
 			timeSinceDetached = 0;
+			spawn = sp;
 		}
 
 		public override void Update(float elapsedTime)
@@ -102,6 +104,8 @@ namespace Sputnik
 			this.attachedShip = null;
 			sputnikDetached = true;
 			timeSinceDetached = 0;
+			spawn.Position = Position;
+			ai.gotDetached();
 		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {

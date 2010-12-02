@@ -14,5 +14,6 @@ namespace Sputnik
 		void GotFrozen();
 		void DistressCall(Ship s, GameEntity f);
 		bool IsAlliedWithPlayer();
+		void gotDetached();
 	}
 }

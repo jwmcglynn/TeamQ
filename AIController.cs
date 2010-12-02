@@ -26,6 +26,8 @@ namespace Sputnik {
 		private float timeSinceLastStateChange;
 		private GameEntity rayCastTarget;
 		private List<Vector2> patrolPoints;
+		private float timeSinceHitWall;
+		private bool recentlyHitWall;
 
         /// <summary>
         ///  Creates a new AI with given spawnpoint and given environment
@@ -50,6 +52,8 @@ namespace Sputnik {
 			patrolPoints.Add(spawn.TopRight);
 			patrolPoints.Add(spawn.BottomRight);
 			patrolPoints.Add(spawn.BottomLeft);
+			timeSinceHitWall = 0; ;
+			recentlyHitWall = false;
         }
 
         /// <summary>
@@ -58,6 +62,13 @@ namespace Sputnik {
 
         public void Update(Ship s, float elapsedTime)
         {
+			if (timeSinceHitWall > 3) //I consider recent 3 seconds
+			{
+				recentlyHitWall = false;
+				timeSinceHitWall = 0;
+			}
+			if (recentlyHitWall)
+				timeSinceHitWall += elapsedTime;
 			timeSinceLastStateChange += elapsedTime;
 			currentShip = s;
 			currentState = nextState;
@@ -502,17 +513,15 @@ namespace Sputnik {
 		/// </summary>
 		public void HitWall()
 		{
-			if (currentState != State.Allied) //Allied ships blindly follow leader
+			if (currentState != State.Allied && !recentlyHitWall) //Allied ships and ships that recently hit a wall ignore hitting a wall
 			{
-				//if (!turning) //Dont do anything if I'm turning, current model of AI assumes you don't move and turn
-				//	{
 				if (currentState == State.Neutral)
 				{
 					//This works as long as both the start and finish position aren't on the other side of the wall
 					//With no pathfinding, this is probably the best I can do
-					patrolPoints.Add(patrolPoints.First()); //Makes the list circular, sorta
-					patrolPoints.RemoveAt(0);  
-					//turning = true;
+					patrolPoints.Add(currentShip.Position); //Makes the list circular, sorta
+					patrolPoints.RemoveAt(0);
+					recentlyHitWall = true;
 				}
 				else
 				{
@@ -520,10 +529,9 @@ namespace Sputnik {
 					nextState = State.Neutral;
 					timeSinceLastStateChange = 0;
 					target = null;
-				//	turning = true;
+					recentlyHitWall = true;
 				}
 			}
-			//}
 		}
 
 		/// <summary>
@@ -553,6 +561,21 @@ namespace Sputnik {
 			}
 		}
 
+		/// <summary>
+		///  Call when sputnik detaches from this ship
+		/// </summary>
+		public void gotDetached()
+		{
+			patrolPoints.Clear();
+			patrolPoints.Add(spawn.TopLeft);
+			patrolPoints.Add(spawn.TopRight);
+			patrolPoints.Add(spawn.BottomRight);
+			patrolPoints.Add(spawn.BottomLeft);
+		}
+
+		/// <summary>
+		///  Tells if this ship is allied with player
+		/// </summary>
 		public bool IsAlliedWithPlayer()
 		{
 			return currentState == State.Allied;
