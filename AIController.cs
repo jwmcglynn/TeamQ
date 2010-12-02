@@ -202,7 +202,7 @@ namespace Sputnik {
 			//TODO What do I do if I can't see my target
 			//Shoot if I see my target
             if(CanSee(currentShip,target))
-                currentShip.Shoot(elapsedTime);
+                currentShip.Shoot(elapsedTime,target);
             //Did i Kill the target
             if (target.ShouldCull())
             {

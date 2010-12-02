@@ -164,6 +164,14 @@ namespace Sputnik
 			isShooting = true;
 		}
 
+		public virtual void Shoot(float elapsedTime, GameEntity target)
+		{
+			shooter.Shoot(elapsedTime);
+			isShooting = true;
+			if (target == Environment.sputnik.controlled)
+				Environment.sputnik.controlled.ai.GotShotBy(Environment.sputnik.controlled, this);
+		}
+
 		public bool isSputnik()
 		{
 			if (this.ai is PlayerController)
