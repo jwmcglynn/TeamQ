@@ -30,6 +30,8 @@ namespace Sputnik {
 		private bool recentlyHitWall;
 		private float timeSinceChangedTargets;
 		private bool recentlyChangedTargets;
+		private float timeSinceLastMoved;
+		private Vector2 oldPosition;
 
         /// <summary>
         ///  Creates a new AI with given spawnpoint and given environment
@@ -58,6 +60,8 @@ namespace Sputnik {
 			recentlyHitWall = false;
 			timeSinceChangedTargets = 0;
 			recentlyChangedTargets = false;
+			timeSinceLastMoved = 0;
+			oldPosition = new Vector2(-1000,-1000);  //I hope this is improbable
         }
 
         /// <summary>
@@ -80,6 +84,20 @@ namespace Sputnik {
 				timeSinceHitWall += elapsedTime;
 			if (recentlyChangedTargets)
 				timeSinceChangedTargets += elapsedTime;
+			if(oldPosition.Equals(new Vector2(-1000,-1000)))
+			{
+				if(currentShip != null)
+					oldPosition = currentShip.Position;
+			}
+			else if (oldPosition.Equals(currentShip.Position))
+			{
+				timeSinceLastMoved += elapsedTime;
+			}
+			else
+			{
+				oldPosition = currentShip.Position;
+				timeSinceLastMoved = 0;
+			}
 			timeSinceLastStateChange += elapsedTime;
 			currentShip = s;
 			currentState = nextState;
@@ -108,8 +126,8 @@ namespace Sputnik {
 
 		/// <summary>
 		///  AI behavior for Neutral State
-		///  Inputs : goingStart, currentShip
-		///  Outputs : nextState
+		///  Inputs : goingStart, currentShip, timeSinceLastMoved, oldPosition
+		///  Outputs : nextState, timeSinceLastMoved, oldPosition
 		/// </summary>
         private void Neutral(float elapsedTime)
         {
@@ -135,6 +153,12 @@ namespace Sputnik {
 				//turning = true;
             }
             nextState = State.Neutral; //I stay in neutral now
+			if (oldPosition.Equals(currentShip.Position) && timeSinceLastMoved > 3)
+			{
+				patrolPoints.Add(currentShip.Position);
+				patrolPoints.RemoveAt(0);
+				timeSinceLastMoved = 0;
+			}
         }
 
 		/// <summary>
