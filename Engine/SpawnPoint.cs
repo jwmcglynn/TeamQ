@@ -23,6 +23,22 @@ namespace Sputnik {
 			}
 		}
 
+		public Vector2 BottomLeft
+		{
+			get
+			{
+				return Position + new Vector2(-Size.X,Size.Y)/2;
+			}
+		}
+
+		public Vector2 TopRight
+		{
+			get
+			{
+				return Position + new Vector2(Size.X, -Size.Y)/2;
+			}
+		}
+
 		public Vector2 BottomRight {
 			get {
 				return Position + Size / 2;
