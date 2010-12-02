@@ -186,15 +186,15 @@ namespace Sputnik
 			else if (Environment.sputnik.controlled == this) //Sputnik is friendly to nobody
 				return false;
 			else {
-				if (this.GetType().Equals(s.GetType()))
+				if (this.GetType().Equals(s.GetType())) 
 				{
 					if (s.sputnikDetached)
-						return s.timeSinceDetached > 3;
+						return s.timeSinceDetached > 3;  //Friendly if Sputnik detached and 3 seconds passed
 					else
-						return true;
+						return true; //Otherwise friendly since both are same type
 				}
 				else
-					return false;
+					return false;  //Not same faction, not friendly
 			}
 		}
 
