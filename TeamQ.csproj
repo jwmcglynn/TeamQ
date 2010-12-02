@@ -144,6 +144,7 @@
     <Compile Include="Engine\Environment.cs" />
     <Compile Include="GameEnvironment.cs" />
     <Compile Include="GymEnvironment.cs" />
+    <Compile Include="ShipCollisionAvoidanceController.cs" />
     <Compile Include="SputnikShip.cs" />
     <Compile Include="SquaretopiaShip.cs" />
     <Compile Include="TakesDamage.cs" />

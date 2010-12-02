@@ -89,6 +89,10 @@ namespace Sputnik {
 			// first parameter controls how strong the pull is; the second parameter controls the radius of the pull.
 			BlackHoleController = new BlackHolePhysicsController(300.0f, 200.0f * k_physicsScale, 9.0f * k_physicsScale);
 			CollisionWorld.AddController(BlackHoleController);
+			
+			ShipCollisionAvoidanceController shipAvoid = new ShipCollisionAvoidanceController(150.0f * k_physicsScale);
+			shipAvoid.MaxRadius = 80.0f * k_physicsScale;
+			CollisionWorld.AddController(shipAvoid);
 
 			// Farseer freaks out unless we call Update here when changing Environments.  FIXME: Why?
 			Update(0.0f);
