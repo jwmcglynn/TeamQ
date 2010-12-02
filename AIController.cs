@@ -152,7 +152,17 @@ namespace Sputnik {
 				currentShip.DesiredRotation = wantedDirection;
 				//turning = true;
             }
-            nextState = State.Neutral; //I stay in neutral now
+			//We hates Sputnik, lets kill him whenever we see him
+			if (CanSee(currentShip, env.sputnik) && env.sputnik.controlled == null)
+			{
+				nextState = State.Hostile;
+				target = env.sputnik;
+				timeSinceLastStateChange = 0;
+			}
+			else
+			{
+				nextState = State.Neutral; //I stay in neutral now
+			}
 			if (oldPosition.Equals(currentShip.Position) && timeSinceLastMoved > 3)
 			{
 				patrolPoints.Add(currentShip.Position);
@@ -193,10 +203,16 @@ namespace Sputnik {
 				currentShip.DesiredRotation = wantedDirection;
 				//turning = true;
             }
-			//Nothing out of the ordinary happened
-			//Might want to make the ship stop following after a certain amount of time / distance
+
 			//Might also change if I can't see my target
-			if (timeSinceLastStateChange < 5)
+			//We hates Sputnik, lets kill him whenever we see him
+			if (CanSee(currentShip, env.sputnik) && env.sputnik.controlled == null)
+			{
+				nextState = State.Hostile;
+				target = env.sputnik;
+				timeSinceLastStateChange = 0;
+			}
+			else if (timeSinceLastStateChange < 5)
 				nextState = State.Alert;
 			else
 				nextState = State.Neutral;
@@ -236,8 +252,19 @@ namespace Sputnik {
             }
 			//TODO What do I do if I can't see my target
 			//Shoot if I see my target
-            if(CanSee(currentShip,target))
-                currentShip.Shoot(elapsedTime,target);
+			if (CanSee(currentShip, target))
+				currentShip.Shoot(elapsedTime, target);
+
+			/* Do we want to kill sputnik if we hate someone else at the moment?
+			//We hates Sputnik, lets kill him whenever we see him
+			if (CanSee(currentShip, env.sputnik) && env.sputnik.controlled == null)
+			{
+				nextState = State.Hostile;
+				target = env.sputnik;
+				timeSinceLastStateChange = 0;
+			}
+			 */
+
             //Did i Kill the target
             if (target.ShouldCull())
             {
@@ -252,10 +279,24 @@ namespace Sputnik {
 				timeSinceLastStateChange = 0;
 			}
 			else if (target is Boss && currentShip.IsFriendly((Boss)target)) //Darn, I can't kill my target anymore
-			{	//I dont think this case ever happens, but might as well include it
+			{	
 				nextState = State.Neutral;
 				target = null;
 				timeSinceLastStateChange = 0;
+			}
+			else if (target is SputnikShip && env.sputnik.controlled != null) //Sputnik took control of a ship, destroy it
+			{
+				if (CanSee(currentShip, env.sputnik.controlled)) //I saw that sneaky Sputnik change ships
+				{ //I saw Sputnik take control of that ship
+					nextState = State.Hostile;
+					target = env.sputnik.controlled;
+					timeSinceLastStateChange = 0;
+				}
+				else //darn, sputnik disappeared
+				{
+					nextState = State.Neutral;
+					timeSinceLastStateChange = 0;
+				}
 			}
 			else
 			{
@@ -271,6 +312,7 @@ namespace Sputnik {
 		/// </summary>
 		/// Maybe I should rotate in the direction I was shot in, NOT IMPLEMENTED
 		/// Always turning CounterClockwise is fun 
+		/// Current behavior: spin if lookingfor is dead, do we want this?
 		private void Confused(float elapsedTime)
 		{
 			currentShip.DesiredVelocity = Vector2.Zero;  //I don't move while spinning
@@ -288,7 +330,14 @@ namespace Sputnik {
 			}
 			 */
 			currentShip.DesiredRotation = currentShip.Rotation + 1.0f; //I always turn now
-			if (CanSee(currentShip, lookingFor))  //I found who shot someone, time to do something
+			//We hates Sputnik, lets kill him whenever we see him
+			if (CanSee(currentShip, env.sputnik) && env.sputnik.controlled == null)
+			{
+				nextState = State.Hostile;
+				target = env.sputnik;
+				timeSinceLastStateChange = 0;
+			}
+			else if (CanSee(currentShip, lookingFor))  //I found who shot someone, time to do something
 			{
 				if (answeringDistressCall)
 				{
@@ -383,8 +432,15 @@ namespace Sputnik {
 			//Casting makes me sad, as long as ships dont follow boss, this works
 			if (((Ship)target).isShooting)
 				currentShip.Shoot(elapsedTime);
+			//We hates Sputnik, lets kill him whenever we see him
+			if (CanSee(currentShip, env.sputnik) && env.sputnik.controlled == null)
+			{
+				nextState = State.Hostile;
+				target = env.sputnik;
+				timeSinceLastStateChange = 0;
+			}
 			//Is my target dead
-			if (target.ShouldCull())
+			else if (target.ShouldCull())
 			{
 				target = null;
 				nextState = State.Neutral;  //If I did, back to default state
@@ -459,7 +515,7 @@ namespace Sputnik {
         private float RayCastHit(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
         {
 			//Faction ships can see through their own faction, unless we happen to be looking at our target
-			if (currentShip.GetType() == fixture.Body.UserData.GetType() && fixture.Body.UserData != lookingFor)
+			if (currentShip.GetType() == fixture.Body.UserData.GetType() && fixture.Body.UserData != rayCastTarget)
 				return -1;
 			//Ignore Bullets
 			else if (fixture.Body.IsBullet)
