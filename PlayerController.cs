@@ -144,7 +144,7 @@ namespace Sputnik
 				{
 					// Reset mouse position to center.
 					Vector2 screenCenter = m_env.Camera.WorldToScreen(m_env.Camera.Position + mousePos);
-					Mouse.SetPosition((int) screenCenter.X, (int) screenCenter.Y);
+					Mouse.SetPosition((int) Math.Round(screenCenter.X), (int) Math.Round(screenCenter.Y));
 				}
 
 				// Detach.

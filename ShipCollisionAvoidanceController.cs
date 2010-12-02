@@ -24,8 +24,6 @@ namespace Sputnik {
 				if (!(body1.UserData is Ship) || (body1.UserData is SputnikShip)) continue;
 
 				foreach (Body body2 in World.BodyList) {
-					if (body1 == body2 || (body1.IsStatic && body2.IsStatic) || !body2.Active)
-						continue;
 					if ((body1 == body2) || !(body2.UserData is Ship) || (body2.UserData is SputnikShip)) continue;
 
 					Vector2 d = body2.Position - body1.Position;
