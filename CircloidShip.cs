@@ -24,13 +24,12 @@ namespace Sputnik
 			ai = new AIController(sp, Environment);
 			LoadTexture(Environment.contentManager, "circloid");
 
-			m_patrolRect = new Rectangle((int) sp.TopLeft.X, (int) sp.BottomRight.Y, (int) (sp.BottomRight.X - sp.TopLeft.X), (int) (sp.BottomRight.Y - sp.TopLeft.Y));
-
 			Registration = new Vector2(117.0f, 101.0f);
 			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(60.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true; // The circloid will not be affected by its own black hole. 
+			CollisionBody.FixedRotation = true;
 			/*
 			List<Vector2> vertices = new List<Vector2>();
 			vertices.Add(new Vector2(0, 0));

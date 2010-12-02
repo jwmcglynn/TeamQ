@@ -25,13 +25,16 @@ namespace Sputnik
 		public bool isTractored;
 		public Ship tractoringShip;
 		protected float passiveShield;
-		protected Rectangle m_patrolRect;
 		protected SpawnPoint spawn;
 
 		// Smooth rotation.
 		public float DesiredRotation;
 		private float m_lastRotDir = 1.0f;
-		public float MaxRotVel = 3.0f * (float) Math.PI; // Up to 1.5 rotations per second.
+		public float MaxRotVel = 2.0f * (float) Math.PI;
+
+		public void ResetMaxRotVel() {
+			MaxRotVel = 2.0f * (float) Math.PI; // Up to 1 rotation per second.
+		}
 
 		//Used for friendliness
 		bool sputnikDetached;
@@ -44,6 +47,7 @@ namespace Sputnik
 			shooterRotation = Rotation;
 			sputnikDetached = false;
 			timeSinceDetached = 0;
+			VisualRotationOnly = true;
 		}
 
 		public Ship(GameEnvironment env, SpawnPoint sp)
@@ -52,6 +56,7 @@ namespace Sputnik
 			sputnikDetached = false;
 			timeSinceDetached = 0;
 			spawn = sp;
+			VisualRotationOnly = true;
 		}
 
 		public override void Update(float elapsedTime)
@@ -134,12 +139,8 @@ namespace Sputnik
 		public override bool ShouldCull() {
 			if (m_shouldCull) return true;
 			if (attachedShip != null && this is TriangulusShip) return false;
-
-			if (m_patrolRect != null) {
-				return !InsideCullRect(Rectangle.Union(VisibleRect, m_patrolRect));
-			} else {
-				return !InsideCullRect(VisibleRect);
-			}
+			
+			return !InsideCullRect(Rectangle.Union(VisibleRect, SpawnPoint.Rect));
 		}
 
 		public virtual void TakeHit(int damage)

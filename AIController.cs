@@ -25,11 +25,13 @@ namespace Sputnik {
 		private bool answeringDistressCall;  //Used to help Confused State transition
 		private float timeSinceLastStateChange;
 		private GameEntity rayCastTarget;
-		private List<Vector2> patrolPoints;
 		private float timeSinceHitWall;
 		private bool recentlyHitWall;
 		private float timeSinceChangedTargets;
 		private bool recentlyChangedTargets;
+		private Vector2 nextPatrolPoint;
+
+		static Random rand = new Random();
 
         /// <summary>
         ///  Creates a new AI with given spawnpoint and given environment
@@ -49,11 +51,6 @@ namespace Sputnik {
 			lookingFor = null;
 			currentShip = null;
 			//turning = false;
-			patrolPoints = new List<Vector2>();
-			patrolPoints.Add(spawn.TopLeft);
-			patrolPoints.Add(spawn.TopRight);
-			patrolPoints.Add(spawn.BottomRight);
-			patrolPoints.Add(spawn.BottomLeft);
 			timeSinceHitWall = 0; ;
 			recentlyHitWall = false;
 			timeSinceChangedTargets = 0;
@@ -82,6 +79,8 @@ namespace Sputnik {
 				timeSinceChangedTargets += elapsedTime;
 			timeSinceLastStateChange += elapsedTime;
 			currentShip = s;
+
+			bool init = (currentState != nextState);
 			currentState = nextState;
 			switch(currentState)
 			{
@@ -89,6 +88,7 @@ namespace Sputnik {
 					Allied(elapsedTime);
 					break;
 				case State.Neutral:
+					if (init) neutralState = NeutralState.FindNewPatrol;
 					Neutral(elapsedTime);
 					break;
 				case State.Alert:
@@ -106,6 +106,23 @@ namespace Sputnik {
             }			
         }
 
+		Vector2 randomPointInsideRect(Rectangle r) {
+			return new Vector2(
+				rand.Next(r.Left, r.Right)
+				, rand.Next(r.Top, r.Bottom)
+			);
+		}
+
+		enum NeutralState {
+			Waiting
+			, FindNewPatrol
+			, Turning
+			, Moving
+		};
+
+		NeutralState neutralState = NeutralState.FindNewPatrol;
+		float waitTimer = 1.0f;
+
 		/// <summary>
 		///  AI behavior for Neutral State
 		///  Inputs : goingStart, currentShip
@@ -113,29 +130,44 @@ namespace Sputnik {
 		/// </summary>
         private void Neutral(float elapsedTime)
         {
-			Vector2 destination = patrolPoints.First();
-            float wantedDirection = Angle.Direction(currentShip.Position, destination);  //Ships want to face the direction their destination is
-            if (Vector2.Distance(currentShip.Position, destination) < currentShip.maxSpeed * elapsedTime)  //Im one frame from my destination		
-            {
-                patrolPoints.Add(destination); //Makes the list circular, sorta
-				patrolPoints.RemoveAt(0);  
-                currentShip.DesiredVelocity = Vector2.Zero;
-				//turning = false; 
-            }
-			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime) //Im facing the direction I want to go in
-			{
-				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
-				currentShip.DesiredRotation = wantedDirection;  //Turn a little bit for any rounding, does not count as turning
-				//turning = false; 
+			switch (neutralState) {
+				case NeutralState.Waiting:
+					waitTimer -= elapsedTime;
+
+					// Wait so we don't move so erratically.
+					if (waitTimer < 0.0f) {
+						neutralState = NeutralState.FindNewPatrol;
+					}
+					break;
+				case NeutralState.FindNewPatrol:
+					nextPatrolPoint = randomPointInsideRect(currentShip.SpawnPoint.Rect);
+					neutralState = NeutralState.Turning;
+					break;
+				case NeutralState.Turning:
+					currentShip.MaxRotVel = (float) Math.PI / 2;
+					currentShip.DesiredRotation = Angle.Direction(currentShip.Position, nextPatrolPoint);  //Ships want to face the direction their destination is
+
+					// Almost at the correct rotation, start moving.
+					if (Angle.DistanceMag(currentShip.Rotation, currentShip.DesiredRotation) < Math.PI / 3) {
+						neutralState = NeutralState.Moving;
+					}
+					break;
+				case NeutralState.Moving:
+					currentShip.MaxRotVel = (float) Math.PI / 2;
+					currentShip.DesiredRotation = Angle.Direction(currentShip.Position, nextPatrolPoint);  //Ships want to face the direction their destination is
+					currentShip.DesiredVelocity = Vector2.Normalize(nextPatrolPoint - currentShip.Position) * currentShip.maxSpeed / 3;
+
+					// We've reached the target, wait before moving again.
+					if (Vector2.DistanceSquared(currentShip.Position, nextPatrolPoint) < 8.0f) {
+						neutralState = NeutralState.Waiting;
+						currentShip.DesiredVelocity = Vector2.Zero;
+						waitTimer = (float) rand.NextDouble() * 3.0f + 0.3f;
+					}
+					break;
 			}
-            else //Im not facting the correct direction
-            {
-                currentShip.DesiredVelocity = Vector2.Zero;
-				currentShip.DesiredRotation = wantedDirection;
-				//turning = true;
-            }
-            nextState = State.Neutral; //I stay in neutral now
-        }
+
+			nextState = State.Neutral; //I stay in neutral now
+		}
 
 		/// <summary>
 		///  AI behavior for Alert State
@@ -534,8 +566,7 @@ namespace Sputnik {
 				{
 					//This works as long as both the start and finish position aren't on the other side of the wall
 					//With no pathfinding, this is probably the best I can do
-					patrolPoints.Add(currentShip.Position); //Makes the list circular, sorta
-					patrolPoints.RemoveAt(0);
+					neutralState = NeutralState.FindNewPatrol;
 					recentlyHitWall = true;
 				}
 				else
@@ -581,11 +612,7 @@ namespace Sputnik {
 		/// </summary>
 		public void gotDetached()
 		{
-			patrolPoints.Clear();
-			patrolPoints.Add(spawn.TopLeft);
-			patrolPoints.Add(spawn.TopRight);
-			patrolPoints.Add(spawn.BottomRight);
-			patrolPoints.Add(spawn.BottomLeft);
+			spawn.Position = spawn.Entity.Position;
 		}
 
 		/// <summary>

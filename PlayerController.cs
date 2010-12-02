@@ -96,19 +96,17 @@ namespace Sputnik
 
         public void Update(Ship s, float elapsedTime)
         {
+			s.ResetMaxRotVel();
+
 			controlled = s;
-            Vector2 temp = Vector2.Zero;
-            KeyboardState kb = Keyboard.GetState();
-            MouseState ms = Mouse.GetState();
+			KeyboardState kb = Keyboard.GetState();
+			MouseState ms = Mouse.GetState();
 			Vector2 mousePos = m_env.Camera.ScreenToWorld(new Vector2(ms.X, ms.Y));
-            s.shooterRotation = (float)Math.Atan2(mousePos.Y - s.Position.Y, mousePos.X - s.Position.X);
-            bool directionChanged = false;
+			s.shooterRotation = Angle.Direction(s.Position, mousePos);
 
 			lastSpace -= elapsedTime;
 			if (lastSpace < 0)
 				lastSpace = 0.0f;
-
-			float scaleFactor = 2.0f;
 
 
 			if (kb.IsKeyDown(Keys.Space) && !OldKeyboard.GetState().IsKeyDown(Keys.Space))
@@ -122,39 +120,20 @@ namespace Sputnik
 					}
 				}
 			}
-			
-            if (kb.IsKeyDown(Keys.W))
-            {
-                temp.Y = -1 * scaleFactor;
-                directionChanged = true;
-            }
-            if (kb.IsKeyDown(Keys.A))
-            {
-				temp.X = -1 * scaleFactor;
-                directionChanged = true;
-            }
-            if (kb.IsKeyDown(Keys.S))
-            {
-				temp.Y = 1 * scaleFactor;
-                directionChanged = true;
-            }
-            if (kb.IsKeyDown(Keys.D))
-            {
-				temp.X = 1 * scaleFactor;
-                directionChanged = true;
-            }
-            if (temp.X != 0 && temp.Y != 0)
-                temp *= (float)Math.Sqrt(Math.Pow(s.maxSpeed, 2) / 2);
-            else
-                temp *= s.maxSpeed;
-            s.DesiredVelocity = temp;
-            if (directionChanged)
-            {
-                s.DesiredRotation = (float)Math.Atan2(s.DesiredVelocity.Y, s.DesiredVelocity.X);
-            }
-            // need to check if sputnik is in a ship or not before you can shoot.
-            if (ms.LeftButton == ButtonState.Pressed)
-                s.Shoot(elapsedTime);
+
+			Vector2 temp = Vector2.Zero;
+			if (kb.IsKeyDown(Keys.W)) temp.Y -= 1.0f;
+			if (kb.IsKeyDown(Keys.A)) temp.X -= 1.0f;
+			if (kb.IsKeyDown(Keys.S)) temp.Y += 1.0f;
+			if (kb.IsKeyDown(Keys.D)) temp.X += 1.0f;
+			s.DesiredVelocity = (temp != Vector2.Zero) ? Vector2.Normalize(temp) * s.maxSpeed : Vector2.Zero;
+			if (s.DesiredVelocity != Vector2.Zero) {
+				s.DesiredRotation = Angle.Direction(Vector2.Zero, s.DesiredVelocity);
+			}
+
+			// need to check if sputnik is in a ship or not before you can shoot.
+			if (ms.LeftButton == ButtonState.Pressed)
+				s.Shoot(elapsedTime);
 
 			// Will spawn a blackhole when we first pressdown our right mouse button.
 			// if a blackhole has already been spawned this way, then the other one will be removed.

@@ -25,12 +25,11 @@ namespace Sputnik
 			ai = new AIController(sp, Environment);
 			LoadTexture(Environment.contentManager, "squaretopia");
 
-			m_patrolRect = new Rectangle((int) sp.TopLeft.X, (int) sp.BottomRight.Y, (int) (sp.BottomRight.X - sp.TopLeft.X), (int) (sp.BottomRight.Y - sp.TopLeft.Y));
-
 			Registration = new Vector2(100.0f, 125.0f);
 			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(50.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
+			CollisionBody.FixedRotation = true;
 
 			passiveShield = 20.0f;
 			/*
