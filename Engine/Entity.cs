@@ -335,7 +335,7 @@ namespace Sputnik {
 			// Apply blackhole teleportation force.
 			if (CollisionBody != null) {
 				if (TimeSinceTeleport < 1.0f) {
-					CollisionBody.ApplyForce(TeleportInertiaDir * 25.0f * CollisionBody.Mass);
+					CollisionBody.ApplyForce(TeleportInertiaDir * 50.0f * CollisionBody.Mass);
 					CollisionBody.IgnoreGravity = true;
 				} else {
 					CollisionBody.IgnoreGravity = false;

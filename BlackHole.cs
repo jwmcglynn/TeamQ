@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using FarseerPhysics.Controllers;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Sputnik
 {
@@ -25,8 +26,15 @@ namespace Sputnik
 				else return First;
 			}
 
+			public void NotJustCreated() {
+				First.Properties.Remove("justCreated");
+				Second.Properties.Remove("justCreated");
+			}
+
 			public void Destroy() {
-				if (First.Entity != null) First.Entity.Dispose();
+				NotJustCreated();
+
+				if (First.Entity != null) ((BlackHole)First.Entity).DissipateAnimation();
 				First.HasBeenOffscreen = true;
 				First.Properties.Remove("active");
 
@@ -35,7 +43,7 @@ namespace Sputnik
 
 				///
 
-				if (Second.Entity != null) Second.Entity.Dispose();
+				if (Second.Entity != null) ((BlackHole)Second.Entity).DissipateAnimation();
 				Second.HasBeenOffscreen = true;
 				Second.Properties.Remove("active");
 
@@ -44,6 +52,7 @@ namespace Sputnik
 			}
 		}
 
+		private Texture2D[] m_textures = new Texture2D[20];
 
 		private float timeElapsed;
 
@@ -51,6 +60,7 @@ namespace Sputnik
 
 		public static Pair CreatePair(GameEnvironment env, Vector2 pos) {
 			SpawnPoint sp = new SpawnPoint(env.SpawnController, "blackhole", pos);
+			sp.Properties.Add("justCreated", "true");
 			env.SpawnedBlackHoles.Add(sp);
 			sp.Name = "__blackhole_" + s_uniqueId;
 			++s_uniqueId;
@@ -61,6 +71,7 @@ namespace Sputnik
 
 			SpawnPoint wormHole = locs[rand.Next(0, locs.Count)];
 			wormHole.Properties.Add("active", "true");
+			wormHole.Properties.Add("justCreated", "true");
 			if (wormHole.AllowRespawn)
 			wormHole.Name = sp.Name;
 			env.SpawnedBlackHoles.Add(wormHole);
@@ -71,6 +82,8 @@ namespace Sputnik
 		}
 
 		SpawnPoint wormHole;
+		private bool animate;
+		private bool beginDestruction;
 
 		public BlackHole(GameEnvironment e, SpawnPoint sp)
 				: base(e, sp) {
@@ -82,9 +95,27 @@ namespace Sputnik
 		}
 
 		private void initialize() {
-			LoadTexture(Environment.contentManager, "blackhole/blackhole00");
+			if (SpawnPoint.Properties.ContainsKey("justCreated")) {
+				// Do animation.
+				SpawnPoint.Properties.Remove("justCreated");
+				animate = true;
+			}
+
+			// Load textures.
+			for (int i = 0; i < m_textures.Length; i++)
+			{
+				String assetName = String.Format("blackhole/blackhole{0:00}", i);
+				m_textures[i] = Environment.contentManager.Load<Texture2D>(assetName);
+			}
+
+			if(!animate) Texture = m_textures[m_textures.Length-1]; 
+			else Texture = m_textures[0];
+
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			Zindex = 0.0f;
+
+			Random rand = new Random();
+			Rotation = (float) (rand.NextDouble() * 2 * Math.PI);
 
 			CreateCollisionBody(Environment.CollisionWorld, FarseerPhysics.Dynamics.BodyType.Static, CollisionFlags.Default);
 			var circle = AddCollisionCircle(Texture.Height / 12, Vector2.Zero); // Using 12 here as an arbitrary value. Reason: Want the black hole to have a small collis
@@ -94,42 +125,35 @@ namespace Sputnik
 			Environment.BlackHoleController.AddBody(CollisionBody);
 		}
 
-		public override void Dispose()
-		{
+		public void DissipateAnimation() {
 			Environment.BlackHoleController.RemoveBody(CollisionBody);
-			base.Dispose();
+			timeElapsed = 0;
+			beginDestruction = true;
 		}
-
+		
 		public override void Update(float elapsedTime)
 		{
-			if(timeElapsed > 2.0) {
-				Rotation -= 1.0f;
+			if(!animate || timeElapsed > 2.0) {
+				Texture = m_textures[m_textures.Length-1];
+				Rotation -= .005f;
 				CollisionBody.Active = true;
-			} else if (timeElapsed > 1.9) {
-				LoadTexture(Environment.contentManager, "blackhole/blackhole20");
-			} else if (timeElapsed > 1.8) {
-				LoadTexture(Environment.contentManager, "blackhole/blackhole11");
-			} else if (timeElapsed > 1.6) {
-				LoadTexture(Environment.contentManager, "blackhole/blackhole10");
-			} else if (timeElapsed > 1.4) {
-				LoadTexture(Environment.contentManager, "blackhole/blackhole09");
-			} else if (timeElapsed > 1.2) {
-				LoadTexture(Environment.contentManager, "blackhole/blackhole08");
-			} else if (timeElapsed > 1.0) {
-				LoadTexture(Environment.contentManager, "blackhole/blackhole07");
-			} else if (timeElapsed > .8) {
-				LoadTexture(Environment.contentManager, "blackhole/blackhole06");
-			} else if (timeElapsed > .6) {
-				LoadTexture(Environment.contentManager, "blackhole/blackhole05");
-			} else if (timeElapsed > .4) {
-				LoadTexture(Environment.contentManager, "blackhole/blackhole04");
-			} else if (timeElapsed > .3) {
-				LoadTexture(Environment.contentManager, "blackhole/blackhole03");
-			} else if (timeElapsed > .2) {
-				LoadTexture(Environment.contentManager, "blackhole/blackhole02");
-			} else if (timeElapsed > .1) {
-				LoadTexture(Environment.contentManager, "blackhole/blackhole01");
+
+				if (animate) {
+					wormHole.Properties.Remove("justCreated");
+					animate = false;
+				}
+			} else {
+				if(animate) Texture = m_textures[(int)(timeElapsed/2 * 20)];
 			}
+
+			if(beginDestruction) {
+				if(timeElapsed > 2.0) {
+					this.Dispose();
+				} else {
+					Texture = m_textures[m_textures.Length - 1 - (int)(timeElapsed * 20 / 2)];
+				}
+			}
+
 			timeElapsed += elapsedTime;
 			base.Update(elapsedTime);
 		}

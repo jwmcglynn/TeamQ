@@ -23,7 +23,7 @@ namespace Sputnik
 			Zindex = 0.0f;
 
 			CreateCollisionBody(Environment.CollisionWorld, FarseerPhysics.Dynamics.BodyType.Static, CollisionFlags.Default);
-			AddCollisionCircle(Texture.Height/10, Vector2.Zero);
+			AddCollisionCircle(Texture.Height/3, Vector2.Zero);
 		}
 
 		public void TractorReleased() {

@@ -88,7 +88,7 @@ namespace Sputnik
 	
 		// Collide with non-circloid bullets and non-circloid ships.
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
-			if(entB is CircloidShip || entB is Boss || entB is Bullet) return false;
+			if(entB is CircloidShip || entB is Boss || entB is Bullet || entB is SputnikShip) return false;
 			if(entB is Ship && (owner.IsFriendly((Ship)entB))) {
 				return false;
 			}

@@ -23,7 +23,6 @@ namespace Sputnik {
 							Environment.PossibleBlackHoleLocations.Add(new SpawnPoint(this, obj));
 							continue;
 						} 
-						
 						SpawnPoint sp = new SpawnPoint(this, obj);
 						if (sp.Entity == null) SpawnPoints.Add(sp);
 

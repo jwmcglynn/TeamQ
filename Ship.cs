@@ -109,6 +109,9 @@ namespace Sputnik
 			if (fixture.IsSensor || entBFixture.IsSensor) return true;
 			return !(entB is Ship) || (entB is SputnikShip);
 			 */
+
+			 if(isFrozen && !(entB is SputnikShip)) return false;
+
 			return true;
 		}
 
