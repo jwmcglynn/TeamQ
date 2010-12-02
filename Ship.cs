@@ -19,18 +19,22 @@ namespace Sputnik
 		public float shooterRotation;
 		protected BulletEmitter shooter = null;
 		protected Ship attachedShip = null;
-		public float maxSpeed = 200.0f;
+		public float maxSpeed = 350.0f;
 		public bool isShooting;
 		public bool isFrozen;
 		public bool isTractored;
 		public Ship tractoringShip;
 		protected float passiveShield;
-		protected Rectangle m_patrolRect;
+		protected SpawnPoint spawn;
 
 		// Smooth rotation.
 		public float DesiredRotation;
 		private float m_lastRotDir = 1.0f;
-		public float MaxRotVel = 3.0f * (float) Math.PI; // Up to 1.5 rotations per second.
+		public float MaxRotVel = 2.0f * (float) Math.PI;
+
+		public void ResetMaxRotVel() {
+			MaxRotVel = 2.0f * (float) Math.PI; // Up to 1 rotation per second.
+		}
 
 		//Used for friendliness
 		bool sputnikDetached;
@@ -43,6 +47,7 @@ namespace Sputnik
 			shooterRotation = Rotation;
 			sputnikDetached = false;
 			timeSinceDetached = 0;
+			VisualRotationOnly = true;
 		}
 
 		public Ship(GameEnvironment env, SpawnPoint sp)
@@ -50,6 +55,8 @@ namespace Sputnik
 		{
 			sputnikDetached = false;
 			timeSinceDetached = 0;
+			spawn = sp;
+			VisualRotationOnly = true;
 		}
 
 		public override void Update(float elapsedTime)
@@ -102,11 +109,11 @@ namespace Sputnik
 			this.attachedShip = null;
 			sputnikDetached = true;
 			timeSinceDetached = 0;
+			spawn.Position = Position;
+			ai.gotDetached();
 		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
-			/*This results in silliness, we collide all the time now
-			if (fixture.IsSensor || entBFixture.IsSensor) return true;
 			return !(entB is Ship) || (entB is SputnikShip);
 			 */
 
@@ -133,12 +140,8 @@ namespace Sputnik
 		public override bool ShouldCull() {
 			if (m_shouldCull) return true;
 			if (attachedShip != null && this is TriangulusShip) return false;
-
-			if (m_patrolRect != null) {
-				return !InsideCullRect(Rectangle.Union(VisibleRect, m_patrolRect));
-			} else {
-				return !InsideCullRect(VisibleRect);
-			}
+			
+			return !InsideCullRect(Rectangle.Union(VisibleRect, SpawnPoint.Rect));
 		}
 
 		public virtual void TakeHit(int damage)
@@ -163,6 +166,14 @@ namespace Sputnik
 			isShooting = true;
 		}
 
+		public virtual void Shoot(float elapsedTime, GameEntity target)
+		{
+			shooter.Shoot(elapsedTime);
+			isShooting = true;
+			if (target == Environment.sputnik.controlled)
+				Environment.sputnik.controlled.ai.GotShotBy(Environment.sputnik.controlled, this);
+		}
+
 		public bool isSputnik()
 		{
 			if (this.ai is PlayerController)
@@ -184,12 +195,27 @@ namespace Sputnik
 		{
 			if (this.Equals(s)) //Im always friendly to myself
 				return true;
-			else if (s == Environment.sputnik.controlled) //Nobody is ever friendly to Sputnik's ship
-				return false;
+			else if (s == Environment.sputnik.controlled ) //Nobody is ever friendly to Sputnik's ship unless they are allied
+				return ai.IsAlliedWithPlayer();
 			else if (Environment.sputnik.controlled == this) //Sputnik is friendly to nobody
 				return false;
-			else
-				return (s.sputnikDetached && s.timeSinceDetached > 3) || (this.GetType().Equals(s.GetType())); //Otherwise friendly to own faction ships
+			else {
+				if (this.GetType().Equals(s.GetType())) 
+				{
+					if (s.sputnikDetached)
+						return s.timeSinceDetached > 3;  //Friendly if Sputnik detached and 3 seconds passed
+					else
+						return true; //Otherwise friendly since both are same type
+				}
+				else
+					return false;  //Not same faction, not friendly
+			}
+		}
+
+		public virtual bool IsFriendly(Boss s)
+		{
+			//Current hack, might want to update this if we ever get more than one boss
+			return this is CircloidShip;
 		}
 	}
 }

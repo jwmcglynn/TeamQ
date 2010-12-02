@@ -112,6 +112,11 @@ namespace Sputnik
 			return false;  //Evidently the boss hates everything
 		}
 
+		public bool IsFriendly(Boss s)
+		{
+			return true;  //Of course the boss is freindly with itself
+		}
+
 		public void Shoot(float elapsedTime)
 		{
 			bm1.Shoot(elapsedTime);

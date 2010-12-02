@@ -113,6 +113,7 @@ namespace Sputnik
 
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			Zindex = 0.0f;
+			VisualRotationOnly = true;
 
 			Random rand = new Random();
 			Rotation = (float) (rand.NextDouble() * 2 * Math.PI);

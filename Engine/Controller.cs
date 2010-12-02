@@ -121,6 +121,8 @@ namespace Sputnik {
 
 			// Get the keyboard state for the next pass.
 			OldKeyboard.m_state = Keyboard.GetState();
+			OldGamePad.m_state = GamePad.GetState(PlayerIndex.One);
+			OldMouse.m_state = Mouse.GetState();
 
 			// FPS counter.
 			m_frameCounter++;

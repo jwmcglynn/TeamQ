@@ -6,12 +6,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Sputnik.Menus {
-	class Widget : Entity {
+	public class Widget : Entity {
 		public Color VertexColor = Color.White;
 		public Menu Menu;
 
 		private bool m_hasButton = false;
 		private Rectangle m_buttonRect; // In pixel-space relative to position.
+
+		public bool Visible = true;
 
 		/// <summary>
 		/// Current position in "percent" from 0 to 1.  Added to Position to determine draw
@@ -80,7 +82,7 @@ namespace Sputnik.Menus {
 		/// </summary>
 		/// <param name="spriteBatch">SpriteBatch to render to.</param>
 		public override void Draw(SpriteBatch spriteBatch) {
-			if (Texture != null) {
+			if (Visible && Texture != null) {
 				spriteBatch.Draw(Texture, AbsolutePosition, null, VertexColor, Rotation, Registration, 1.0f, SpriteEffects.None, Zindex);
 			}
 

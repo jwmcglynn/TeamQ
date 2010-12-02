@@ -50,7 +50,10 @@ namespace Sputnik
 			if (entB is Bullet) return false; // Don't collide with other bullets.
 
 			if (entB is TakesDamage) {
-				return !((TakesDamage)owner).IsFriendly((Ship)entB);
+				if(entB is Ship)
+					return !((TakesDamage)owner).IsFriendly((Ship)entB);
+				else
+					return !((TakesDamage)owner).IsFriendly((Boss)entB);
 			}
 
 			return true;

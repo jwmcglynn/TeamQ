@@ -12,9 +12,7 @@ namespace Sputnik {
 		public TestLevelEnvironment(Controller ctrl)
 			: base(ctrl) {
 
-			AddChild(new Crosshair(this));
 			LoadMap("testlevel.tmx");
-
 			Sound.PlayCue("music");
 		}
 	}

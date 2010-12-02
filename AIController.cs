@@ -12,20 +12,26 @@ namespace Sputnik {
     class AIController : ShipController
     {
 		private SpawnPoint spawn;  //Used for spawnpoint manipulation
-		private bool goingStart;  //Way to determine direction of patrol behavior
-		private Vector2 start, finish;  //Endpoints of patrol
 		private GameEnvironment env;  //Game Environment reference
 		private Vector2 hitBodyPosition;  //Position of the body hit by a raycast
 		private GameEntity target; //Current target of attention
 		private GameEntity lookingFor; //Entity that I can't see but I'm looking for
 		private enum State { Allied, Neutral, Alert, Hostile, Confused, Disabled }; //All possible states
         private State oldState,currentState,nextState; // Used to control AI's FSM
-		private float startingAngle; //Used for confused
-		private bool startedRotation; //Used for making a ship rotate once
+		//private float startingAngle; //Used for confused
+		//private bool startedRotation; //Used for making a ship rotate once
 		private Ship currentShip;  //Current ship I'm controlling
-		private bool turning;  //Used to tell if a ship is turning, still somewhat buggy
+		//private bool turning;  //Used to tell if a ship is turning, still somewhat buggy
 		private bool answeringDistressCall;  //Used to help Confused State transition
 		private float timeSinceLastStateChange;
+		private GameEntity rayCastTarget;
+		private float timeSinceHitWall;
+		private bool recentlyHitWall;
+		private float timeSinceChangedTargets;
+		private bool recentlyChangedTargets;
+		private Vector2 nextPatrolPoint;
+
+		static Random rand = new Random();
 
         /// <summary>
         ///  Creates a new AI with given spawnpoint and given environment
@@ -36,18 +42,19 @@ namespace Sputnik {
         {
 			timeSinceLastStateChange = 0;
 			spawn = sp;
-            start = spawn.TopLeft;
-            finish = spawn.BottomRight;
             env = e;
-            goingStart = true;
             nextState = State.Neutral;
 			currentState = State.Neutral;
 			target = null;
 			answeringDistressCall = false;
-			startedRotation = false;
+			//startedRotation = false;
 			lookingFor = null;
 			currentShip = null;
-			turning = false;
+			//turning = false;
+			timeSinceHitWall = 0; ;
+			recentlyHitWall = false;
+			timeSinceChangedTargets = 0;
+			recentlyChangedTargets = false;
         }
 
         /// <summary>
@@ -56,8 +63,24 @@ namespace Sputnik {
 
         public void Update(Ship s, float elapsedTime)
         {
+			if (timeSinceHitWall > 3) //I consider recent 3 seconds
+			{
+				recentlyHitWall = false;
+				timeSinceHitWall = 0;
+			}
+			if (timeSinceChangedTargets > 3) //I consider recent 3 seconds
+			{
+				recentlyChangedTargets = false;
+				timeSinceChangedTargets = 0;
+			}
+			if (recentlyHitWall)
+				timeSinceHitWall += elapsedTime;
+			if (recentlyChangedTargets)
+				timeSinceChangedTargets += elapsedTime;
 			timeSinceLastStateChange += elapsedTime;
 			currentShip = s;
+
+			bool init = (currentState != nextState);
 			currentState = nextState;
 			switch(currentState)
 			{
@@ -65,6 +88,7 @@ namespace Sputnik {
 					Allied(elapsedTime);
 					break;
 				case State.Neutral:
+					if (init) neutralState = NeutralState.FindNewPatrol;
 					Neutral(elapsedTime);
 					break;
 				case State.Alert:
@@ -82,6 +106,23 @@ namespace Sputnik {
             }			
         }
 
+		Vector2 randomPointInsideRect(Rectangle r) {
+			return new Vector2(
+				rand.Next(r.Left, r.Right)
+				, rand.Next(r.Top, r.Bottom)
+			);
+		}
+
+		enum NeutralState {
+			Waiting
+			, FindNewPatrol
+			, Turning
+			, Moving
+		};
+
+		NeutralState neutralState = NeutralState.FindNewPatrol;
+		float waitTimer = 1.0f;
+
 		/// <summary>
 		///  AI behavior for Neutral State
 		///  Inputs : goingStart, currentShip
@@ -89,32 +130,54 @@ namespace Sputnik {
 		/// </summary>
         private void Neutral(float elapsedTime)
         {
-            Vector2 destination; //Current Destination, pathfinding destionation will go here later
-            if (goingStart)
-                destination = start;
-            else
-                destination = finish;
-            float wantedDirection = Angle.Direction(currentShip.Position, destination);  //Ships want to face the direction their destination is
-            if (Vector2.Distance(currentShip.Position, destination) < currentShip.maxSpeed * elapsedTime)  //Im one frame from my destination		
-            {
-                goingStart = !goingStart;
-                currentShip.DesiredVelocity = Vector2.Zero;
-				turning = false; 
-            }
-			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime) //Im facing the direction I want to go in
-			{
-				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
-				currentShip.DesiredRotation = wantedDirection;  //Turn a little bit for any rounding, does not count as turning
-				turning = false; 
+			switch (neutralState) {
+				case NeutralState.Waiting:
+					waitTimer -= elapsedTime;
+
+					// Wait so we don't move so erratically.
+					if (waitTimer < 0.0f) {
+						neutralState = NeutralState.FindNewPatrol;
+					}
+					break;
+				case NeutralState.FindNewPatrol:
+					nextPatrolPoint = randomPointInsideRect(currentShip.SpawnPoint.Rect);
+					neutralState = NeutralState.Turning;
+					break;
+				case NeutralState.Turning:
+					currentShip.MaxRotVel = (float) Math.PI / 2;
+					currentShip.DesiredRotation = Angle.Direction(currentShip.Position, nextPatrolPoint);  //Ships want to face the direction their destination is
+
+					// Almost at the correct rotation, start moving.
+					if (Angle.DistanceMag(currentShip.Rotation, currentShip.DesiredRotation) < Math.PI / 3) {
+						neutralState = NeutralState.Moving;
+					}
+					break;
+				case NeutralState.Moving:
+					currentShip.MaxRotVel = (float) Math.PI / 2;
+					currentShip.DesiredRotation = Angle.Direction(currentShip.Position, nextPatrolPoint);  //Ships want to face the direction their destination is
+					currentShip.DesiredVelocity = Vector2.Normalize(nextPatrolPoint - currentShip.Position) * currentShip.maxSpeed / 3;
+
+					// We've reached the target, wait before moving again.
+					if (Vector2.DistanceSquared(currentShip.Position, nextPatrolPoint) < 8.0f) {
+						neutralState = NeutralState.Waiting;
+						currentShip.DesiredVelocity = Vector2.Zero;
+						waitTimer = (float) rand.NextDouble() * 3.0f + 0.3f;
+					}
+					break;
 			}
-            else //Im not facting the correct direction
-            {
-                currentShip.DesiredVelocity = Vector2.Zero;
-				currentShip.DesiredRotation = wantedDirection;
-				turning = true;
-            }
-            nextState = State.Neutral; //I stay in neutral now
-        }
+
+			//We hates Sputnik, lets kill him whenever we see him
+			if (CanSee(currentShip, env.sputnik) && env.sputnik.controlled == null)
+			{
+				nextState = State.Hostile;
+				target = env.sputnik;
+				timeSinceLastStateChange = 0;
+			}
+			else
+			{
+				nextState = State.Neutral; //I stay in neutral now
+			}
+		}
 
 		/// <summary>
 		///  AI behavior for Alert State
@@ -130,28 +193,34 @@ namespace Sputnik {
 				//There is a good chance that I want to multiply this by the levelscale
             {
                 currentShip.DesiredVelocity = Vector2.Zero;
-				if (wantedDirection == currentShip.Rotation)
-					turning = false;
-				else
-					turning = true;
+			//	if (wantedDirection == currentShip.Rotation)
+					//turning = false;
+			//	else
+					//turning = true;
 				currentShip.DesiredRotation = wantedDirection;  //Even though I want to keep a certain distance, I will still turn to face you
             }
 			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime) //Im facing my target
             {
 				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
 				currentShip.DesiredRotation = wantedDirection;  //Doesnt count as turning
-				turning = false;
+				//turning = false;
             }
             else  //Im not facing my target
             {
                 currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection;
-				turning = true;
+				//turning = true;
             }
-			//Nothing out of the ordinary happened
-			//Might want to make the ship stop following after a certain amount of time / distance
+
 			//Might also change if I can't see my target
-			if (timeSinceLastStateChange < 5)
+			//We hates Sputnik, lets kill him whenever we see him
+			if (CanSee(currentShip, env.sputnik) && env.sputnik.controlled == null)
+			{
+				nextState = State.Hostile;
+				target = env.sputnik;
+				timeSinceLastStateChange = 0;
+			}
+			else if (timeSinceLastStateChange < 5)
 				nextState = State.Alert;
 			else
 				nextState = State.Neutral;
@@ -171,28 +240,39 @@ namespace Sputnik {
 				//Good chance I want to incorporate levelScal in here somewhere
             {
                 currentShip.DesiredVelocity = Vector2.Zero;
-				if (wantedDirection == currentShip.Rotation)
-					turning = false;
-				else
-					turning = true;
+			//	if (wantedDirection == currentShip.Rotation)
+				//	turning = false;
+			//	else
+				//	turning = true;
 				currentShip.DesiredRotation = wantedDirection; //Even though I dont move, I want to face my targets direction
             }
 			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime) // Im facing my target
             {
 				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
 				currentShip.DesiredRotation = wantedDirection; //Does not count as rotation
-				turning = false;
+				//turning = false;
             }
             else //Im not facing my target
             {
                 currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection;
-				turning = true;
+				//turning = true;
             }
 			//TODO What do I do if I can't see my target
 			//Shoot if I see my target
-            if(CanSee(currentShip,target))
-                currentShip.Shoot(elapsedTime);
+			if (CanSee(currentShip, target))
+				currentShip.Shoot(elapsedTime, target);
+
+			/* Do we want to kill sputnik if we hate someone else at the moment?
+			//We hates Sputnik, lets kill him whenever we see him
+			if (CanSee(currentShip, env.sputnik) && env.sputnik.controlled == null)
+			{
+				nextState = State.Hostile;
+				target = env.sputnik;
+				timeSinceLastStateChange = 0;
+			}
+			 */
+
             //Did i Kill the target
             if (target.ShouldCull())
             {
@@ -205,6 +285,26 @@ namespace Sputnik {
 				nextState = State.Neutral;
 				target = null;
 				timeSinceLastStateChange = 0;
+			}
+			else if (target is Boss && currentShip.IsFriendly((Boss)target)) //Darn, I can't kill my target anymore
+			{	
+				nextState = State.Neutral;
+				target = null;
+				timeSinceLastStateChange = 0;
+			}
+			else if (target is SputnikShip && env.sputnik.controlled != null) //Sputnik took control of a ship, destroy it
+			{
+				if (CanSee(currentShip, env.sputnik.controlled)) //I saw that sneaky Sputnik change ships
+				{ //I saw Sputnik take control of that ship
+					nextState = State.Hostile;
+					target = env.sputnik.controlled;
+					timeSinceLastStateChange = 0;
+				}
+				else //darn, sputnik disappeared
+				{
+					nextState = State.Neutral;
+					timeSinceLastStateChange = 0;
+				}
 			}
 			else
 			{
@@ -220,10 +320,11 @@ namespace Sputnik {
 		/// </summary>
 		/// Maybe I should rotate in the direction I was shot in, NOT IMPLEMENTED
 		/// Always turning CounterClockwise is fun 
+		/// Current behavior: spin if lookingfor is dead, do we want this?
 		private void Confused(float elapsedTime)
 		{
 			currentShip.DesiredVelocity = Vector2.Zero;  //I don't move while spinning
-			turning = true;  //Im spinning!
+		//	turning = true;  //Im spinning!
 			/*
 			if (startedRotation) //If I just started rotating, rotate right
 				currentShip.DesiredRotation = currentShip.Rotation + 1.0f;
@@ -237,7 +338,14 @@ namespace Sputnik {
 			}
 			 */
 			currentShip.DesiredRotation = currentShip.Rotation + 1.0f; //I always turn now
-			if (CanSee(currentShip, lookingFor))  //I found who shot someone, time to do something
+			//We hates Sputnik, lets kill him whenever we see him
+			if (CanSee(currentShip, env.sputnik) && env.sputnik.controlled == null)
+			{
+				nextState = State.Hostile;
+				target = env.sputnik;
+				timeSinceLastStateChange = 0;
+			}
+			else if (CanSee(currentShip, lookingFor))  //I found who shot someone, time to do something
 			{
 				if (answeringDistressCall)
 				{
@@ -266,7 +374,7 @@ namespace Sputnik {
 				else //Nothing happened, Im still confused
 					nextState = State.Confused;
 			}
-			startedRotation = false;
+			//startedRotation = false;
 		}
 
 		/// <summary>
@@ -310,30 +418,37 @@ namespace Sputnik {
 			//Good chance I want to incorporate levelScal in here somewhere
 			{
 				currentShip.DesiredVelocity = Vector2.Zero;
-				if (wantedDirection == currentShip.Rotation)
-					turning = false;
-				else
-					turning = true;
+			//	if (wantedDirection == currentShip.Rotation)
+			//		turning = false;
+			//	else
+			//		turning = true;
 				currentShip.DesiredRotation = wantedDirection; //Even though I dont move, I want to face my targets direction
 			}
 			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime) // Im facing my target
 			{
 				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
 				currentShip.DesiredRotation = wantedDirection; //Does not count as rotation
-				turning = false;
+		//		turning = false;
 			}
 			else //Im not facing my target
 			{
 				currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection;
-				turning = true;
+		//		turning = true;
 			}
 			//Shoot if my target shoots
 			//Casting makes me sad, as long as ships dont follow boss, this works
 			if (((Ship)target).isShooting)
 				currentShip.Shoot(elapsedTime);
+			//We hates Sputnik, lets kill him whenever we see him
+			if (CanSee(currentShip, env.sputnik) && env.sputnik.controlled == null)
+			{
+				nextState = State.Hostile;
+				target = env.sputnik;
+				timeSinceLastStateChange = 0;
+			}
 			//Is my target dead
-			if (target.ShouldCull())
+			else if (target.ShouldCull())
 			{
 				target = null;
 				nextState = State.Neutral;  //If I did, back to default state
@@ -392,6 +507,7 @@ namespace Sputnik {
 			float theta = Angle.Direction(s.Position, f.Position); //Angle that I want to see
 			if (Angle.DistanceMag(theta, s.Rotation) < (MathHelper.ToRadians(20))) // If within cone of vision (20 degrees), raycast
             {
+				rayCastTarget = f;
                 env.CollisionWorld.RayCast(RayCastHit, s.CollisionBody.Position, f.CollisionBody.Position);
 				return (hitBodyPosition.Equals(f.CollisionBody.Position));
             }
@@ -407,10 +523,13 @@ namespace Sputnik {
         private float RayCastHit(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
         {
 			//Faction ships can see through their own faction, unless we happen to be looking at our target
-			if (currentShip.GetType() == fixture.Body.UserData.GetType() && fixture.Body.UserData != lookingFor)
+			if (currentShip.GetType() == fixture.Body.UserData.GetType() && fixture.Body.UserData != rayCastTarget)
 				return -1;
 			//Ignore Bullets
 			else if (fixture.Body.IsBullet)
+				return -1;
+			//Ignore Ships, weird things happen when ships block the way
+			else if (fixture.Body.UserData is Ship && fixture.Body.UserData != rayCastTarget)
 				return -1;
 			else //look for closest, sets current GameEntity hit as the Body hit's postion
 			{
@@ -424,16 +543,18 @@ namespace Sputnik {
 		/// </summaryd>
 		public void GotShotBy(Ship s, GameEntity f)
 		{
-			if (CanSee(currentShip, f)) //If I can see the shooter
+			if (currentState != State.Allied) //Allied ships do nothing if shot
 			{
-				switch (currentState)
+				if (CanSee(currentShip, f)) //If I can see the shooter
 				{
-					case State.Neutral: //Currently I only become un-neutral when shot
-						target = f;
-						nextState = State.Alert;
-						timeSinceLastStateChange = 0;
-						break;
-					case State.Alert:  //Someone shot me, time to do something
+					switch (currentState)
+					{
+						case State.Neutral: //Currently I only become un-neutral when shot
+							target = f;
+							nextState = State.Alert;
+							timeSinceLastStateChange = 0;
+							break;
+						case State.Alert:  //Someone shot me, time to do something
 							if (f == target) //My target shot me, now Im mad
 							{
 								nextState = State.Hostile;
@@ -450,35 +571,42 @@ namespace Sputnik {
 								timeSinceLastStateChange = 0; //I mean to do this
 							}
 							break;
-					case State.Allied:
-						//Do I want to do something if the shooting ship is of the same faction?
+						case State.Hostile:
+							if (!recentlyChangedTargets)
+							{
+								nextState = State.Hostile;
+								target = f;
+								timeSinceLastStateChange = 0;
+								recentlyChangedTargets = true;
+							}
 							break;
-					default:
+						default:
 							//current do nothing if in Disabled or Hostile when shot
 							break;
+					}
 				}
-			}
-			else
-			{
-				if (currentState == State.Confused) //If Im confused, I don't make my oldState Confused,
+				else
+				{
+					if (currentState == State.Confused) //If Im confused, I don't make my oldState Confused,
 					//but I do become more confused
-				{
-					lookingFor = f;
-					nextState = State.Confused;
-					timeSinceLastStateChange = 0; //I mean to do this
-					startingAngle = currentShip.Rotation;
-					startedRotation = true;
-					answeringDistressCall = false;
-				}
-				else if (currentState != State.Hostile) //I don't become confused if im hostile
-				{
-					lookingFor = f;
-					oldState = currentState;
-					nextState = State.Confused;
-					timeSinceLastStateChange = 0;
-					startingAngle = currentShip.Rotation;
-					startedRotation = true;
-					answeringDistressCall = false;
+					{
+						lookingFor = f;
+						nextState = State.Confused;
+						timeSinceLastStateChange = 0; //I mean to do this
+				//		startingAngle = currentShip.Rotation;
+				//		startedRotation = true;
+						answeringDistressCall = false;
+					}
+					else if (currentState != State.Hostile) //I don't become confused if im hostile
+					{
+						lookingFor = f;
+						oldState = currentState;
+						nextState = State.Confused;
+						timeSinceLastStateChange = 0;
+				//		startingAngle = currentShip.Rotation;
+					//	startedRotation = true;
+						answeringDistressCall = false;
+					}
 				}
 			}
 		}
@@ -488,14 +616,14 @@ namespace Sputnik {
 		/// </summary>
 		public void HitWall()
 		{
-			if (!turning) //Dont do anything if I'm turning, current model of AI assumes you don't move and turn
+			if (currentState != State.Allied && !recentlyHitWall) //Allied ships and ships that recently hit a wall ignore hitting a wall
 			{
 				if (currentState == State.Neutral)
 				{
 					//This works as long as both the start and finish position aren't on the other side of the wall
 					//With no pathfinding, this is probably the best I can do
-					goingStart = !goingStart;
-					turning = true;
+					neutralState = NeutralState.FindNewPatrol;
+					recentlyHitWall = true;
 				}
 				else
 				{
@@ -503,7 +631,7 @@ namespace Sputnik {
 					nextState = State.Neutral;
 					timeSinceLastStateChange = 0;
 					target = null;
-					turning = true;
+					recentlyHitWall = true;
 				}
 			}
 		}
@@ -528,11 +656,27 @@ namespace Sputnik {
 					lookingFor = s;
 					oldState = currentState;
 					nextState = State.Confused;
-					startingAngle = currentShip.Rotation;
-					startedRotation = true;
+			//		startingAngle = currentShip.Rotation;
+			//		startedRotation = true;
 					timeSinceLastStateChange = 0;
 				}
 			}
+		}
+
+		/// <summary>
+		///  Call when sputnik detaches from this ship
+		/// </summary>
+		public void gotDetached()
+		{
+			spawn.Position = spawn.Entity.Position;
+		}
+
+		/// <summary>
+		///  Tells if this ship is allied with player
+		/// </summary>
+		public bool IsAlliedWithPlayer()
+		{
+			return currentState == State.Allied;
 		}
     }
 }

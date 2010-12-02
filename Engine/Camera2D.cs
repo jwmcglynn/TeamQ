@@ -102,6 +102,10 @@ namespace Sputnik {
 			return Vector2.Transform(screenPos, InverseTransform);
 		}
 
+		public Vector2 WorldToScreen(Vector2 worldPos) {
+			return Vector2.Transform(worldPos, Transform);
+		}
+
 		public void TeleportAndFocus(Entity ent) {
 			Focus = ent;
 			Position = ent.Position;
