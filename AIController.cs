@@ -236,7 +236,6 @@ namespace Sputnik {
                 currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection;
             }
-			//TODO What do I do if I can't see my target
 			//Shoot if I see my target
 			if (CanSee(currentShip, target))
 			{

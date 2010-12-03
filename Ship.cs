@@ -205,7 +205,7 @@ namespace Sputnik
 				else{
 					if (ai is AIController)
 					{
-						return ((AIController)ai).target != s;
+						return ((AIController)ai).Target != s;
 					}
 					else
 					{
