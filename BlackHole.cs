@@ -34,7 +34,7 @@ namespace Sputnik
 			public void Destroy() {
 				NotJustCreated();
 
-				if (First.Entity != null) ((BlackHole)First.Entity).DissipateAnimation();
+				if (First.Entity != null) ((BlackHole) First.Entity).DissipateAnimation();
 				First.HasBeenOffscreen = true;
 				First.Properties.Remove("active");
 
@@ -43,7 +43,7 @@ namespace Sputnik
 
 				///
 
-				if (Second.Entity != null) ((BlackHole)Second.Entity).DissipateAnimation();
+				if (Second.Entity != null) ((BlackHole) Second.Entity).DissipateAnimation();
 				Second.HasBeenOffscreen = true;
 				Second.Properties.Remove("active");
 
@@ -72,7 +72,6 @@ namespace Sputnik
 			SpawnPoint wormHole = locs[rand.Next(0, locs.Count)];
 			wormHole.Properties.Add("active", "true");
 			wormHole.Properties.Add("justCreated", "true");
-			if (wormHole.AllowRespawn)
 			wormHole.Name = sp.Name;
 			env.SpawnedBlackHoles.Add(wormHole);
 			env.SpawnController.SpawnPoints.Add(wormHole);
@@ -127,17 +126,26 @@ namespace Sputnik
 		}
 
 		public void DissipateAnimation() {
+			SpawnPoint.Reset();
+			SpawnPoint = null;
+
 			Environment.BlackHoleController.RemoveBody(CollisionBody);
+			DestroyCollisionBody();
 			timeElapsed = 0;
 			beginDestruction = true;
 		}
-		
+
+		public override void Dispose() {
+			if (CollisionBody != null) Environment.BlackHoleController.RemoveBody(CollisionBody);
+			base.Dispose();
+		}
+
 		public override void Update(float elapsedTime)
 		{
 			Rotation -= .005f;
 			if(!animate || timeElapsed > 2.0) {
 				Texture = m_textures[m_textures.Length-1];
-				CollisionBody.Active = true;
+				if (CollisionBody != null) CollisionBody.Active = true;
 
 				if (animate) {
 					wormHole.Properties.Remove("justCreated");
