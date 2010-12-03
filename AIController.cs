@@ -156,6 +156,15 @@ namespace Sputnik {
 				{
 					currentShip.DesiredVelocity = Vector2.Zero;
 					currentShip.DesiredRotation = wantedDirection;
+					//Added in to make movement fluid.
+					if (Angle.DistanceMag(currentShip.Rotation, currentShip.DesiredRotation) < Math.PI / 3)
+					{
+						currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed / 3;
+					}
+					else
+					{
+						currentShip.DesiredVelocity = Vector2.Zero;
+					}
 				}
 			}
 		}
