@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="64" tileheight="64">
+ <tileset firstgid="1" name="obstacles" tilewidth="64" tileheight="64">
+  <image source="tile_set_sheet.png"/>
+ </tileset>
+ <tileset firstgid="166" name="cloud1" tilewidth="64" tileheight="64">
+  <image source="bg_cloud1.png"/>
+ </tileset>
+ <tileset firstgid="616" name="cloud2" tilewidth="64" tileheight="64">
+  <image source="bg_cloud2.png"/>
+ </tileset>
+ <tileset firstgid="1066" name="cloud3" tilewidth="64" tileheight="64">
+  <image source="bg_cloud3.png"/>
+ </tileset>
+ <layer name="bg/maze" width="100" height="100">
+  <data encoding="base64" compression="gzip">
+   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
+  </data>
+ </layer>
+ <layer name="clouds" width="100" height="100" visible="0" opacity="0.75">
+  <data encoding="base64" compression="gzip">
+   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
+  </data>
+ </layer>
+ <objectgroup name="objects" width="100" height="100" visible="0">
+  <object name="asteroid" type="asteroid1" x="1988" y="3206" width="124" height="188"/>
+  <object name="b2" type="blackhole" x="4208" y="2848" width="360" height="316"/>
+  <object name="asteroid" type="asteroid1" x="3206" y="3014" width="122" height="260"/>
+  <object name="asteroid" type="asteroid2" x="4384" y="3992" width="318" height="132"/>
+  <object name="asteroid" type="asteroid3" x="808" y="208" width="338" height="186"/>
+  <object name="pair_BH" type="possibleBlackhole" x="5256" y="1032" width="312" height="320"/>
+  <object name="possible_BH" type="possibleBlackhole" x="2296" y="152" width="408" height="400"/>
+  <object name="b1" type="blackhole" x="5944" y="1448" width="384" height="384"/>
+  <object name="b1" type="blackhole" x="792" y="1128" width="312" height="288"/>
+  <object name="sputnik" type="spawn" x="24" y="1000" width="360" height="384"/>
+  <object name="possible" type="possibleBlackhole" x="128" y="5880" width="352" height="304"/>
+  <object name="asteroid" type="asteroid3" x="3464" y="4736" width="232" height="304"/>
+  <object name="asteroid" type="asteroid2" x="1408" y="2176" width="296" height="200"/>
+  <object name="possible" type="possibleBlackhole" x="800" y="3584" width="216" height="360"/>
+  <object name="possibl" type="possibleBlackhole" x="2200" y="3392" width="504" height="408"/>
+  <object name="b2" type="blackhole" x="5568" y="5768" width="308" height="332"/>
+  <object name="asteroid" type="asteroid1" x="4200" y="1388" width="200" height="196"/>
+  <object name="asteroid" type="asteroid2" x="4348" y="1124" width="268" height="244"/>
+  <object name="asteroid" type="asteroid3" x="4432" y="1412" width="244" height="248"/>
+  <object name="asteroid" type="asteroid3" x="416" y="1844" width="324" height="124"/>
+  <object name="possible" type="possibleBlackhole" x="1672" y="1256" width="312" height="248"/>
+  <object name="possible" type="possibleBlackhole" x="36" y="2488" width="260" height="268"/>
+  <object name="asteroid" type="asteroid2" x="4384" y="5736" width="232" height="216"/>
+  <object name="possible" type="possibleBlackhole" x="5964" y="4788" width="276" height="280"/>
+  <object name="asteroid" type="asteroid1" x="3712" y="760" width="232" height="208"/>
+  <object name="asteroid" type="asteroid3" x="832" y="5296" width="240" height="144"/>
+  <object name="asteroid" type="asteroid1" x="1064" y="5512" width="304" height="176"/>
+  <object name="asteroid" type="asteroid1" x="5168" y="1992" width="208" height="296"/>
+  <object name="possible" type="possibleBlackhole" x="2904" y="2176" width="256" height="280"/>
+  <object name="possible" type="possibleBlackhole" x="4688" y="4816" width="312" height="320"/>
+ </objectgroup>
+ <objectgroup name="boss" width="100" height="100" visible="0">
+  <object name="boss" type="boss" x="4936" y="5352" width="200" height="224"/>
+  <object name="1" type="BossPatrolPoint" x="5368" y="4000" width="184" height="176"/>
+  <object name="2" type="BossPatrolPoint" x="4920" y="2904" width="184" height="184"/>
+  <object name="3" type="BossPatrolPoint" x="3560" y="3344" width="200" height="176"/>
+  <object name="4" type="BossPatrolPoint" x="2280" y="4584" width="152" height="144"/>
+  <object name="5" type="BossPatrolPoint" x="3496" y="5376" width="208" height="160"/>
+  <object name="6" type="BossPatrolPoint" x="4640" y="3432" width="192" height="192"/>
+  <object name="7" type="BossPatrolPoint" x="4584" y="1872" width="184" height="168"/>
+  <object name="8" type="BossPatrolPoint" x="4848" y="472" width="200" height="176"/>
+  <object name="9" type="BossPatrolPoint" x="3192" y="464" width="216" height="168"/>
+  <object name="10" type="BossPatrolPoint" x="3240" y="1624" width="216" height="160"/>
+  <object name="11" type="BossPatrolPoint" x="2920" y="2976" width="168" height="160"/>
+  <object name="11" type="BossPatrolPoint" x="2312" y="4000" width="184" height="184"/>
+  <object name="12" type="BossPatrolPoint" x="2408" y="5528" width="176" height="160"/>
+  <object name="13" type="BossPatrolPoint" x="1392" y="5920" width="136" height="152"/>
+  <object name="14" type="BossPatrolPoint" x="1056" y="4288" width="184" height="176"/>
+  <object name="15" type="BossPatrolPoint" x="952" y="2512" width="200" height="176"/>
+  <object name="16" type="BossPatrolPoint" x="1696" y="752" width="184" height="184"/>
+ </objectgroup>
+ <objectgroup name="circloids" width="100" height="100">
+  <object name="c1" type="circloid" x="32" y="24" width="877" height="758"/>
+  <object name="c2" type="circloid" x="28" y="796" width="886" height="666"/>
+  <object name="c3" type="circloid" x="1608" y="22" width="372" height="860"/>
+  <object name="c4" type="circloid" x="24" y="1600" width="1126" height="380"/>
+  <object name="c5" type="circloid" x="3392" y="2112" width="864" height="1104"/>
+  <object name="c6" type="circloid" x="5848" y="1088" width="544" height="896"/>
+  <object name="c7" type="circloid" x="4344" y="2584" width="1008" height="888"/>
+  <object name="c8" type="circloid" x="2144" y="3216" width="544" height="872"/>
+  <object name="c9" type="circloid" x="72" y="2472" width="1008" height="304"/>
+  <object name="c10" type="circloid" x="40" y="5840" width="1176" height="512"/>
+  <object name="c11" type="circloid" x="3296" y="3256" width="1000" height="448"/>
+  <object name="c12" type="circloid" x="776" y="4080" width="488" height="520"/>
+  <object name="c13" type="circloid" x="4136" y="1136" width="840" height="520"/>
+  <object name="c14" type="circloid" x="5848" y="616" width="544" height="432"/>
+  <object name="c15" type="circloid" x="1896" y="4920" width="592" height="696"/>
+  <object name="c16" type="circloid" x="5960" y="3352" width="416" height="1048"/>
+  <object name="c17" type="circloid" x="5152" y="5696" width="712" height="648"/>
+  <object name="c18" type="circloid" x="952" y="5856" width="1064" height="488"/>
+  <object name="c19" type="circloid" x="616" y="2968" width="440" height="392"/>
+  <object name="c20" type="circloid" x="5920" y="4184" width="424" height="1120"/>
+  <object name="c21" type="circloid" x="4352" y="3096" width="1080" height="624"/>
+  <object name="c22" type="circloid" x="2152" y="2440" width="512" height="1032"/>
+  <object name="c23" type="circloid" x="4648" y="4944" width="504" height="664"/>
+  <object name="c24" type="circloid" x="64" y="5240" width="920" height="360"/>
+  <object name="c25" type="circloid" x="1032" y="5232" width="1024" height="432"/>
+ </objectgroup>
+ <objectgroup name="triangulus" width="100" height="100">
+  <object name="triangulus" type="triangulus" x="926" y="22" width="414" height="1116"/>
+  <object name="t2" type="triangulus" x="5224" y="816" width="432" height="696"/>
+  <object name="t1" type="triangulus" x="3664" y="720" width="272" height="1112"/>
+  <object name="t4" type="triangulus" x="1664" y="800" width="424" height="816"/>
+  <object name="t5" type="triangulus" x="1472" y="1568" width="1120" height="336"/>
+  <object name="t6" type="triangulus" x="2640" y="1632" width="1272" height="272"/>
+  <object name="t7" type="triangulus" x="4832" y="80" width="1496" height="344"/>
+  <object name="t8" type="triangulus" x="4248" y="1840" width="920" height="424"/>
+  <object name="t9" type="triangulus" x="4632" y="3664" width="496" height="1240"/>
+  <object name="t10" type="triangulus" x="3440" y="4584" width="272" height="960"/>
+  <object name="t11" type="triangulus" x="64" y="3288" width="160" height="1816"/>
+  <object name="t12" type="triangulus" x="2888" y="5808" width="1760" height="184"/>
+ </objectgroup>
+ <objectgroup name="squaretopia" width="100" height="100">
+  <object name="s1" type="squaretopia" x="2232" y="72" width="1312" height="528"/>
+  <object name="s2" type="squaretopia" x="2496" y="696" width="992" height="600"/>
+  <object name="s3" type="squaretopia" x="4136" y="72" width="720" height="1064"/>
+  <object name="s4" type="squaretopia" x="5728" y="2224" width="632" height="440"/>
+  <object name="s5" type="squaretopia" x="2136" y="1976" width="528" height="600"/>
+  <object name="s6" type="squaretopia" x="40" y="2144" width="1776" height="160"/>
+  <object name="s7" type="squaretopia" x="5176" y="3552" width="544" height="1256"/>
+  <object name="s8" type="squaretopia" x="5216" y="4872" width="520" height="792"/>
+  <object name="s9" type="squaretopia" x="3008" y="4400" width="296" height="632"/>
+  <object name="s10" type="squaretopia" x="592" y="4776" width="952" height="264"/>
+  <object name="s11" type="squaretopia" x="2152" y="6176" width="2776" height="192"/>
+  <object name="s12" type="squaretopia" x="2920" y="2168" width="232" height="920"/>
+ </objectgroup>
+</map>

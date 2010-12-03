@@ -83,6 +83,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
+    <None Include="Level_1.tmx">
+      <Name>Level_1</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="testlevel.tmx">
       <Name>testlevel</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -589,6 +593,30 @@
     </Compile>
     <Compile Include="blackhole\black_hole20.png">
       <Name>black_hole20</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="bg_cloud1.png">
+      <Name>bg_cloud1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="bg_cloud2.png">
+      <Name>bg_cloud2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="bg_cloud3.png">
+      <Name>bg_cloud3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="tile_set_sheet.png">
+      <Name>tile_set_sheet</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

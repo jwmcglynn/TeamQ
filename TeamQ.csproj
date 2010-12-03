@@ -128,6 +128,7 @@
     <Compile Include="Engine\SpawnController.cs" />
     <Compile Include="Engine\SpawnPoint.cs" />
     <Compile Include="Engine\OldKeyboard.cs" />
+    <Compile Include="Level1Environment.cs" />
     <Compile Include="Menus\DebugMenu.cs" />
     <Compile Include="ForceField.cs" />
     <Compile Include="Freezable.cs" />
