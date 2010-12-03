@@ -34,6 +34,7 @@ namespace Sputnik {
 		private Vector2 oldPosition;
 		private GameEntity oldTarget;
 		private float timeSinceSawTarget;
+		private bool okayToLeaveDisabled;
 
         /// <summary>
         ///  Creates a new AI with given spawnpoint and given environment
@@ -62,6 +63,7 @@ namespace Sputnik {
 			timeSinceMoved = 0;
 			oldPosition = new Vector2(-1000, 1000);//I hope this is improbable
 			timeSinceSawTarget = 0;
+			okayToLeaveDisabled = false;
         }
 
         /// <summary>
@@ -70,6 +72,10 @@ namespace Sputnik {
 
         public void Update(Ship s, float elapsedTime)
         {
+			if (currentState == State.Disabled && nextState != State.Disabled && !okayToLeaveDisabled)
+			{
+				throw new ArgumentException("If this happens, Matthew screwed up somewhere");
+			}
 			if ((currentShip != null) && (oldPosition.Equals(new Vector2(-1000, 1000)) || !oldPosition.Equals(currentShip.Position)))
 			{
 				timeSinceMoved = 0;
@@ -105,6 +111,7 @@ namespace Sputnik {
 					break;
 				case State.Neutral:
 					Neutral(elapsedTime);
+					okayToLeaveDisabled = false;
 					break;
 				case State.Alert:
 					Alert(elapsedTime);
@@ -314,6 +321,7 @@ namespace Sputnik {
 			{
 				//changeToOld();
 				changeToNeutral();
+				okayToLeaveDisabled = true;
 				// I would like to do something else here
 				//Id like to up the alertness level, ie, if you tractor or freeze me, i become alert or hostile
 				//I can currently do this for tractor due to knowing the tractoring ship, but can't for freezing.
@@ -569,6 +577,7 @@ namespace Sputnik {
 			timeSinceLastStateChange = 0;
 			timeSinceChangedTargets = 0;
 			recentlyChangedTargets = false;
+			okayToLeaveDisabled = false;
 		}
 
 		private void changeToAlert(GameEntity t)
@@ -583,6 +592,7 @@ namespace Sputnik {
 			timeSinceLastStateChange = 0;
 			timeSinceChangedTargets = 0;
 			recentlyChangedTargets = false;
+			okayToLeaveDisabled = false;
 		}
 
 		private void changeToHostile(GameEntity t)
@@ -597,6 +607,7 @@ namespace Sputnik {
 			timeSinceLastStateChange = 0;
 			timeSinceChangedTargets = 0;
 			recentlyChangedTargets = false;
+			okayToLeaveDisabled = false;
 		}
 
 		private void changeToAllied(GameEntity t)
@@ -611,6 +622,7 @@ namespace Sputnik {
 			timeSinceLastStateChange = 0;
 			timeSinceChangedTargets = 0;
 			recentlyChangedTargets = false;
+			okayToLeaveDisabled = false;
 		}
 
 		private void changeToDisabled()
@@ -625,6 +637,7 @@ namespace Sputnik {
 			timeSinceLastStateChange = 0;
 			timeSinceChangedTargets = 0;
 			recentlyChangedTargets = false;
+			okayToLeaveDisabled = false;
 		}
 
 		private void changeToConfused(GameEntity l, bool adc)
@@ -640,6 +653,7 @@ namespace Sputnik {
 			timeSinceLastStateChange = 0;
 			timeSinceChangedTargets = 0;
 			recentlyChangedTargets = false;
+			okayToLeaveDisabled = false;
 		}
 
 		//This behavior causes problems, I dont like it 
