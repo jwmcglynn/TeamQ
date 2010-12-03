@@ -14,7 +14,7 @@ namespace Sputnik {
 		private SpawnPoint spawn;  //Used for spawnpoint manipulation
 		private GameEnvironment env;  //Game Environment reference
 		private Vector2 hitBodyPosition;  //Position of the body hit by a raycast
-		private GameEntity target; //Current target of attention
+		private GameEntity target, oldTarget; //Current target of attention
 		private GameEntity lookingFor; //Entity that I can't see but I'm looking for
 		private enum State { Allied, Neutral, Alert, Hostile, Confused, Disabled }; //All possible states
         private State oldState,currentState,nextState; // Used to control AI's FSM
@@ -26,9 +26,11 @@ namespace Sputnik {
 		private bool recentlyHitWall;
 		private float timeSinceChangedTargets;
 		private bool recentlyChangedTargets;
+		private float timeSinceMoved;
 		private List<Vector2> patrolPoints;
 		private static Random r = new Random();
 		private float waitTimer;
+		private Vector2 oldPosition;
 
         /// <summary>
         ///  Creates a new AI with given spawnpoint and given environment
@@ -53,6 +55,9 @@ namespace Sputnik {
 			waitTimer = 0;
 			patrolPoints = new List<Vector2>();
 			patrolPoints.Add(randomPatrolPoint());
+			oldTarget = null;
+			timeSinceMoved = 0;
+			oldPosition = new Vector2(-1000, 1000);//I hope this is improbable
         }
 
         /// <summary>
@@ -61,6 +66,16 @@ namespace Sputnik {
 
         public void Update(Ship s, float elapsedTime)
         {
+			if ((currentShip != null) && (oldPosition.Equals(new Vector2(-1000, 1000)) || !oldPosition.Equals(currentShip.Position)))
+			{
+				timeSinceMoved = 0;
+				oldPosition = currentShip.Position;
+			}
+			else
+			{
+				//currentShip==null defaults here, but it wont matter
+				timeSinceMoved += elapsedTime;
+			}
 			if (timeSinceHitWall > 3) //I consider recent 3 seconds
 			{
 				recentlyHitWall = false;
@@ -109,6 +124,13 @@ namespace Sputnik {
 		/// </summary>
 		private void Neutral(float elapsedTime)
 		{
+			if (timeSinceMoved > 3)
+			{
+				timeSinceMoved = 0;
+				patrolPoints.RemoveAt(0);
+				patrolPoints.Add(randomPatrolPoint());
+				//Actually, I might want to put my new collision wall behavior here
+			}
 			if (waitTimer > 0)
 			{
 				waitTimer -= elapsedTime;
@@ -135,7 +157,6 @@ namespace Sputnik {
 					currentShip.DesiredVelocity = Vector2.Zero;
 					currentShip.DesiredRotation = wantedDirection;
 				}
-				nextState = State.Neutral; //I stay in neutral now
 			}
 		}
 
@@ -166,10 +187,8 @@ namespace Sputnik {
             }
 
 			//Might also change if I can't see my target
-			if (timeSinceLastStateChange < 5)
-				nextState = State.Alert;
-			else
-				nextState = State.Neutral;
+			if (timeSinceLastStateChange > 5)
+				changeToNeutral();
         }
 
 		/// <summary>
@@ -205,25 +224,15 @@ namespace Sputnik {
             //Did i Kill the target
             if (target.ShouldCull())
             {
-				target = null;
-                nextState = State.Neutral;  //If I did, back to default state
-				timeSinceLastStateChange = 0;
+				changeToNeutral();
             }
 			else if (target is Ship && currentShip.IsFriendly((Ship)target)) //Darn, I can't kill my target anymore
 			{
-				nextState = State.Neutral;
-				target = null;
-				timeSinceLastStateChange = 0;
+				changeToNeutral();
 			}
 			else if (target is Boss && currentShip.IsFriendly((Boss)target)) //Darn, I can't kill my target anymore
-			{	
-				nextState = State.Neutral;
-				target = null;
-				timeSinceLastStateChange = 0;
-			}
-			else
 			{
-				nextState = State.Hostile;  //More killing
+				changeToNeutral();
 			}
         }
 
@@ -244,28 +253,19 @@ namespace Sputnik {
 			{
 				if (answeringDistressCall)
 				{
-					answeringDistressCall = false;
-					target = lookingFor;
-					nextState = State.Allied;
-					timeSinceLastStateChange = 0;
+					changeToAllied(lookingFor);
 				}
 				else
 				{
-					target = lookingFor;
-					nextState = State.Alert;
-					timeSinceLastStateChange = 0;
+					changeToAlert(lookingFor);
 				}
 			}
 			else
 			{
 				if(timeSinceLastStateChange > 1) //I spin for 1 second now
 				{
-					lookingFor = null;
-					nextState = oldState;
-					timeSinceLastStateChange = 0;
+					changeToOld();
 				}
-				else //Nothing happened, Im still confused
-					nextState = State.Confused;
 			}
 		}
 
@@ -282,14 +282,10 @@ namespace Sputnik {
 				// determine the position of the tractored item.
 				currentShip.Position = currentShip.tractoringShip.Position + new Vector2(100, 100);
 			}
-			if (currentShip.isFrozen || currentShip.isTractored)
+			if (!currentShip.isFrozen && !currentShip.isTractored)
 			{
-				nextState = State.Disabled;
-			}
-			else
-			{
-				timeSinceLastStateChange = 0;
-				nextState = oldState; // I would like to do something else here
+				changeToOld();
+				// I would like to do something else here
 				//Id like to up the alertness level, ie, if you tractor or freeze me, i become alert or hostile
 				//I can currently do this for tractor due to knowing the tractoring ship, but can't for freezing.
 			}
@@ -327,13 +323,7 @@ namespace Sputnik {
 			//Is my target dead
 			if (target.ShouldCull())
 			{
-				target = null;
-				nextState = State.Neutral;  //If I did, back to default state
-				timeSinceLastStateChange = 0;
-			}
-			else
-			{
-				nextState = State.Allied;  //More following 
+				changeToNeutral();
 			}
 		}
 
@@ -343,9 +333,7 @@ namespace Sputnik {
 		public void GotFrozen()
 		{
 			currentShip.DesiredVelocity = Vector2.Zero;
-			oldState = currentState;
-			nextState = State.Disabled;
-			timeSinceLastStateChange = 0;// Shouldnt matter
+			changeToDisabled();
 		}
 
 		/// <summary>
@@ -354,9 +342,7 @@ namespace Sputnik {
 		public void GotTractored()
 		{
 			currentShip.DesiredVelocity = Vector2.Zero;
-			oldState = currentState;
-			nextState = State.Disabled;
-			timeSinceLastStateChange = 0;// Shouldnt matter
+			changeToDisabled();
 		}
 
         /// <summary>
@@ -425,34 +411,25 @@ namespace Sputnik {
 					switch (currentState)
 					{
 						case State.Neutral: //Currently I only become un-neutral when shot
-							target = f;
-							nextState = State.Alert;
-							timeSinceLastStateChange = 0;
+							changeToAlert(f);
 							break;
 						case State.Alert:  //Someone shot me, time to do something
 							if (f == target) //My target shot me, now Im mad
 							{
-								nextState = State.Hostile;
-								target = f;
-								timeSinceLastStateChange = 0;
+								changeToHostile(f);
 							}
 							else  //Someone else shot me, time to get suspicious of them
 							{
 								//I actually might want to make this behavior more faction like
 								//If whoever shot me is the same faction as my previous target, I might just go hostile
 								//Take this up to the game creator gods.
-								nextState = State.Alert;
-								target = f;
-								timeSinceLastStateChange = 0; //I mean to do this
+								changeToAlert(f);
 							}
 							break;
 						case State.Hostile:
 							if (!recentlyChangedTargets)
 							{
-								nextState = State.Hostile;
-								target = f;
-								timeSinceLastStateChange = 0;
-								recentlyChangedTargets = true;
+								changeToHostile(f);
 							}
 							break;
 						default:
@@ -460,26 +437,11 @@ namespace Sputnik {
 							break;
 					}
 				}
-				else
-				{
-					if (currentState == State.Confused) //If Im confused, I don't make my oldState Confused,
-					//but I do become more confused
+				else if (currentState != State.Hostile) //I don't become confused if im hostile
 					{
-						lookingFor = f;
-						nextState = State.Confused;
-						timeSinceLastStateChange = 0; //I mean to do this
-						answeringDistressCall = false;
-					}
-					else if (currentState != State.Hostile) //I don't become confused if im hostile
-					{
-						lookingFor = f;
-						oldState = currentState;
-						nextState = State.Confused;
-						timeSinceLastStateChange = 0;
-						answeringDistressCall = false;
+						changeToConfused(f, false);
 					}
 				}
-			}
 		}
 
 		/// <summary>
@@ -500,16 +462,14 @@ namespace Sputnik {
 				else
 				{
 					//There is no pathfinding, might as well give up
-					nextState = State.Neutral;
-					timeSinceLastStateChange = 0;
-					target = null;
+					changeToNeutral();
 					recentlyHitWall = true;
 				}
 			}
 		}
 
 		/// <summary>
-		///  Call when sputnik's controlled ship gets shot by f
+		///  Call when sputnik's controlled ship (s) gets shot by f
 		/// </summary>
 		public void DistressCall(Ship s, GameEntity f)
 		{
@@ -518,19 +478,11 @@ namespace Sputnik {
 				if (CanSee(currentShip, s) && !s.GetType().Equals(f.GetType()))//If i can see sputniks ship, go help him 
 					//if there isnt some civil war going on
 				{
-					target = s;
-					nextState = State.Allied;
-					timeSinceLastStateChange = 0;
+					changeToAllied(s);
 				}
 				else  //If I can't see Sputnik's ship, go look for it.
 				{
-					answeringDistressCall = true;
-					lookingFor = s;
-					oldState = currentState;
-					nextState = State.Confused;
-			//		startingAngle = currentShip.Rotation;
-			//		startedRotation = true;
-					timeSinceLastStateChange = 0;
+					changeToConfused(s, true);
 				}
 			}
 		}
@@ -557,6 +509,105 @@ namespace Sputnik {
 			r.Next((int)spawn.TopLeft.X, (int)spawn.TopRight.X),
 			r.Next((int)spawn.TopLeft.Y, (int)spawn.BottomRight.Y)
 			);
-		} 
+		}
+
+		private void changeToNeutral()
+		{
+			oldTarget = null;
+			target = null;
+			lookingFor = null;
+			oldState = currentState;
+			nextState = State.Neutral;
+			answeringDistressCall = false;
+			timeSinceLastStateChange = 0;
+			timeSinceChangedTargets = 0;
+			recentlyChangedTargets = false;
+		}
+
+		private void changeToAlert(GameEntity t)
+		{
+			oldTarget = null;
+			target = t;
+			lookingFor = null;
+			oldState = currentState;
+			nextState = State.Alert;
+			answeringDistressCall = false;
+			timeSinceLastStateChange = 0;
+			timeSinceChangedTargets = 0;
+			recentlyChangedTargets = false;
+		}
+
+		private void changeToHostile(GameEntity t)
+		{
+			oldTarget = null;
+			target = t;
+			lookingFor = null;
+			oldState = currentState;
+			nextState = State.Hostile;
+			answeringDistressCall = false;
+			timeSinceLastStateChange = 0;
+			timeSinceChangedTargets = 0;
+			recentlyChangedTargets = false;
+		}
+
+		private void changeToAllied(GameEntity t)
+		{
+			oldTarget = null;
+			target = t;
+			lookingFor = null;
+			oldState = currentState;
+			nextState = State.Allied;
+			answeringDistressCall = false;
+			timeSinceLastStateChange = 0;
+			timeSinceChangedTargets = 0;
+			recentlyChangedTargets = false;
+		}
+
+		private void changeToDisabled()
+		{
+			oldTarget = target;
+			target = null;
+			lookingFor = null;
+			oldState = currentState;
+			nextState = State.Disabled;
+			answeringDistressCall = false;
+			timeSinceLastStateChange = 0;
+			timeSinceChangedTargets = 0;
+			recentlyChangedTargets = false;
+		}
+
+		private void changeToConfused(GameEntity l, bool adc)
+		{
+			oldTarget = target;
+			target = null;
+			lookingFor = l;
+			if (currentState != State.Confused)
+				oldState = currentState;
+			nextState = State.Confused;
+			answeringDistressCall = adc;
+			timeSinceLastStateChange = 0;
+			timeSinceChangedTargets = 0;
+			recentlyChangedTargets = false;
+		}
+
+		private void changeToOld()
+		{
+			switch (oldState)
+			{
+				case State.Neutral:
+					changeToNeutral();
+					break;
+				case State.Alert:
+					changeToAlert(oldTarget);
+					break;
+				case State.Hostile:
+					changeToHostile(oldTarget);
+					break;
+				case State.Allied:
+					changeToAllied(oldTarget);
+					break;
+			}
+
+		}
     }
 }
