@@ -14,7 +14,7 @@ namespace Sputnik {
 		private SpawnPoint spawn;  //Used for spawnpoint manipulation
 		private GameEnvironment env;  //Game Environment reference
 		private Vector2 hitBodyPosition;  //Position of the body hit by a raycast
-		public GameEntity target { get; internal set; }//Current target of attention
+		public GameEntity target { get; private set; }//Current target of attention
 		private GameEntity lookingFor; //Entity that I can't see but I'm looking for
 		private enum State { Allied, Neutral, Alert, Hostile, Confused, Disabled }; //All possible states
         private State oldState,currentState,nextState; // Used to control AI's FSM
@@ -188,7 +188,7 @@ namespace Sputnik {
                 currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection;  //Even though I want to keep a certain distance, I will still turn to face you
             }
-			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime) //Im facing my target
+			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2) //Im facing my target
             {
 				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
 				currentShip.DesiredRotation = wantedDirection;  //Doesnt count as turning
@@ -220,7 +220,7 @@ namespace Sputnik {
                 currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection; //Even though I dont move, I want to face my targets direction
             }
-			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime) // Im facing my target
+			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) <  MathHelper.PiOver2) // Im facing my target
             {
 				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
 				currentShip.DesiredRotation = wantedDirection; //Does not count as rotation
@@ -253,7 +253,7 @@ namespace Sputnik {
 			{
 				changeToNeutral();
 			}
-			else if (timeSinceSawTarget > 3)
+			else if (timeSinceSawTarget > 5)
 				changeToNeutral();
         }
 
@@ -332,7 +332,7 @@ namespace Sputnik {
 				currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection; //Even though I dont move, I want to face my targets direction
 			}
-			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime) // Im facing my target
+			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2) // Im facing my target
 			{
 				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
 				currentShip.DesiredRotation = wantedDirection; //Does not count as rotation
