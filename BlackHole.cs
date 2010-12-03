@@ -52,7 +52,7 @@ namespace Sputnik
 			}
 		}
 
-		private Texture2D[] m_textures = new Texture2D[20];
+		private Texture2D[] m_textures = new Texture2D[21];
 
 		private float timeElapsed;
 
@@ -140,11 +140,34 @@ namespace Sputnik
 			base.Dispose();
 		}
 
+		private int currentTexture = 12; // So that it will start from blackhole 11
+		private float blackholeTimer;
+		private bool goBackwards;
+		private float timeForAnimation = 2.0f;
+		private int numberOfFrames = 20;
+
 		public override void Update(float elapsedTime)
 		{
-			Rotation -= .005f;
-			if(!animate || timeElapsed > 2.0) {
-				Texture = m_textures[m_textures.Length-1];
+			Rotation -= .02f;
+			if (!animate || timeElapsed > timeForAnimation)
+			{
+				Texture = m_textures[currentTexture];
+
+				if(blackholeTimer > 0.1) {
+					if(goBackwards) {
+						currentTexture--;
+					} else {
+						currentTexture++;
+					}
+					blackholeTimer = 0.0f;
+				}
+				
+				if(currentTexture == 20) {
+					goBackwards = true;
+				} else if (currentTexture == 12) {
+					goBackwards = false;
+				}
+
 				if (CollisionBody != null) CollisionBody.Active = true;
 
 				if (animate) {
@@ -152,17 +175,19 @@ namespace Sputnik
 					animate = false;
 				}
 			} else {
-				if(animate) Texture = m_textures[(int)(timeElapsed/2 * 20)];
+				if (animate) Texture = m_textures[(int)(timeElapsed / timeForAnimation * numberOfFrames)];
 			}
 
 			if(beginDestruction) {
-				if(timeElapsed > 2.0) {
+				if (timeElapsed > timeForAnimation)
+				{
 					Dispose();
 				} else {
-					Texture = m_textures[m_textures.Length - 1 - (int)(timeElapsed * 20 / 2)];
+					Texture = m_textures[m_textures.Length - 1 - (int)(timeElapsed * numberOfFrames / timeForAnimation)];
 				}
 			}
 
+			blackholeTimer += elapsedTime;
 			timeElapsed += elapsedTime;
 			base.Update(elapsedTime);
 		}

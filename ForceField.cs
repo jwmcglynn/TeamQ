@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-
+using Microsoft.Xna.Framework.Graphics;
 namespace Sputnik
 {
 	class ForceField : GameEntity
@@ -12,6 +12,7 @@ namespace Sputnik
 		float m_angle;
 		float timeElapsed;
 		TakesDamage owner;
+		private Texture2D[] m_textures = new Texture2D[10];
 
 		// Create force field dynamically.
 		public ForceField(GameEnvironment env, Vector2 pos, float angle, TakesDamage o)
@@ -25,7 +26,14 @@ namespace Sputnik
 
 		private void Initialize()
 		{
-			LoadTexture(Environment.contentManager, "freeze/freeze1");
+			// Load textures.
+			for (int i = 0; i < m_textures.Length; i++)
+			{
+				String assetName = "freeze/freeze" + (i + 1);
+				m_textures[i] = Environment.contentManager.Load<Texture2D>(assetName);
+			}
+
+			Texture = m_textures[0];
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			Zindex = 0.0f;
 
@@ -40,27 +48,16 @@ namespace Sputnik
 		private Entity entityCollidedWith = null;
 		private Vector2 posOfCollision;
 		private bool hasFrozen;
+		private float timeForAnimation = 1.0f;
+		private int numberOfFrames = 10;
 
 		public override void Update(float elapsedTime)
 		{
-			if(timeElapsed > 0.9 ) {
-				LoadTexture(Environment.contentManager, "freeze/freeze10");
-			} else if(timeElapsed > 0.8) {
-				LoadTexture(Environment.contentManager, "freeze/freeze9");
-			} else if (timeElapsed > 0.7) {
-				LoadTexture(Environment.contentManager, "freeze/freeze8");
-			} else if (timeElapsed > 0.6) {
-				LoadTexture(Environment.contentManager, "freeze/freeze7");
-			} else if (timeElapsed > 0.5) {
-				LoadTexture(Environment.contentManager, "freeze/freeze6");
-			} else if (timeElapsed > 0.4) {
-				LoadTexture(Environment.contentManager, "freeze/freeze5");
-			} else if (timeElapsed > 0.3) {
-				LoadTexture(Environment.contentManager, "freeze/freeze4");
-			} else if (timeElapsed > 0.2) {
-				LoadTexture(Environment.contentManager, "freeze/freeze3");
-			} else if (timeElapsed > 0.1) {
-				LoadTexture(Environment.contentManager, "freeze/freeze2");
+			if (timeElapsed > timeForAnimation)
+			{
+				Texture = m_textures[m_textures.Length - 1];
+			} else {
+				Texture = m_textures[(int)(timeElapsed / timeForAnimation * numberOfFrames)];
 			}
 
 			if(entityCollidedWith != null && !hasFrozen) {
@@ -73,8 +70,8 @@ namespace Sputnik
 					((Freezable)entityCollidedWith).Freeze();
 				}
 			}
-			timeElapsed += elapsedTime;
 
+			timeElapsed += elapsedTime;
 			base.Update(elapsedTime);
 		}
 		
