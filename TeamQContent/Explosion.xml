@@ -16,7 +16,7 @@
         <Variation>0 0 0</Variation>
       </ReleaseColour>
       <ReleaseOpacity>
-        <Value>1</Value>
+        <Value>0</Value>
         <Variation>0</Variation>
       </ReleaseOpacity>
       <ReleaseScale>
@@ -50,7 +50,7 @@
       <TriggerOffset>0 0</TriggerOffset>
       <MinimumTriggerPeriod>0.1</MinimumTriggerPeriod>
       <Radius>8</Radius>
-      <Ring>true</Ring>
+      <Ring>false</Ring>
       <Radiate>true</Radiate>
     </Item>
     <Item Type="ProjectMercury.Emitters.CircleEmitter">

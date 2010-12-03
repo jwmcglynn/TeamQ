@@ -174,6 +174,8 @@ namespace Sputnik
 					wormHole.Properties.Remove("justCreated");
 					animate = false;
 				}
+
+				Environment.BlackHoleEffect.Trigger(Position);
 			} else {
 				if (animate) Texture = m_textures[(int)(timeElapsed / timeForAnimation * numberOfFrames)];
 			}

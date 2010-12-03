@@ -39,6 +39,7 @@ namespace Sputnik {
 		public ParticleEffect ExplosionEffect;
 		public ParticleEffect ThrusterEffect;
 		public ParticleEffect AttachEffect;
+		public ParticleEffect BlackHoleEffect;
 
 		private List<ParticleEffect> EffectsBelowShip = new List<ParticleEffect>();
 		private List<ParticleEffect> EffectsAboveShip = new List<ParticleEffect>();
@@ -86,10 +87,12 @@ namespace Sputnik {
 			ExplosionEffect = contentManager.Load<ParticleEffect>("Explosion");
 			ThrusterEffect = contentManager.Load<ParticleEffect>("Thruster");
 			AttachEffect = contentManager.Load<ParticleEffect>("Attach");
+			BlackHoleEffect = contentManager.Load<ParticleEffect>("BlackHole");
 
 			EffectsBelowShip.Add(ThrusterEffect);
 			EffectsAboveShip.Add(ExplosionEffect);
 			EffectsAboveShip.Add(AttachEffect);
+			EffectsAboveShip.Add(BlackHoleEffect);
 
 			ParticleRenderer.LoadContent(contentManager);
 
@@ -248,39 +251,33 @@ namespace Sputnik {
 		/// Draw the world.
 		/// </summary>
 		public override void Draw() {
+			Matrix tform = Camera.Transform;
+
 			// Draw map.
 			if (m_map != null) {
 				m_map.Draw(m_spriteBatch, Camera.Rect, () => {
-					m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
+					m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, tform);
 				});
 			}
 
 			// Below ship particles.
 			foreach (var effect in EffectsBelowShip) {
-				for (int i = 0; i < effect.Count; ++i) {
-					m_spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Camera.Transform);
-					ParticleRenderer.RenderEmitter(effect[i], m_spriteBatch);
-					m_spriteBatch.End();
-				}
+				ParticleRenderer.RenderEffect(effect, ref tform);
 			}
 
 			// Draw entities.
-			m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
+			m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, tform);
 			Draw(m_spriteBatch);
 			m_spriteBatch.End();
 
 			// Above ship particles.
 			foreach (var effect in EffectsAboveShip) {
-				for (int i = 0; i < effect.Count; ++i) {
-					m_spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Camera.Transform);
-					ParticleRenderer.RenderEmitter(effect[i], m_spriteBatch);
-					m_spriteBatch.End();
-				}
+				ParticleRenderer.RenderEffect(effect, ref tform);
 			}
 
 			if (m_debugView != null) {
 				// Debug drawing.
-				Matrix debugMatrix = Matrix.CreateScale(k_invPhysicsScale) * Camera.Transform;
+				Matrix debugMatrix = Matrix.CreateScale(k_invPhysicsScale) * tform;
 				m_debugView.RenderDebugData(ref m_projection, ref debugMatrix);
 			}
 

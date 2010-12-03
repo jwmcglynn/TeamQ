@@ -60,10 +60,10 @@ namespace Sputnik
 					if (Vector2.Distance(Position, controlled.Position) < 10.0f && Angle.DistanceMag(Rotation, controlled.Rotation) < 0.5f) {
 						attaching = false;
 						DesiredVelocity = Vector2.Zero;
-
-						Environment.AttachEffect.Trigger(Position);
 					} else {
-						DesiredVelocity = Vector2.Normalize(controlled.Position - Position) * maxSpeed;
+						Vector2 dir = (controlled.Position - Position);
+						if (dir.Length() < maxSpeed * elapsedTime) DesiredVelocity = dir * 60.0f;
+						else DesiredVelocity = Vector2.Normalize(dir) * maxSpeed;
 						DesiredRotation = controlled.Rotation;
 					}
 				}
@@ -98,6 +98,8 @@ namespace Sputnik
 			attaching = true;
 			controlled = target;
 			this.ai = null;
+
+			Environment.AttachEffect.Trigger(target.Position);
 		}
 
 		public override void Detach()
