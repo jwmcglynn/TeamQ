@@ -324,7 +324,7 @@ namespace Sputnik {
 			{
 				timeSinceSawTarget += elapsedTime;
 			}
-			Vector2 destination = target.Position;  //Im going to my target's position
+			Vector2 destination = target.Position - (Angle.Vector(target.Rotation) * 100);  //Im going to my target's position
 			float wantedDirection = Angle.Direction(currentShip.Position, destination);  //I want to face my targets direction
 
 			if (Vector2.Distance(currentShip.Position, destination) < 200) //Keep a certain distance from target
@@ -351,11 +351,11 @@ namespace Sputnik {
 			{
 				changeToNeutral();
 			}
-			else if (target != env.sputnik) //We don't follow non sputnik people
+			else if (target != env.sputnik.controlled) //We don't follow non sputnik people
 			{
 				changeToNeutral();
 			}
-			else if (timeSinceSawTarget > 5)
+			else if (timeSinceSawTarget > 10)
 				changeToNeutral();
 		}
 
