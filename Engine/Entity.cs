@@ -227,6 +227,8 @@ namespace Sputnik {
 		public void DestroyCollisionBody() {
 			if (CollisionBody == null) return;
 
+			m_position = CollisionBody.Position * GameEnvironment.k_invPhysicsScale;
+
 			CollisionWorld.RemoveBody(CollisionBody);
 			CollisionWorld = null;
 			CollisionBody = null;

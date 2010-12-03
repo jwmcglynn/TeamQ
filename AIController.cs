@@ -141,40 +141,29 @@ namespace Sputnik {
 				patrolPoints.Add(randomPatrolPoint());
 				//Actually, I might want to put my new collision wall behavior here
 			}
-			if (waitTimer > 0)
+			
+			waitTimer -= elapsedTime;
+			if (waitTimer > 0) return;
+
+			Vector2 destination = patrolPoints.First();
+			currentShip.MaxRotVel = MathHelper.Pi / 2; //Take my time turning
+			float wantedDirection = Angle.Direction(currentShip.Position, destination); //Ships want to face the direction their destination is
+			if (Vector2.Distance(currentShip.Position, destination) < currentShip.maxSpeed * 0.3f) // Close to destination
 			{
-				waitTimer -= elapsedTime;
+				patrolPoints.RemoveAt(0);
+				patrolPoints.Add(randomPatrolPoint());
+				currentShip.DesiredVelocity = Vector2.Zero;
+				waitTimer = (float)(r.NextDouble() * 3 + 0.3);
 			}
-			else
+			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2) //Im facing the direction I want to go in
 			{
-				currentShip.MaxRotVel = MathHelper.Pi / 2; //Take my time turning
-				Vector2 destination = patrolPoints.First();
-				float wantedDirection = Angle.Direction(currentShip.Position, destination); //Ships want to face the direction their destination is
-				if (Vector2.Distance(currentShip.Position, destination) < currentShip.maxSpeed * elapsedTime) //Im one frame from my destination
-				{
-					patrolPoints.RemoveAt(0);
-					patrolPoints.Add(randomPatrolPoint());
-					currentShip.DesiredVelocity = Vector2.Zero;
-					waitTimer = (float)(r.NextDouble() * 3 + 0.3);
-				}
-				else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < currentShip.MaxRotVel * elapsedTime) //Im facing the direction I want to go in
-				{
-					currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed / 3;
-					currentShip.DesiredRotation = wantedDirection; //Turn a little bit for any rounding, does not count as turning
-				}
-				else //Im not facing the correct direction
-				{
-					currentShip.DesiredRotation = wantedDirection;
-					//Added in to make movement fluid.
-					if (Angle.DistanceMag(currentShip.Rotation, currentShip.DesiredRotation) < MathHelper.PiOver2)
-					{
-						currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed / 3;
-					}
-					else
-					{
-						currentShip.DesiredVelocity = Vector2.Zero;
-					}
-				}
+				currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed / 3;
+				currentShip.DesiredRotation = wantedDirection; //Turn a little bit for any rounding, does not count as turning
+			}
+			else //Im not facing the correct direction
+			{
+				currentShip.DesiredRotation = wantedDirection;
+				currentShip.DesiredVelocity = Vector2.Zero;
 			}
 		}
 

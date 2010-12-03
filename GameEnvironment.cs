@@ -38,6 +38,10 @@ namespace Sputnik {
 		public SpriteBatchRenderer ParticleRenderer;
 		public ParticleEffect ExplosionEffect;
 		public ParticleEffect ThrusterEffect;
+		public ParticleEffect AttachEffect;
+
+		private List<ParticleEffect> EffectsBelowShip = new List<ParticleEffect>();
+		private List<ParticleEffect> EffectsAboveShip = new List<ParticleEffect>();
 
 		// Physics.
 		private Physics.DebugViewXNA m_debugView;
@@ -81,12 +85,23 @@ namespace Sputnik {
 
 			ExplosionEffect = contentManager.Load<ParticleEffect>("Explosion");
 			ThrusterEffect = contentManager.Load<ParticleEffect>("Thruster");
+			AttachEffect = contentManager.Load<ParticleEffect>("Attach");
+
+			EffectsBelowShip.Add(ThrusterEffect);
+			EffectsAboveShip.Add(ExplosionEffect);
+			EffectsAboveShip.Add(AttachEffect);
 
 			ParticleRenderer.LoadContent(contentManager);
-			ExplosionEffect.Initialise();
-			ThrusterEffect.Initialise();
-			ExplosionEffect.LoadContent(contentManager);
-			ThrusterEffect.LoadContent(contentManager);
+
+			foreach (var e in EffectsBelowShip) {
+				e.Initialise();
+				e.LoadContent(contentManager);
+			}
+
+			foreach (var e in EffectsAboveShip) {
+				e.Initialise();
+				e.LoadContent(contentManager);
+			}
 
 			// Create collision notification callbacks.
 			CollisionWorld.ContactManager.PreSolve += PreSolve;
@@ -204,8 +219,8 @@ namespace Sputnik {
 				HUD.Update(k_physicsStep);
 
 				// Particles.
-				ExplosionEffect.Update(k_physicsStep);
-				ThrusterEffect.Update(k_physicsStep);
+				foreach (var effect in EffectsAboveShip) effect.Update(k_physicsStep);
+				foreach (var effect in EffectsBelowShip) effect.Update(k_physicsStep);
 			}
 
 			// Toggle debug view.
@@ -240,11 +255,13 @@ namespace Sputnik {
 				});
 			}
 
-			// Thruster particle.
-			for (int i = 0; i < ThrusterEffect.Count; ++i) {
-				m_spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Camera.Transform);
-				ParticleRenderer.RenderEmitter(ThrusterEffect[i], m_spriteBatch);
-				m_spriteBatch.End();
+			// Below ship particles.
+			foreach (var effect in EffectsBelowShip) {
+				for (int i = 0; i < effect.Count; ++i) {
+					m_spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Camera.Transform);
+					ParticleRenderer.RenderEmitter(effect[i], m_spriteBatch);
+					m_spriteBatch.End();
+				}
 			}
 
 			// Draw entities.
@@ -252,11 +269,13 @@ namespace Sputnik {
 			Draw(m_spriteBatch);
 			m_spriteBatch.End();
 
-			// Explosion particle.
-			for (int i = 0; i < ExplosionEffect.Count; ++i) {
-				m_spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Camera.Transform);
-				ParticleRenderer.RenderEmitter(ExplosionEffect[i], m_spriteBatch);
-				m_spriteBatch.End();
+			// Above ship particles.
+			foreach (var effect in EffectsAboveShip) {
+				for (int i = 0; i < effect.Count; ++i) {
+					m_spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Camera.Transform);
+					ParticleRenderer.RenderEmitter(effect[i], m_spriteBatch);
+					m_spriteBatch.End();
+				}
 			}
 
 			if (m_debugView != null) {

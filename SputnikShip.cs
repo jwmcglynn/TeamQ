@@ -27,14 +27,17 @@ namespace Sputnik
 			LoadTexture(env.contentManager, "Sputnik");
 			Registration = new Vector2(70.0f, 33.0f);
 
-			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
-			AddCollisionCircle(20.0f, Vector2.Zero);
-			CollisionBody.LinearDamping = 8.0f; // This value causes a small amount of slowing before stop which looks nice.
-
+			SputnikCreateCollision();
 			ai = playerAI = new PlayerController(env);
 
 			// Adjust camera.
 			env.Camera.TeleportAndFocus(this);
+		}
+
+		private void SputnikCreateCollision() {
+			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
+			AddCollisionCircle(20.0f, Vector2.Zero);
+			CollisionBody.LinearDamping = 8.0f; // This value causes a small amount of slowing before stop which looks nice.
 		}
 
 		public override void Update(float elapsedTime)
@@ -49,18 +52,23 @@ namespace Sputnik
 				Environment.ThrusterEffect.Trigger(Position + Angle.Vector(Rotation + MathHelper.Pi) * 20.0f);
 			}
 
-			if (attached && controlled != null)
-			{
-				if(Vector2.Distance(this.Position, this.controlled.Position) < (this.maxSpeed * 3) * elapsedTime || !attaching)
-				{
-					attaching = false;
-					this.Rotation = this.controlled.Rotation;
-					this.Position = this.controlled.Position;
+			if (attached) {
+				if(!attaching) {
+					Rotation = controlled.Rotation;
+					Position = controlled.Position;
 				} else {
-					this.DesiredRotation = Angle.Direction(this.Position, this.controlled.Position);
-					this.DesiredVelocity = Angle.Vector(this.DesiredRotation) * this.maxSpeed * 3;
+					if (Vector2.Distance(Position, controlled.Position) < 10.0f && Angle.DistanceMag(Rotation, controlled.Rotation) < 0.5f) {
+						attaching = false;
+						DesiredVelocity = Vector2.Zero;
+
+						Environment.AttachEffect.Trigger(Position);
+					} else {
+						DesiredVelocity = Vector2.Normalize(controlled.Position - Position) * maxSpeed;
+						DesiredRotation = controlled.Rotation;
+					}
 				}
 			}
+
 			base.Update(elapsedTime);
 		}
 
@@ -83,12 +91,25 @@ namespace Sputnik
 			return this.ai;
 		}
 
+		public void SputnikAttach(Ship target) {
+			DestroyCollisionBody();
+
+			attached = true;
+			attaching = true;
+			controlled = target;
+			this.ai = null;
+		}
+
 		public override void Detach()
 		{
+			if (!attached) return;
+
 			recentlyControlled = controlled;
 			attached = false;
 			controlled = null;
 			ai = playerAI;
+
+			SputnikCreateCollision();
 		}
 
 		public override void OnSeparate(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
@@ -106,25 +127,14 @@ namespace Sputnik
 			// Do nothing.
 		}
 
-        public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
-        {
+		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+		{
 			contact.Enabled = false;
 			if (entB is Ship && !attached && entB != recentlyControlled)
 			{
-				this.attached = true;
-				this.attaching = true;
-				((Ship)entB).Attach(this);
-				this.ai = null;
-				controlled = (Ship)entB;
+				OnNextUpdate += () => ((Ship) entB).Attach(this);
 			}
 			base.OnCollide(entB, contact);
-        }
-
-		public override void OnCull()
-		{
-			Environment.sputnik = null;
-			base.OnCull();
 		}
-
 	}
 }

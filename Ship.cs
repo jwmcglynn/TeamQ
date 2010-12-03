@@ -114,10 +114,14 @@ namespace Sputnik
 			sputnikDetached = false;
 			timeSinceDetached = 0;
 			Zindex = 0.26f;
+
+			sp.SputnikAttach(this);
 		}
 
 		public virtual void Detach()
 		{
+			if (attachedShip == null) return;
+
 			this.ai = this.previousAI;
 			this.attachedShip.Detach();
 			this.attachedShip = null;
@@ -139,9 +143,11 @@ namespace Sputnik
 				//Horrible Casting makes me sad.
 				ai.GotShotBy(this, (GameEntity)((Bullet)entB).owner);
 			}
-			else if (entB is Environment)
+			else if (entB is Environment || entB.CollisionBody.IsStatic)
 			{
-				ai.HitWall(contact.Manifold.LocalPoint * (GameEnvironment.k_invPhysicsScale));
+				FarseerPhysics.Collision.WorldManifold manifold;
+				contact.GetWorldManifold(out manifold);
+				if (ai != null) ai.HitWall(manifold.Points[0] * GameEnvironment.k_invPhysicsScale);
 			}
 				
 			base.OnCollide(entB, contact);
