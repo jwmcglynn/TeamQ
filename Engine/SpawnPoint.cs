@@ -140,6 +140,9 @@ namespace Sputnik {
 				case "asteroid3":
 					Entity = new Asteroid(SpawnController.Environment, this);
 					break;
+				case "forcefield":
+					Entity = new EnvironmentalForceField(SpawnController.Environment, this);
+					break;
 				default:
 					throw new InvalidOperationException("Invalid entity type.");
 			}
