@@ -9,7 +9,7 @@ namespace Sputnik
 	{
 		void Update(Ship s, float elapsedTime);
 		void GotShotBy(Ship s, GameEntity f);
-		void HitWall();
+		void HitWall(Microsoft.Xna.Framework.Vector2 collidePosition);
 		void GotTractored();
 		void GotFrozen();
 		void DistressCall(Ship s, GameEntity f);

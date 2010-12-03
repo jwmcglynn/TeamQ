@@ -21,6 +21,10 @@ namespace Sputnik {
 			get {
 				return Position - Size / 2;
 			}
+			set
+			{
+				Position = value + (Size / 2);
+			}
 		}
 
 		public Vector2 BottomLeft
@@ -28,6 +32,10 @@ namespace Sputnik {
 			get
 			{
 				return Position + new Vector2(-Size.X,Size.Y)/2;
+			}
+			set
+			{
+				Position = value - (new Vector2(-Size.X, Size.Y) / 2);
 			}
 		}
 
@@ -37,11 +45,19 @@ namespace Sputnik {
 			{
 				return Position + new Vector2(Size.X, -Size.Y)/2;
 			}
+			set
+			{
+				Position = value - (new Vector2(Size.X, -Size.Y) / 2);
+			}
 		}
 
 		public Vector2 BottomRight {
 			get {
 				return Position + Size / 2;
+			}
+			set
+			{
+				Position = value - (Size / 2);
 			}
 		}
 

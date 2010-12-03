@@ -73,7 +73,7 @@ namespace Sputnik
 			//Player doesn't care about distress calls
 		}
 
-		public void HitWall()
+		public void HitWall(Vector2 collidePosition)
 		{
 			//Players dont care if they hit the wall
 		}

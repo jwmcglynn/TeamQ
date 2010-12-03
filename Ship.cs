@@ -141,7 +141,7 @@ namespace Sputnik
 			}
 			else if (entB is Environment)
 			{
-				ai.HitWall();
+				ai.HitWall(contact.Manifold.LocalPoint * (GameEnvironment.k_invPhysicsScale));
 			}
 				
 			base.OnCollide(entB, contact);
@@ -222,7 +222,7 @@ namespace Sputnik
 				else{
 					if (ai is AIController)
 					{
-						return ((AIController)ai).Target != s;
+						return ((AIController)ai).target != s;
 					}
 					else
 					{
@@ -237,7 +237,7 @@ namespace Sputnik
 			if (ai is AIController)
 			{
 				//GDD says so, so allied circloid ships do this too
-				return ((AIController)ai).Target != s;
+				return ((AIController)ai).target != s;
 			}
 			else
 			{

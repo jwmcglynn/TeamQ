@@ -14,8 +14,7 @@ namespace Sputnik {
 		private SpawnPoint spawn;  //Used for spawnpoint manipulation
 		private GameEnvironment env;  //Game Environment reference
 		private Vector2 hitBodyPosition;  //Position of the body hit by a raycast
-		private GameEntity target; //Current target of attention
-		public GameEntity Target { get { return target; } }
+		public GameEntity target { get; internal set; }//Current target of attention
 		private GameEntity lookingFor; //Entity that I can't see but I'm looking for
 		private enum State { Allied, Neutral, Alert, Hostile, Confused, Disabled }; //All possible states
         private State oldState,currentState,nextState; // Used to control AI's FSM
@@ -163,12 +162,11 @@ namespace Sputnik {
 					currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed / 3;
 					currentShip.DesiredRotation = wantedDirection; //Turn a little bit for any rounding, does not count as turning
 				}
-				else //Im not facting the correct direction
+				else //Im not facing the correct direction
 				{
-					currentShip.DesiredVelocity = Vector2.Zero;
 					currentShip.DesiredRotation = wantedDirection;
 					//Added in to make movement fluid.
-					if (Angle.DistanceMag(currentShip.Rotation, currentShip.DesiredRotation) < Math.PI / 3)
+					if (Angle.DistanceMag(currentShip.Rotation, currentShip.DesiredRotation) < MathHelper.PiOver2)
 					{
 						currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed / 3;
 					}
@@ -501,14 +499,24 @@ namespace Sputnik {
 		/// <summary>
 		///  Call when controlled ship hits a wall
 		/// </summary>
-		public void HitWall()
+		public void HitWall(Vector2 collidePosition)
 		{
 			if (currentState != State.Allied && !recentlyHitWall && currentState != State.Disabled) //Allied ships and ships that recently hit a wall ignore hitting a wall
 			{
 				if (currentState == State.Neutral)
 				{
-					//This works as long as both the start and finish position aren't on the other side of the wall
 					//With no pathfinding, this is probably the best I can do
+					//spawn.Position = currentShip.Position - 100 * Angle.Vector(Angle.Direction(currentShip.Position, collidePosition));
+					float collideAngle = Angle.Direction(currentShip.Position, collidePosition);
+					//I HATE that coordinate plane of screen is not a math coordinate plane
+					if (collideAngle < - MathHelper.PiOver2)
+						spawn.TopLeft = collidePosition;
+					else if (collideAngle < 0)
+						spawn.TopRight = collidePosition;
+					else if (collideAngle <  MathHelper.PiOver2)
+						spawn.BottomRight = collidePosition;
+					else
+						spawn.BottomLeft = collidePosition;
 					patrolPoints.RemoveAt(0);
 					patrolPoints.Add(randomPatrolPoint());
 					recentlyHitWall = true;
