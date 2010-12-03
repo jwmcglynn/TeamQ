@@ -34,6 +34,7 @@ namespace Sputnik {
 		private GameEntity oldTarget;
 		private float timeSinceSawTarget;
 		private bool okayToLeaveDisabled;
+		private float timeSinceAnsweredDistressCall;
 
         /// <summary>
         ///  Creates a new AI with given spawnpoint and given environment
@@ -63,6 +64,7 @@ namespace Sputnik {
 			oldPosition = new Vector2(-1000, 1000);//I hope this is improbable
 			timeSinceSawTarget = 0;
 			okayToLeaveDisabled = false;
+			timeSinceAnsweredDistressCall = 0;
         }
 
         /// <summary>
@@ -100,6 +102,7 @@ namespace Sputnik {
 			if (recentlyChangedTargets)
 				timeSinceChangedTargets += elapsedTime;
 			timeSinceLastStateChange += elapsedTime;
+			timeSinceAnsweredDistressCall += elapsedTime;
 			currentShip = s;
 			currentState = nextState;
 			currentShip.ResetMaxRotVel();//For the turning speed slowdown;
@@ -518,16 +521,20 @@ namespace Sputnik {
 		/// </summary>
 		public void DistressCall(Ship s, GameEntity f)
 		{
-			if (currentState == State.Neutral) //Only non busy ships (neutral) answer
+			if (timeSinceAnsweredDistressCall > 5)
 			{
-				if (CanSee(currentShip, s) && !s.GetType().Equals(f.GetType()))//If i can see sputniks ship, go help him 
+				timeSinceAnsweredDistressCall = 0;
+				if (currentState == State.Neutral) //Only non busy ships (neutral) answer
+				{
+					if (CanSee(currentShip, s) && !s.GetType().Equals(f.GetType()))//If i can see sputniks ship, go help him 
 					//if there isnt some civil war going on
-				{
-					changeToAllied(s);
-				}
-				else  //If I can't see Sputnik's ship, go look for it.
-				{
-					changeToConfused(s, true);
+					{
+						changeToAllied(s);
+					}
+					else  //If I can't see Sputnik's ship, go look for it.
+					{
+						changeToConfused(s, true);
+					}
 				}
 			}
 		}
