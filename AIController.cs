@@ -447,44 +447,47 @@ namespace Sputnik {
 		/// </summaryd>
 		public void GotShotBy(Ship s, GameEntity f)
 		{
-			if (currentState != State.Allied) //Allied ships do nothing if shot
+			if (currentState != State.Disabled)
 			{
-				if (CanSee(currentShip, f)) //If I can see the shooter
+				if (currentState != State.Allied) //Allied ships do nothing if shot
 				{
-					switch (currentState)
+					if (CanSee(currentShip, f)) //If I can see the shooter
 					{
-						case State.Neutral: //Currently I only become un-neutral when shot
-							changeToAlert(f);
-							break;
-						case State.Alert:  //Someone shot me, time to do something
-							if (f == target) //My target shot me, now Im mad
-							{
-								changeToHostile(f);
-							}
-							else  //Someone else shot me, time to get suspicious of them
-							{
-								//I actually might want to make this behavior more faction like
-								//If whoever shot me is the same faction as my previous target, I might just go hostile
-								//Take this up to the game creator gods.
+						switch (currentState)
+						{
+							case State.Neutral: //Currently I only become un-neutral when shot
 								changeToAlert(f);
-							}
-							break;
-						case State.Hostile:
-							if (!recentlyChangedTargets)
-							{
-								changeToHostile(f);
-							}
-							break;
-						default:
-							//current do nothing if in Disabled or Hostile when shot
-							break;
+								break;
+							case State.Alert:  //Someone shot me, time to do something
+								if (f == target) //My target shot me, now Im mad
+								{
+									changeToHostile(f);
+								}
+								else  //Someone else shot me, time to get suspicious of them
+								{
+									//I actually might want to make this behavior more faction like
+									//If whoever shot me is the same faction as my previous target, I might just go hostile
+									//Take this up to the game creator gods.
+									changeToAlert(f);
+								}
+								break;
+							case State.Hostile:
+								if (!recentlyChangedTargets)
+								{
+									changeToHostile(f);
+								}
+								break;
+							default:
+								//current do nothing if in Disabled or Hostile when shot
+								break;
+						}
 					}
-				}
-				else if (currentState != State.Hostile) //I don't become confused if im hostile
+					else if (currentState != State.Hostile) //I don't become confused if im hostile
 					{
 						changeToConfused(f, false);
 					}
 				}
+			}
 		}
 
 		/// <summary>
@@ -492,7 +495,7 @@ namespace Sputnik {
 		/// </summary>
 		public void HitWall()
 		{
-			if (currentState != State.Allied && !recentlyHitWall) //Allied ships and ships that recently hit a wall ignore hitting a wall
+			if (currentState != State.Allied && !recentlyHitWall && currentState != State.Disabled) //Allied ships and ships that recently hit a wall ignore hitting a wall
 			{
 				if (currentState == State.Neutral)
 				{
