@@ -298,13 +298,7 @@ namespace Sputnik {
 		/// </summary>
 		private void Disabled(float elapsedTime)
 		{
-			currentShip.DesiredVelocity = Vector2.Zero;
-			if (currentShip.isTractored)
-			{
-				// determine the position of the tractored item.
-				currentShip.Position = currentShip.tractoringShip.Position + new Vector2(100, 100);
-			}
-			if (!currentShip.isFrozen && !currentShip.isTractored)
+			if (!currentShip.isFrozen && !(currentShip is Tractorable && ((Tractorable) currentShip).IsTractored))
 			{
 				//changeToOld();
 				changeToNeutral();

@@ -8,7 +8,9 @@ namespace Sputnik
 {
 	class Asteroid : GameEntity, Tractorable
 	{
-		bool isTractored;
+		private bool m_tractored;
+		public bool IsTractored { get { return m_tractored; }  set { m_tractored = value; } }
+
 		Ship tractoringShip;
 
 		public Asteroid(GameEnvironment env, SpawnPoint sp)
@@ -26,21 +28,25 @@ namespace Sputnik
 			AddCollisionCircle(Texture.Height/3, Vector2.Zero);
 		}
 
+		public override bool ShouldCull() {
+			if (IsTractored) return false;
+			return base.ShouldCull();
+		}
+
 		public void TractorReleased() {
-			isTractored = false;
+			IsTractored = false;
+			if (CollisionBody != null) {
+				CollisionBody.IsStatic = true;
+			}
 		}
 
 		public void Tractored(Ship s){
 			tractoringShip = s;
-			isTractored = true;
+			IsTractored = true;
 		}
 
-		public override void Update(float elapsedTime)
-		{
-			if(isTractored) {
-				Position = tractoringShip.Position + new Vector2(100, 100);
-			}
-			base.Update(elapsedTime);
+		public void UpdateTractor(Vector2 position) {
+			Position = position;
 		}
 	}
 }
