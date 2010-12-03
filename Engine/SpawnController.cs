@@ -22,13 +22,15 @@ namespace Sputnik {
 							obj.Type = "blackhole";
 							Environment.PossibleBlackHoleLocations.Add(new SpawnPoint(this, obj));
 							continue;
-						} 
+						} else if (obj.Type == "BossPatrolPoint") {
+							Environment.SpawnedBossPatrolPoints.Add(new Vector2(obj.X, obj.Y) + new Vector2(obj.Width, obj.Height) / 2);
+							continue;
+						}
+						
 						SpawnPoint sp = new SpawnPoint(this, obj);
 						if (sp.Entity == null) SpawnPoints.Add(sp);
 
-						if (obj.Type == "BossPatrolPoint")
-							Environment.SpawnedBossPatrolPoints.Add(sp);
-						else if (obj.Type == "blackhole") {
+						if (obj.Type == "blackhole") {
 							Environment.SpawnedBlackHoles.Add(sp);
 						}
 

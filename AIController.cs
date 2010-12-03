@@ -189,7 +189,7 @@ namespace Sputnik {
 			Vector2 destination = target.Position;  //Current Destination, is set to our target
             float wantedDirection = Angle.Direction(currentShip.Position, destination);  //I like facing my destination when I move
 
-			if (Vector2.Distance(currentShip.Position, destination) < 200 * GameEnvironment.k_levelScale)  //I want to keep a certain distance away from my target
+			if (Vector2.Distance(currentShip.Position, destination) < 200)  //I want to keep a certain distance away from my target
 				//There is a good chance that I want to multiply this by the levelscale
             {
                 currentShip.DesiredVelocity = Vector2.Zero;
@@ -236,7 +236,7 @@ namespace Sputnik {
             Vector2 destination = target.Position;  //Im going to my target's position
             float wantedDirection = Angle.Direction(currentShip.Position, destination);  //I want to face my targets direction
 
-            if (Vector2.Distance(currentShip.Position, destination) < 200 * GameEnvironment.k_levelScale) //Keep a certain distance from target
+            if (Vector2.Distance(currentShip.Position, destination) < 200) //Keep a certain distance from target
 				//Good chance I want to incorporate levelScal in here somewhere
             {
                 currentShip.DesiredVelocity = Vector2.Zero;
@@ -414,7 +414,7 @@ namespace Sputnik {
 			Vector2 destination = target.Position;  //Im going to my target's position
 			float wantedDirection = Angle.Direction(currentShip.Position, destination);  //I want to face my targets direction
 
-			if (Vector2.Distance(currentShip.Position, destination) < 200 * GameEnvironment.k_levelScale) //Keep a certain distance from target
+			if (Vector2.Distance(currentShip.Position, destination) < 200) //Keep a certain distance from target
 			//Good chance I want to incorporate levelScal in here somewhere
 			{
 				currentShip.DesiredVelocity = Vector2.Zero;

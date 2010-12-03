@@ -86,8 +86,8 @@ namespace Sputnik {
 
 		internal SpawnPoint(SpawnController spawner, Squared.Tiled.Object obj) {
 			SpawnController = spawner;
-			Size = new Vector2(obj.Width, obj.Height) * GameEnvironment.k_levelScale;
-			Position = new Vector2(obj.X, obj.Y) * GameEnvironment.k_levelScale + Size / 2;
+			Size = new Vector2(obj.Width, obj.Height);
+			Position = new Vector2(obj.X, obj.Y) + Size / 2;
 
 			Name = obj.Name;
 			Properties = obj.Properties;
@@ -135,6 +135,9 @@ namespace Sputnik {
 					Entity = new SaphereBoss(SpawnController.Environment, this);
 					break;
 				case "asteroid":
+				case "asteroid1":
+				case "asteroid2":
+				case "asteroid3":
 					Entity = new Asteroid(SpawnController.Environment, this);
 					break;
 				default:

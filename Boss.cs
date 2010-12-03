@@ -75,7 +75,7 @@ namespace Sputnik
 			{
 				temp = new Vector2[env.SpawnedBossPatrolPoints.Count];
 				for (int i = 0; i < temp.Length; ++i)
-					temp[i] = env.SpawnedBossPatrolPoints.ElementAt(i).Position;
+					temp[i] = env.SpawnedBossPatrolPoints.ElementAt(i);
 
 			}
 			this.ai = new BossAI(env, this, temp);

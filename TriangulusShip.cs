@@ -11,8 +11,6 @@ namespace Sputnik
 {
 	class TriangulusShip : Ship, Tractorable, Freezable
 	{
-		private float tractorBeamSpread = 20 * (float)Math.PI / 180;
-
 		public TriangulusShip(GameEnvironment env, Vector2 pos, SpawnPoint sp)
 			: base(env, pos)
 		{

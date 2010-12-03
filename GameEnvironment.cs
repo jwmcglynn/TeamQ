@@ -51,10 +51,7 @@ namespace Sputnik {
 		public List<SpawnPoint> PossibleBlackHoleLocations = new List<SpawnPoint>();
 		public List<SpawnPoint> SpawnedBlackHoles = new List<SpawnPoint>();
 
-		public List<SpawnPoint> SpawnedBossPatrolPoints = new List<SpawnPoint>();
-
-		// TEMP: Level scale.
-		public const float k_levelScale = 2.0f;
+		public List<Vector2> SpawnedBossPatrolPoints = new List<Vector2>();
 
 		//Shiplists
 		internal List<SquaretopiaShip> squares = new List<SquaretopiaShip>();
@@ -87,7 +84,7 @@ namespace Sputnik {
 			CollisionWorld.ContactManager.ContactFilter += ContactFilter;
 
 			// first parameter controls how strong the pull is; the second parameter controls the radius of the pull.
-			BlackHoleController = new BlackHolePhysicsController(600.0f, 300.0f * k_physicsScale, 9.0f * k_physicsScale);
+			BlackHoleController = new BlackHolePhysicsController(500.0f, 250.0f * k_physicsScale, 9.0f * k_physicsScale);
 			CollisionWorld.AddController(BlackHoleController);
 			
 			ShipCollisionAvoidanceController shipAvoid = new ShipCollisionAvoidanceController(150.0f * k_physicsScale);
@@ -126,11 +123,18 @@ namespace Sputnik {
 			Camera.WindowSizeChanged();
 		}
 
-		private enum Tile {
-			None
-			, AsteroidWall
-			, WhiteBlock
-			, GreyBlock
+		byte[,] collision = {
+			{0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0},
+			{0, 1, 1, 1,  1, 1, 0, 0,  0, 0, 0, 0,  0, 0, 0},
+			{0, 1, 1, 1,  1, 1, 0, 0,  0, 0, 0, 0,  0, 0, 0},
+			{0, 1, 1, 1,  1, 1, 0, 0,  0, 0, 0, 0,  0, 0, 0},
+			{0, 1, 1, 1,  1, 1, 0, 0,  0, 0, 0, 0,  0, 0, 0},
+			{0, 1, 1, 1,  1, 1, 0, 0,  0, 0, 0, 0,  0, 0, 0},
+			{0, 0, 0, 0,  1, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0},
+			{0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0},
+			{0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0},
+			{0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0},
+			{0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0}
 		};
 
 		/// <summary>
@@ -144,20 +148,22 @@ namespace Sputnik {
 			DestroyCollisionBody();
 			CreateCollisionBody(CollisionWorld, Physics.Dynamics.BodyType.Static);
 
-			Vector2 tileHalfSize = new Vector2(m_map.TileWidth, m_map.TileHeight) / 2 * k_levelScale;
-			Vector2 tileSize = new Vector2(m_map.TileWidth, m_map.TileHeight) * k_levelScale;
+			Vector2 tileHalfSize = new Vector2(m_map.TileWidth, m_map.TileHeight) / 2;
+			Vector2 tileSize = new Vector2(m_map.TileWidth, m_map.TileHeight);
 
 			foreach (Tiled.Layer layer in m_map.Layers.Values) {
 				for (int x = 0; x < layer.Width; ++x)
 				for (int y = 0; y < layer.Height; ++y) {
-					Tile tileType = (Tile) layer.GetTile(x, y);
-					
-					switch (tileType) {
-						case Tile.AsteroidWall:
-						case Tile.GreyBlock:
-							// Create collision.
-							AddCollisionRectangle(tileHalfSize, new Vector2(tileSize.X * x, tileSize.Y * y) + tileHalfSize);
-							break;
+					int tileId = layer.GetTile(x, y) - 1;
+					if (tileId < 0) continue;
+
+					int row = tileId / 15;
+					int col = tileId - row * 15;
+					if (row >= 11 || col >= 15) continue;
+
+					if (collision[row, col] != 0) {
+						// Create collision.
+						AddCollisionRectangle(tileHalfSize, new Vector2(tileSize.X * x, tileSize.Y * y) + tileHalfSize);
 					}
 				}
 			}
@@ -171,13 +177,11 @@ namespace Sputnik {
 		/// <param name="elapsedTime">Time since last Update() call.</param>
 		public override void Update(float elapsedTime) {
 			m_updateAccum += elapsedTime;
-			bool didUpdate = false;
 
 			// Update physics.
 			const float k_physicsStep = 1.0f / 60.0f;
 			while (m_updateAccum > k_physicsStep) {
 				m_updateAccum -= k_physicsStep;
-				didUpdate = true;
 
 				CollisionWorld.Step(k_physicsStep);
 
@@ -187,14 +191,6 @@ namespace Sputnik {
 				base.Update(k_physicsStep);
 				Camera.Update(k_physicsStep);
 				HUD.Update(k_physicsStep);
-			}
-
-			if (!didUpdate) {
-				// Update entities if they did not update above.
-				if (SpawnController != null) SpawnController.Update(0.0f);
-				base.Update(0.0f);
-				Camera.Update(0.0f);
-				HUD.Update(0.0f);
 			}
 
 			// Toggle debug view.
@@ -224,11 +220,9 @@ namespace Sputnik {
 		public override void Draw() {
 			// Draw map.
 			if (m_map != null) {
-				m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Matrix.CreateScale(k_levelScale) * Camera.Transform);
-				Camera.Position /= k_levelScale;
-				m_map.Draw(m_spriteBatch, Camera.Rect);
-				Camera.Position *= k_levelScale;
-				m_spriteBatch.End();
+				m_map.Draw(m_spriteBatch, Camera.Rect, () => {
+					m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
+				});
 			}
 
 			// Draw entities.

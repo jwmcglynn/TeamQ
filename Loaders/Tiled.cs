@@ -471,23 +471,6 @@ namespace Squared.Tiled {
 		public string Type;
 		public int Width, Height, X, Y;
 
-		protected Texture2D _Texture;
-		protected int _TexWidth, _TexHeight;
-
-		public Texture2D Texture
-		{
-			get
-			{
-				return _Texture;
-			}
-			set
-			{
-				_Texture = value;
-				_TexWidth = value.Width;
-				_TexHeight = value.Height;
-			}
-		}
-
 		internal static Object Load(XmlReader reader)
 		{
 			var result = new Object();
@@ -654,32 +637,16 @@ namespace Squared.Tiled {
 				);
 			}
 
-			foreach (var objects in result.ObjectGroups.Values)
-			{
-				foreach (var list in objects.Objects.Values)
-				{
-					foreach (var item in list) {
-						if (item.Image != null)
-						{
-							item.Texture = content.Load<Texture2D>
-							(
-								Path.Combine
-								(
-									Path.GetDirectoryName(item.Image),
-									Path.GetFileNameWithoutExtension(item.Image)
-								)
-							);
-						}
-					}
-				}
-			}
-
 			return result;
 		}
 
-		public void Draw (SpriteBatch batch, Rectangle rectangle) {
+		public delegate void BeginSpriteBatch();
+
+		public void Draw (SpriteBatch batch, Rectangle rectangle, BeginSpriteBatch begin) {
 			foreach (Layer layers in Layers.Values) {
-				layers.Draw(batch, Tilesets.Values, rectangle, TileWidth, TileHeight);
+				begin();
+				layers.Draw(batch, Tilesets.Values, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height), TileWidth, TileHeight);
+				batch.End();
 			}
 		}
 	}

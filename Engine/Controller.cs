@@ -83,7 +83,7 @@ namespace Sputnik {
 			FarseerPhysics.DebugViewXNA.LoadContent(GraphicsDevice, Content);
 
 			// Create first environment.
-			m_env = new TestLevelEnvironment(this);
+			m_env = new Level1Environment(this);
 		}
 
 		/// <summary>

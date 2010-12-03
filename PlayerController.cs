@@ -21,6 +21,7 @@ namespace Sputnik
 		private bool isTractoringItem;
 		private Entity itemBeingTractored;
 		private Ship controlled;
+		private static bool s_captureMouse = true;
 
 		const float k_speed = 600.0f; // pixels per second
 
@@ -144,7 +145,8 @@ namespace Sputnik
 				{
 					// Reset mouse position to center.
 					Vector2 screenCenter = m_env.Camera.WorldToScreen(m_env.Camera.Position + mousePos);
-					Mouse.SetPosition((int) Math.Round(screenCenter.X), (int) Math.Round(screenCenter.Y));
+					if (s_captureMouse) Mouse.SetPosition((int) Math.Round(screenCenter.X), (int) Math.Round(screenCenter.Y));
+					m_env.Controller.IsMouseVisible = !s_captureMouse;
 				}
 
 				// Detach.
@@ -156,6 +158,11 @@ namespace Sputnik
 
 				// Shoot.
 				shoot = (mouse.LeftButton == ButtonState.Pressed);
+
+				// Debug. F3 toggles mouse capture.
+				if (keyboard.IsKeyDown(Keys.F3) && !OldKeyboard.GetState().IsKeyDown(Keys.F3)) {
+					s_captureMouse = !s_captureMouse;
+				}
 
 			} else {
 				GamePadState oldGamepad = OldGamePad.GetState();

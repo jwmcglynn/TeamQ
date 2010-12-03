@@ -46,6 +46,15 @@ namespace Sputnik.Menus {
 			AddChild(button);
 
 			ypos += 50.0f;
+			button = new TextButton(this, "Start Level 1");
+			button.PositionPercent = title.PositionPercent;
+			button.Position = new Vector2(0.0f, ypos);
+			button.CreateButton(new Rectangle(-50, -16, 100, 32));
+			button.OnActivate += () => {
+				Controller.ChangeEnvironment(new Level1Environment(Controller));
+			};
+			AddChild(button);
+			ypos += 50.0f;
 			button = new TextButton(this, "Quit");
 			button.PositionPercent = title.PositionPercent;
 			button.Position = new Vector2(0.0f, ypos);
