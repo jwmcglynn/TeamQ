@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 // Comment out later
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
+using ProjectMercury;
 
 namespace Sputnik
 {
@@ -25,7 +26,6 @@ namespace Sputnik
 		public bool isTractored;
 		public Ship tractoringShip;
 		protected float passiveShield;
-		protected SpawnPoint spawn;
 
 		// Smooth rotation.
 		public float DesiredRotation;
@@ -55,7 +55,6 @@ namespace Sputnik
 		{
 			sputnikDetached = false;
 			timeSinceDetached = 0;
-			spawn = sp;
 			VisualRotationOnly = true;
 		}
 
@@ -109,7 +108,7 @@ namespace Sputnik
 			this.attachedShip = null;
 			sputnikDetached = true;
 			timeSinceDetached = 0;
-			spawn.Position = Position;
+			SpawnPoint.Position = Position;
 			ai.gotDetached();
 		}
 
@@ -183,6 +182,8 @@ namespace Sputnik
 			// TODO: Animations / explosions.
 			this.health = 0;
 			m_shouldCull = true;
+
+			Environment.ExplosionEffect.Trigger(Position);
 		}
 
 		//Tells if this is friendly to s

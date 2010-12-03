@@ -36,6 +36,8 @@ namespace Sputnik {
 
 		// Particles.
 		public SpriteBatchRenderer ParticleRenderer;
+		public ParticleEffect ExplosionEffect;
+		public ParticleEffect ThrusterEffect;
 
 		// Physics.
 		private Physics.DebugViewXNA m_debugView;
@@ -59,7 +61,7 @@ namespace Sputnik {
 		internal List<CircloidShip> circles = new List<CircloidShip>();
 		internal SputnikShip sputnik = null;
 
-
+		// HUD.
 		public Menus.HUD HUD;
 
 		public GameEnvironment(Controller ctrl)
@@ -76,6 +78,15 @@ namespace Sputnik {
 			ParticleRenderer = new SpriteBatchRenderer {
 				GraphicsDeviceService = ctrl.Graphics
 			};
+
+			ExplosionEffect = contentManager.Load<ParticleEffect>("Explosion");
+			ThrusterEffect = contentManager.Load<ParticleEffect>("Thruster");
+
+			ParticleRenderer.LoadContent(contentManager);
+			ExplosionEffect.Initialise();
+			ThrusterEffect.Initialise();
+			ExplosionEffect.LoadContent(contentManager);
+			ThrusterEffect.LoadContent(contentManager);
 
 			// Create collision notification callbacks.
 			CollisionWorld.ContactManager.PreSolve += PreSolve;
@@ -191,6 +202,10 @@ namespace Sputnik {
 				base.Update(k_physicsStep);
 				Camera.Update(k_physicsStep);
 				HUD.Update(k_physicsStep);
+
+				// Particles.
+				ExplosionEffect.Update(k_physicsStep);
+				ThrusterEffect.Update(k_physicsStep);
 			}
 
 			// Toggle debug view.
@@ -221,14 +236,28 @@ namespace Sputnik {
 			// Draw map.
 			if (m_map != null) {
 				m_map.Draw(m_spriteBatch, Camera.Rect, () => {
-					m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
+					m_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
 				});
 			}
 
+			// Thruster particle.
+			for (int i = 0; i < ThrusterEffect.Count; ++i) {
+				m_spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Camera.Transform);
+				ParticleRenderer.RenderEmitter(ThrusterEffect[i], m_spriteBatch);
+				m_spriteBatch.End();
+			}
+
 			// Draw entities.
-			m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
+			m_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
 			Draw(m_spriteBatch);
 			m_spriteBatch.End();
+
+			// Explosion particle.
+			for (int i = 0; i < ExplosionEffect.Count; ++i) {
+				m_spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Camera.Transform);
+				ParticleRenderer.RenderEmitter(ExplosionEffect[i], m_spriteBatch);
+				m_spriteBatch.End();
+			}
 
 			if (m_debugView != null) {
 				// Debug drawing.

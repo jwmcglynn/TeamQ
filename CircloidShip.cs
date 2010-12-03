@@ -47,6 +47,15 @@ namespace Sputnik
 			env.circles.Add(this);
 		}
 
+		public override void Update(float elapsedTime) {
+			// Thruster particle.
+			if (DesiredVelocity.LengthSquared() > (maxSpeed / 6) * (maxSpeed / 6)) {
+				Environment.ThrusterEffect.Trigger(Position + Angle.Vector(Rotation + MathHelper.Pi) * 90.0f);
+			}
+
+			base.Update(elapsedTime);
+		}
+
 		public void Tractored(Ship shipTractoring)
 		{
 			tractoringShip = shipTractoring;

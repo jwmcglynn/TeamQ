@@ -46,6 +46,18 @@ namespace Sputnik
 			env.triangles.Add(this);
 		}
 
+		public override void Update(float elapsedTime) {
+			// Thruster particle.
+			if (DesiredVelocity.LengthSquared() > (maxSpeed / 6) * (maxSpeed / 6)) {
+				Matrix rotMatrix = Matrix.CreateRotationZ(Rotation);
+
+				Environment.ThrusterEffect.Trigger(Position + Vector2.Transform(new Vector2(-45.0f, -10.0f), rotMatrix));
+				Environment.ThrusterEffect.Trigger(Position + Vector2.Transform(new Vector2(-45.0f, 10.0f), rotMatrix));
+			}
+
+			base.Update(elapsedTime);
+		}
+
 		public override bool ShouldCollide(Entity entB, Fixture fixture, Fixture entBFixture)
 		{
 			if (fixture.IsSensor && !(entB is Tractorable)) return false;

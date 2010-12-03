@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<XnaContent xmlns:Emitters="ProjectMercury.Emitters" xmlns:Modifiers="ProjectMercury.Modifiers">
+<XnaContent>
   <Asset Type="ProjectMercury.ParticleEffect">
-    <Item Type="Emitters:CircleEmitter">
+    <Item Type="ProjectMercury.Emitters.CircleEmitter">
       <Name>Smoke Trail</Name>
       <Budget>500</Budget>
       <Term>2.5</Term>
       <ReleaseQuantity>16</ReleaseQuantity>
-      <Enabled>true</Enabled>
+      <Enabled>True</Enabled>
       <ReleaseSpeed>
         <Value>0</Value>
         <Variation>128</Variation>
       </ReleaseSpeed>
       <ReleaseColour>
-        <Value>0.5019608 0.5019608 0.5019608</Value>
+        <Value>0.2509804 0.2509804 0.2509804</Value>
         <Variation>0 0 0</Variation>
       </ReleaseColour>
       <ReleaseOpacity>
@@ -20,7 +20,7 @@
         <Variation>0</Variation>
       </ReleaseOpacity>
       <ReleaseScale>
-        <Value>16</Value>
+        <Value>32</Value>
         <Variation>0</Variation>
       </ReleaseScale>
       <ReleaseRotation>
@@ -30,42 +30,38 @@
       <ReleaseImpulse>0 0</ReleaseImpulse>
       <ParticleTextureAssetName>Cloud001</ParticleTextureAssetName>
       <Modifiers>
-        <Item Type="Modifiers:OpacityModifier">
-          <Initial>0.2</Initial>
+        <Item Type="ProjectMercury.Modifiers.OpacityModifier">
+          <Initial>0.5</Initial>
           <Ultimate>0</Ultimate>
         </Item>
-        <Item Type="Modifiers:ScaleModifier">
-          <InitialScale>48</InitialScale>
-          <UltimateScale>255</UltimateScale>
+        <Item Type="ProjectMercury.Modifiers.ScaleModifier">
+          <InitialScale>70</InitialScale>
+          <UltimateScale>350</UltimateScale>
         </Item>
-        <Item Type="Modifiers:DampingModifier">
+        <Item Type="ProjectMercury.Modifiers.DampingModifier">
           <DampingCoefficient>1</DampingCoefficient>
         </Item>
-        <Item Type="Modifiers:RotationRateModifier">
+        <Item Type="ProjectMercury.Modifiers.RotationRateModifier">
           <InitialRate>1</InitialRate>
           <FinalRate>0</FinalRate>
-        </Item>
-        <Item Type="Modifiers:ColourModifier">
-          <InitialColour>0.305882365 0.254901975 0.211764708</InitialColour>
-          <UltimateColour>0.5019608 0.5019608 0.5019608</UltimateColour>
         </Item>
       </Modifiers>
       <BlendMode>Alpha</BlendMode>
       <TriggerOffset>0 0</TriggerOffset>
-      <MinimumTriggerPeriod>0.25</MinimumTriggerPeriod>
-      <Radius>1</Radius>
+      <MinimumTriggerPeriod>0.1</MinimumTriggerPeriod>
+      <Radius>8</Radius>
       <Ring>true</Ring>
       <Radiate>true</Radiate>
     </Item>
-    <Item Type="Emitters:CircleEmitter">
+    <Item Type="ProjectMercury.Emitters.CircleEmitter">
       <Name>Flames</Name>
       <Budget>1000</Budget>
       <Term>1</Term>
       <ReleaseQuantity>64</ReleaseQuantity>
-      <Enabled>true</Enabled>
+      <Enabled>True</Enabled>
       <ReleaseSpeed>
-        <Value>0</Value>
-        <Variation>100</Variation>
+        <Value>100</Value>
+        <Variation>200</Variation>
       </ReleaseSpeed>
       <ReleaseColour>
         <Value>1 0.5019608 0</Value>
@@ -76,8 +72,8 @@
         <Variation>0</Variation>
       </ReleaseOpacity>
       <ReleaseScale>
-        <Value>48</Value>
-        <Variation>32</Variation>
+        <Value>192</Value>
+        <Variation>96</Variation>
       </ReleaseScale>
       <ReleaseRotation>
         <Value>3.14</Value>
@@ -86,21 +82,21 @@
       <ReleaseImpulse>0 0</ReleaseImpulse>
       <ParticleTextureAssetName>Particle004</ParticleTextureAssetName>
       <Modifiers>
-        <Item Type="Modifiers:OpacityModifier">
+        <Item Type="ProjectMercury.Modifiers.OpacityModifier">
           <Initial>0.5</Initial>
           <Ultimate>0</Ultimate>
         </Item>
-        <Item Type="Modifiers:RotationModifier">
+        <Item Type="ProjectMercury.Modifiers.RotationModifier">
           <RotationRate>1</RotationRate>
         </Item>
-        <Item Type="Modifiers:DampingModifier">
+        <Item Type="ProjectMercury.Modifiers.DampingModifier">
           <DampingCoefficient>1</DampingCoefficient>
         </Item>
       </Modifiers>
       <BlendMode>Add</BlendMode>
       <TriggerOffset>0 0</TriggerOffset>
       <MinimumTriggerPeriod>0.25</MinimumTriggerPeriod>
-      <Radius>1</Radius>
+      <Radius>8</Radius>
       <Ring>true</Ring>
       <Radiate>true</Radiate>
     </Item>
@@ -109,7 +105,7 @@
       <Budget>250</Budget>
       <Term>0.75</Term>
       <ReleaseQuantity>35</ReleaseQuantity>
-      <Enabled>true</Enabled>
+      <Enabled>True</Enabled>
       <ReleaseSpeed>
         <Value>0</Value>
         <Variation>250</Variation>
@@ -123,8 +119,8 @@
         <Variation>0</Variation>
       </ReleaseOpacity>
       <ReleaseScale>
-        <Value>5</Value>
-        <Variation>2</Variation>
+        <Value>20</Value>
+        <Variation>8</Variation>
       </ReleaseScale>
       <ReleaseRotation>
         <Value>0</Value>
@@ -133,11 +129,11 @@
       <ReleaseImpulse>0 0</ReleaseImpulse>
       <ParticleTextureAssetName>Particle005</ParticleTextureAssetName>
       <Modifiers>
-        <Item Type="Modifiers:OpacityModifier">
+        <Item Type="ProjectMercury.Modifiers.OpacityModifier">
           <Initial>1</Initial>
           <Ultimate>0</Ultimate>
         </Item>
-        <Item Type="Modifiers:DampingModifier">
+        <Item Type="ProjectMercury.Modifiers.DampingModifier">
           <DampingCoefficient>2</DampingCoefficient>
         </Item>
       </Modifiers>
@@ -150,9 +146,9 @@
       <Budget>32</Budget>
       <Term>0.1</Term>
       <ReleaseQuantity>1</ReleaseQuantity>
-      <Enabled>true</Enabled>
+      <Enabled>True</Enabled>
       <ReleaseSpeed>
-        <Value>50</Value>
+        <Value>100</Value>
         <Variation>0</Variation>
       </ReleaseSpeed>
       <ReleaseColour>
@@ -164,7 +160,7 @@
         <Variation>0</Variation>
       </ReleaseOpacity>
       <ReleaseScale>
-        <Value>192</Value>
+        <Value>512</Value>
         <Variation>0</Variation>
       </ReleaseScale>
       <ReleaseRotation>
@@ -174,7 +170,7 @@
       <ReleaseImpulse>0 0</ReleaseImpulse>
       <ParticleTextureAssetName>Particle005</ParticleTextureAssetName>
       <Modifiers>
-        <Item Type="Modifiers:OpacityModifier">
+        <Item Type="ProjectMercury.Modifiers.OpacityModifier">
           <Initial>1</Initial>
           <Ultimate>0</Ultimate>
         </Item>

@@ -43,6 +43,11 @@ namespace Sputnik
 			{
 				Detach();
 			}
+
+			// Thruster particle.
+			if (!attached && DesiredVelocity.LengthSquared() > (maxSpeed / 4) * (maxSpeed / 4)) {
+				Environment.ThrusterEffect.Trigger(Position + Angle.Vector(Rotation + MathHelper.Pi) * 20.0f);
+			}
 			
 			if (attached && controlled != null)
 			{
