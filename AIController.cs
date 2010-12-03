@@ -196,7 +196,7 @@ namespace Sputnik {
 			Vector2 destination = target.Position;  //Current Destination, is set to our target
             float wantedDirection = Angle.Direction(currentShip.Position, destination);  //I like facing my destination when I move
 
-			if (Vector2.Distance(currentShip.Position, destination) < 200)  //I want to keep a certain distance away from my target
+			if (Vector2.Distance(currentShip.Position, destination) < 300)  //I want to keep a certain distance away from my target
             {
                 currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection;  //Even though I want to keep a certain distance, I will still turn to face you
@@ -228,7 +228,7 @@ namespace Sputnik {
             Vector2 destination = target.Position;  //Im going to my target's position
             float wantedDirection = Angle.Direction(currentShip.Position, destination);  //I want to face my targets direction
 
-            if (Vector2.Distance(currentShip.Position, destination) < 200) //Keep a certain distance from target
+            if (Vector2.Distance(currentShip.Position, destination) < 300) //Keep a certain distance from target
             {
                 currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection; //Even though I dont move, I want to face my targets direction
