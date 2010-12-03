@@ -195,15 +195,23 @@ namespace Sputnik
 			else if (Environment.sputnik.controlled == this) //Sputnik is friendly to nobody
 				return false;
 			else {
-				if (this.GetType().Equals(s.GetType())) 
+				if (this.GetType().Equals(s.GetType()))
 				{
 					if (s.sputnikDetached)
 						return s.timeSinceDetached > 3;  //Friendly if Sputnik detached and 3 seconds passed
 					else
 						return true; //Otherwise friendly since both are same type
 				}
-				else
-					return false;  //Not same faction, not friendly
+				else{
+					if (ai is AIController)
+					{
+						return ((AIController)ai).target != s;
+					}
+					else
+					{
+						return false;  //If we get here, playercontroller hates everyone
+					}
+					}
 			}
 		}
 

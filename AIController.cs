@@ -14,7 +14,7 @@ namespace Sputnik {
 		private SpawnPoint spawn;  //Used for spawnpoint manipulation
 		private GameEnvironment env;  //Game Environment reference
 		private Vector2 hitBodyPosition;  //Position of the body hit by a raycast
-		private GameEntity target, oldTarget; //Current target of attention
+		public GameEntity target; //Current target of attention
 		private GameEntity lookingFor; //Entity that I can't see but I'm looking for
 		private enum State { Allied, Neutral, Alert, Hostile, Confused, Disabled }; //All possible states
         private State oldState,currentState,nextState; // Used to control AI's FSM
@@ -31,6 +31,7 @@ namespace Sputnik {
 		private static Random r = new Random();
 		private float waitTimer;
 		private Vector2 oldPosition;
+		private GameEntity oldTarget;
 
         /// <summary>
         ///  Creates a new AI with given spawnpoint and given environment
@@ -273,7 +274,8 @@ namespace Sputnik {
 			{
 				if(timeSinceLastStateChange > 1) //I spin for 1 second now
 				{
-					changeToOld();
+					//changeToOld();
+					changeToNeutral();
 				}
 			}
 		}
@@ -293,7 +295,8 @@ namespace Sputnik {
 			}
 			if (!currentShip.isFrozen && !currentShip.isTractored)
 			{
-				changeToOld();
+				//changeToOld();
+				changeToNeutral();
 				// I would like to do something else here
 				//Id like to up the alertness level, ie, if you tractor or freeze me, i become alert or hostile
 				//I can currently do this for tractor due to knowing the tractoring ship, but can't for freezing.
@@ -522,7 +525,7 @@ namespace Sputnik {
 
 		private void changeToNeutral()
 		{
-			oldTarget = null;
+			oldTarget = target;
 			target = null;
 			lookingFor = null;
 			oldState = currentState;
@@ -535,7 +538,7 @@ namespace Sputnik {
 
 		private void changeToAlert(GameEntity t)
 		{
-			oldTarget = null;
+			oldTarget = target;
 			target = t;
 			lookingFor = null;
 			oldState = currentState;
@@ -548,7 +551,7 @@ namespace Sputnik {
 
 		private void changeToHostile(GameEntity t)
 		{
-			oldTarget = null;
+			oldTarget = target;
 			target = t;
 			lookingFor = null;
 			oldState = currentState;
@@ -561,7 +564,7 @@ namespace Sputnik {
 
 		private void changeToAllied(GameEntity t)
 		{
-			oldTarget = null;
+			oldTarget = target;
 			target = t;
 			lookingFor = null;
 			oldState = currentState;
@@ -599,7 +602,8 @@ namespace Sputnik {
 			recentlyChangedTargets = false;
 		}
 
-		private void changeToOld()
+		//This behavior causes problems, I dont like it 
+		/*private void changeToOld()
 		{
 			switch (oldState)
 			{
@@ -617,6 +621,6 @@ namespace Sputnik {
 					break;
 			}
 
-		}
+		}*/
     }
 }
