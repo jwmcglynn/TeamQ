@@ -21,6 +21,8 @@ namespace Sputnik
 		private void Initialize(SpawnPoint sp) {
 			shooter = new BulletEmitter(Environment, this, BulletEmitter.BulletStrength.Medium);
 			AddChild(shooter);
+			RelativeShooterPos = new Vector2(65.0f, -5.0f);
+
 			ai = new AIController(sp, Environment);
 			LoadTexture(Environment.contentManager, "circloid");
 
@@ -30,14 +32,6 @@ namespace Sputnik
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true; // The circloid will not be affected by its own black hole. 
 			CollisionBody.FixedRotation = true;
-			/*
-			List<Vector2> vertices = new List<Vector2>();
-			vertices.Add(new Vector2(0, 0));
-			vertices.Add(new Vector2(20, -(float)(Math.Tan(MathHelper.ToRadians(20)) * 20)));
-			vertices.Add(new Vector2(20, (float)(Math.Tan(MathHelper.ToRadians(20)) * 20)));
-			Fixture sensor = CollisionBody.CreateFixture(new PolygonShape(new Vertices(vertices)), 0);
-			sensor.IsSensor = true;
-			*/ 
 		}
 
 		public CircloidShip(GameEnvironment env, SpawnPoint sp)
@@ -50,7 +44,8 @@ namespace Sputnik
 		public override void Update(float elapsedTime) {
 			// Thruster particle.
 			if (DesiredVelocity.LengthSquared() > (maxSpeed / 6) * (maxSpeed / 6)) {
-				Environment.ThrusterEffect.Trigger(Position + Angle.Vector(Rotation + MathHelper.Pi) * 90.0f);
+				Matrix rotMatrix = Matrix.CreateRotationZ(Rotation);
+				Environment.ThrusterEffect.Trigger(Position + Vector2.Transform(new Vector2(-90.0f, 0.0f), rotMatrix));
 			}
 
 			base.Update(elapsedTime);

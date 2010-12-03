@@ -27,6 +27,8 @@ namespace Sputnik
 		public Ship tractoringShip;
 		protected float passiveShield;
 
+		public Vector2 RelativeShooterPos = Vector2.Zero;
+
 		// Smooth rotation.
 		public float DesiredRotation;
 		private float m_lastRotDir = 1.0f;
@@ -36,6 +38,8 @@ namespace Sputnik
 			MaxRotVel = 2.0f * (float) Math.PI; // Up to 1 rotation per second.
 		}
 
+		private static int k_zindexOffset = 0;
+
 		//Used for friendliness
 		bool sputnikDetached;
 		float timeSinceDetached;
@@ -44,18 +48,26 @@ namespace Sputnik
 				: base(env)
 		{
 			Position = pos;
-			shooterRotation = Rotation;
-			sputnikDetached = false;
-			timeSinceDetached = 0;
-			VisualRotationOnly = true;
+			Initialize();
 		}
 
 		public Ship(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp)
 		{
+			Initialize();
+		}
+
+		private void Initialize() {
+			shooterRotation = Rotation;
 			sputnikDetached = false;
 			timeSinceDetached = 0;
 			VisualRotationOnly = true;
+			ResetZIndex();
+		}
+
+		public void ResetZIndex() {
+			Zindex = 0.5f + MathHelper.Clamp((float) k_zindexOffset / 100000.0f, 0.0f, 0.5f);
+			++k_zindexOffset;
 		}
 
 		public override void Update(float elapsedTime)
@@ -71,7 +83,9 @@ namespace Sputnik
 			{
 				// Update emitter position.
 				shooter.Rotation = shooterRotation;
-				shooter.Position = Position;
+				
+				Matrix rotMatrix = Matrix.CreateRotationZ(Rotation);
+				shooter.Position = Position + Vector2.Transform(RelativeShooterPos, rotMatrix);
 			}
 
 			if (Rotation != DesiredRotation && !isFrozen) {
@@ -99,6 +113,7 @@ namespace Sputnik
 			isTractored = false;
 			sputnikDetached = false;
 			timeSinceDetached = 0;
+			Zindex = 0.26f;
 		}
 
 		public virtual void Detach()
@@ -110,6 +125,7 @@ namespace Sputnik
 			timeSinceDetached = 0;
 			SpawnPoint.Position = Position;
 			ai.gotDetached();
+			ResetZIndex();
 		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {

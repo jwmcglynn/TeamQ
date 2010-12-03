@@ -19,7 +19,7 @@ namespace Sputnik
 				: base(env, sp) {
 					
 			env.sputnik = this;
-			Zindex = 0.0f;
+			Zindex = 0.25f;
 			Position = sp.Position;
 			
 			this.maxSpeed = 500;
@@ -48,7 +48,7 @@ namespace Sputnik
 			if (!attached && DesiredVelocity.LengthSquared() > (maxSpeed / 4) * (maxSpeed / 4)) {
 				Environment.ThrusterEffect.Trigger(Position + Angle.Vector(Rotation + MathHelper.Pi) * 20.0f);
 			}
-			
+
 			if (attached && controlled != null)
 			{
 				if(Vector2.Distance(this.Position, this.controlled.Position) < (this.maxSpeed * 3) * elapsedTime || !attaching)

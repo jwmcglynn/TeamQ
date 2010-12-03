@@ -21,6 +21,8 @@ namespace Sputnik
 		private void Initialize(SpawnPoint sp) {
 			shooter = new BulletEmitter(Environment, this,BulletEmitter.BulletStrength.Weak);
 			AddChild(shooter);
+			RelativeShooterPos = new Vector2(65.0f, 0.0f);
+
 			ai = new AIController(sp, Environment);
 			LoadTexture(Environment.contentManager, "triangulus");
 
@@ -29,14 +31,6 @@ namespace Sputnik
 			AddCollisionCircle(40.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.FixedRotation = true;
-			/*
-			List<Vector2> vertices = new List<Vector2>();
-			vertices.Add(new Vector2(0, 0));
-			vertices.Add(new Vector2(20, -(float)(Math.Tan(MathHelper.ToRadians(20)) * 20)));
-			vertices.Add(new Vector2(20, (float)(Math.Tan(MathHelper.ToRadians(20)) * 20)));
-			Fixture sensor = CollisionBody.CreateFixture(new PolygonShape(new Vertices(vertices)), 0);
-			sensor.IsSensor = true;
-			*/ 
 		}
 
 		public TriangulusShip(GameEnvironment env, SpawnPoint sp)

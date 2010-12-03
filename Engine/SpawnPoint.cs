@@ -157,9 +157,6 @@ namespace Sputnik {
 			if (AllowRespawn) {
 				m_currentCooldown = 0.0f;
 				SpawnController.SpawnPoints.Add(this);
-				System.Console.WriteLine("Reset sp " + Entity);
-			} else {
-				System.Console.WriteLine("Destroy sp " + Entity);
 			}
 
 			Entity = null;

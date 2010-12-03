@@ -164,6 +164,10 @@ namespace Sputnik
 					s_captureMouse = !s_captureMouse;
 				}
 
+				if (keyboard.IsKeyDown(Keys.Q)) {
+					m_env.ExplosionEffect.Trigger(s.Position);
+				}
+
 			} else {
 				GamePadState oldGamepad = OldGamePad.GetState();
 				Vector2 invertY = new Vector2(1.0f, -1.0f);

@@ -236,7 +236,7 @@ namespace Sputnik {
 			// Draw map.
 			if (m_map != null) {
 				m_map.Draw(m_spriteBatch, Camera.Rect, () => {
-					m_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
+					m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
 				});
 			}
 
@@ -248,7 +248,7 @@ namespace Sputnik {
 			}
 
 			// Draw entities.
-			m_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
+			m_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Camera.Transform);
 			Draw(m_spriteBatch);
 			m_spriteBatch.End();
 
