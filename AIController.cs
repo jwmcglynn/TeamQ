@@ -579,6 +579,10 @@ namespace Sputnik {
 
 		private void changeToAlert(GameEntity t)
 		{
+			if (currentState != State.Alert) {
+				env.AlertEffect.Trigger(currentShip.Position);
+			}
+
 			timeSinceSawTarget = 0;
 			oldTarget = target;
 			target = t;

@@ -40,6 +40,7 @@ namespace Sputnik {
 		public ParticleEffect ThrusterEffect;
 		public ParticleEffect AttachEffect;
 		public ParticleEffect BlackHoleEffect;
+		public ParticleEffect AlertEffect;
 
 		private List<ParticleEffect> EffectsBelowShip = new List<ParticleEffect>();
 		private List<ParticleEffect> EffectsAboveShip = new List<ParticleEffect>();
@@ -88,11 +89,13 @@ namespace Sputnik {
 			ThrusterEffect = contentManager.Load<ParticleEffect>("Thruster");
 			AttachEffect = contentManager.Load<ParticleEffect>("Attach");
 			BlackHoleEffect = contentManager.Load<ParticleEffect>("BlackHole");
+			AlertEffect = contentManager.Load<ParticleEffect>("AlertEffect");
 
 			EffectsBelowShip.Add(ThrusterEffect);
 			EffectsAboveShip.Add(ExplosionEffect);
 			EffectsAboveShip.Add(AttachEffect);
 			EffectsAboveShip.Add(BlackHoleEffect);
+			EffectsAboveShip.Add(AlertEffect);
 
 			ParticleRenderer.LoadContent(contentManager);
 
