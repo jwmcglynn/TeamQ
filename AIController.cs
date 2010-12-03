@@ -14,7 +14,8 @@ namespace Sputnik {
 		private SpawnPoint spawn;  //Used for spawnpoint manipulation
 		private GameEnvironment env;  //Game Environment reference
 		private Vector2 hitBodyPosition;  //Position of the body hit by a raycast
-		public GameEntity target; //Current target of attention
+		private GameEntity target; //Current target of attention
+		public GameEntity Target { get { return target; } }
 		private GameEntity lookingFor; //Entity that I can't see but I'm looking for
 		private enum State { Allied, Neutral, Alert, Hostile, Confused, Disabled }; //All possible states
         private State oldState,currentState,nextState; // Used to control AI's FSM
@@ -32,6 +33,7 @@ namespace Sputnik {
 		private float waitTimer;
 		private Vector2 oldPosition;
 		private GameEntity oldTarget;
+		private float timeSinceSawTarget;
 
         /// <summary>
         ///  Creates a new AI with given spawnpoint and given environment
@@ -59,6 +61,7 @@ namespace Sputnik {
 			oldTarget = null;
 			timeSinceMoved = 0;
 			oldPosition = new Vector2(-1000, 1000);//I hope this is improbable
+			timeSinceSawTarget = 0;
         }
 
         /// <summary>
@@ -177,6 +180,12 @@ namespace Sputnik {
 		/// </summary>
         private void Alert(float elapsedTime)
         {
+			if(CanSee(currentShip,target)){
+				timeSinceSawTarget = 0;
+			}
+			else{
+				timeSinceSawTarget += elapsedTime;
+			}
 			Vector2 destination = target.Position;  //Current Destination, is set to our target
             float wantedDirection = Angle.Direction(currentShip.Position, destination);  //I like facing my destination when I move
 
@@ -196,8 +205,9 @@ namespace Sputnik {
 				currentShip.DesiredRotation = wantedDirection;
             }
 
-			//Might also change if I can't see my target
 			if (timeSinceLastStateChange > 5)
+				changeToNeutral();
+			else if(timeSinceSawTarget > 3)
 				changeToNeutral();
         }
 
@@ -226,10 +236,15 @@ namespace Sputnik {
                 currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection;
             }
-			//TODO What do I do if I can't see my target
 			//Shoot if I see my target
 			if (CanSee(currentShip, target))
+			{
 				currentShip.Shoot(elapsedTime, target);
+				timeSinceSawTarget = 0;
+			}
+			else{
+				timeSinceSawTarget += elapsedTime;
+			}
 
             //Did i Kill the target
             if (target.ShouldCull())
@@ -244,6 +259,8 @@ namespace Sputnik {
 			{
 				changeToNeutral();
 			}
+			else if (timeSinceSawTarget > 3)
+				changeToNeutral();
         }
 
 		/// <summary>
@@ -310,6 +327,14 @@ namespace Sputnik {
 		/// </summary>
 		private void Allied(float elapsedTime)
 		{
+			if (CanSee(currentShip, target))
+			{
+				timeSinceSawTarget = 0;
+			}
+			else
+			{
+				timeSinceSawTarget += elapsedTime;
+			}
 			Vector2 destination = target.Position;  //Im going to my target's position
 			float wantedDirection = Angle.Direction(currentShip.Position, destination);  //I want to face my targets direction
 
@@ -337,6 +362,12 @@ namespace Sputnik {
 			{
 				changeToNeutral();
 			}
+			else if (target != env.sputnik) //We don't follow non sputnik people
+			{
+				changeToNeutral();
+			}
+			else if (timeSinceSawTarget > 5)
+				changeToNeutral();
 		}
 
 		/// <summary>
@@ -525,6 +556,7 @@ namespace Sputnik {
 
 		private void changeToNeutral()
 		{
+			timeSinceSawTarget = 0;
 			oldTarget = target;
 			target = null;
 			lookingFor = null;
@@ -538,6 +570,7 @@ namespace Sputnik {
 
 		private void changeToAlert(GameEntity t)
 		{
+			timeSinceSawTarget = 0;
 			oldTarget = target;
 			target = t;
 			lookingFor = null;
@@ -551,6 +584,7 @@ namespace Sputnik {
 
 		private void changeToHostile(GameEntity t)
 		{
+			timeSinceSawTarget = 0;
 			oldTarget = target;
 			target = t;
 			lookingFor = null;
@@ -564,6 +598,7 @@ namespace Sputnik {
 
 		private void changeToAllied(GameEntity t)
 		{
+			timeSinceSawTarget = 0;
 			oldTarget = target;
 			target = t;
 			lookingFor = null;
@@ -577,6 +612,7 @@ namespace Sputnik {
 
 		private void changeToDisabled()
 		{
+			timeSinceSawTarget = 0;
 			oldTarget = target;
 			target = null;
 			lookingFor = null;
@@ -590,6 +626,7 @@ namespace Sputnik {
 
 		private void changeToConfused(GameEntity l, bool adc)
 		{
+			timeSinceSawTarget = 0;
 			oldTarget = target;
 			target = null;
 			lookingFor = l;

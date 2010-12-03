@@ -27,6 +27,8 @@ namespace Sputnik
 		Fixture takesDamage, sensor;
 		protected Vector2 target;
 		protected SpawnPoint sp = null;
+		private GameEntity shootTarget;
+		public GameEntity ShootTarget { get { return shootTarget; } }
 
 		public Boss(GameEnvironment env) : base(env)
 		{
@@ -109,7 +111,7 @@ namespace Sputnik
 
 		public bool IsFriendly(Ship s)
 		{
-			return false;  //Evidently the boss hates everything
+			return s != shootTarget;
 		}
 
 		public bool IsFriendly(Boss s)
@@ -143,12 +145,12 @@ namespace Sputnik
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
 		{
 			base.OnCollide(entB, contact);
-
+			//This might not work if Jeff removes sputniks collision circle
 			if (entB is SputnikShip)
 			{
 				isShooting = true;
 				shooterRotation = (float)Math.Atan2(entB.Position.Y - this.Position.Y, entB.Position.X - this.Position.X);
-
+				shootTarget = ((SputnikShip)entB).controlled;
 				target = entB.Position;
 			}
 		}
