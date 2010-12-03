@@ -85,7 +85,7 @@ namespace Sputnik {
 				//currentShip==null defaults here, but it wont matter
 				timeSinceMoved += elapsedTime;
 			}
-			if (timeSinceHitWall > 3) //I consider recent 3 seconds
+			if (timeSinceHitWall > 1) //I consider recent 1 seconds
 			{
 				recentlyHitWall = false;
 				timeSinceHitWall = 0;
@@ -495,7 +495,7 @@ namespace Sputnik {
 				if (currentState == State.Neutral)
 				{
 					//With no pathfinding, this is probably the best I can do
-					//spawn.Position = currentShip.Position - 100 * Angle.Vector(Angle.Direction(currentShip.Position, collidePosition));
+					//Worst case seems to be if this happens in a corner
 					float collideAngle = Angle.Direction(currentShip.Position, collidePosition);
 					//I HATE that coordinate plane of screen is not a math coordinate plane
 					if (collideAngle < - MathHelper.PiOver2)
