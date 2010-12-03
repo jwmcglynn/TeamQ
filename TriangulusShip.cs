@@ -11,6 +11,9 @@ namespace Sputnik
 {
 	class TriangulusShip : Ship, Tractorable, Freezable
 	{
+		private bool m_tractored;
+		public bool IsTractored { get { return m_tractored; } set { m_tractored = value; } }
+
 		public TriangulusShip(GameEnvironment env, Vector2 pos, SpawnPoint sp)
 			: base(env, pos)
 		{
@@ -56,7 +59,7 @@ namespace Sputnik
 		{
 			if (fixture.IsSensor && !(entB is Tractorable)) return false;
 			if(entB is Tractorable && entB is Ship) {
-				if(((Ship) entB).isTractored) return false;
+				if (((Tractorable) entB).IsTractored) return false;
 			}
 			return base.ShouldCollide(entB, fixture, entBFixture);
 		}
@@ -75,16 +78,25 @@ namespace Sputnik
 		public void Tractored(Ship shipTractoring)
 		{
 			tractoringShip = shipTractoring;
-			isTractored = true;
+			IsTractored = true;
 			ai.GotTractored();
 		}
 
-		public void TractorReleased() {
-			isTractored = false;
+		public override bool ShouldCull() {
+			if (IsTractored) return false;
+			return base.ShouldCull();
 		}
 
-		public override void OnCull()
-		{
+		public void TractorReleased() {
+			IsTractored = false;
+		}
+
+		public void UpdateTractor(Vector2 position) {
+			Position = position;
+		}
+
+		public override void OnCull() {
+			IsTractored = false;
 			Environment.triangles.Remove(this);
 			base.OnCull();
 		}

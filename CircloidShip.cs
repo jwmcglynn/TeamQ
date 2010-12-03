@@ -11,6 +11,9 @@ namespace Sputnik
 {
 	class CircloidShip : Ship, Tractorable
 	{
+		private bool m_tractored;
+		public bool IsTractored { get { return m_tractored; } set { m_tractored = value; } }
+
 		public CircloidShip(GameEnvironment env, Vector2 pos, SpawnPoint sp) 
 			: base(env, pos)
 		{
@@ -51,20 +54,30 @@ namespace Sputnik
 			base.Update(elapsedTime);
 		}
 
+		public override bool ShouldCull() {
+			if (IsTractored) return false;
+			return base.ShouldCull();
+		}
+
 		public void Tractored(Ship shipTractoring)
 		{
 			tractoringShip = shipTractoring;
-			isTractored = true;
+			IsTractored = true;
 			ai.GotTractored();
 		}
 
 		public void TractorReleased()
 		{
-			isTractored = false;
+			IsTractored = false;
+		}
+		
+		public void UpdateTractor(Vector2 position) {
+			Position = position;
 		}
 
 		public override void OnCull()
 		{
+			IsTractored = false;
 			Environment.circles.Remove(this);
 			base.OnCull();
 		}

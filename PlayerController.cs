@@ -18,8 +18,7 @@ namespace Sputnik
 		private GameEnvironment m_env;
 		private const float timeBetweenControls = 0.0f;
 		private BlackHole.Pair m_playerBlackHoles;
-		private bool isTractoringItem;
-		private Entity itemBeingTractored;
+		private Tractorable itemBeingTractored;
 		private Ship controlled;
 		private static bool s_captureMouse = true;
 
@@ -127,7 +126,7 @@ namespace Sputnik
 				if (keyboard.IsKeyDown(Keys.S)) movement.Y += 1.0f;
 				if (keyboard.IsKeyDown(Keys.D)) movement.X += 1.0f;
 
-				// Aiming.  TODO: Direction, not position.
+				// Aiming.
 				Vector2 mousePos = m_env.Camera.ScreenToWorld(new Vector2(mouse.X, mouse.Y)) - m_env.Camera.Position;
 				if (mousePos.Length() > k_aimRadius) {
 					mousePos.Normalize();
@@ -182,12 +181,13 @@ namespace Sputnik
 				m_env.HUD.Cursor.Position = Angle.Vector(aimDirection) * k_aimRadius / 3.0f + m_env.Camera.WorldToScreen(s.Position);
 
 				// Detach.
-				detachPressed = (gamepad.IsButtonDown(Buttons.LeftShoulder) && !oldGamepad.IsButtonDown(Buttons.LeftShoulder))
-									|| (gamepad.IsButtonDown(Buttons.RightShoulder) && !oldGamepad.IsButtonDown(Buttons.RightShoulder));
+				detachPressed = (gamepad.IsButtonDown(Buttons.B) && !oldGamepad.IsButtonDown(Buttons.B));
 
 				// Use special.
-				useSpecialHeld = (gamepad.IsButtonDown(Buttons.A) && oldGamepad.IsButtonDown(Buttons.A));
-				useSpecialPressed = (gamepad.IsButtonDown(Buttons.A) && !oldGamepad.IsButtonDown(Buttons.A));
+				useSpecialHeld = (gamepad.IsButtonDown(Buttons.LeftShoulder) && oldGamepad.IsButtonDown(Buttons.LeftShoulder))
+									|| (gamepad.IsButtonDown(Buttons.RightShoulder) && oldGamepad.IsButtonDown(Buttons.RightShoulder));
+				useSpecialPressed = (gamepad.IsButtonDown(Buttons.LeftShoulder) && !oldGamepad.IsButtonDown(Buttons.LeftShoulder))
+									|| (gamepad.IsButtonDown(Buttons.RightShoulder) && !oldGamepad.IsButtonDown(Buttons.RightShoulder));
 
 				// Shoot.
 				shoot = (gamepad.ThumbSticks.Right.Length() > 0.1f);
@@ -201,12 +201,19 @@ namespace Sputnik
 			{
 				s.Detach();
 				// If i am tractoring something, and i detach from it, then they should go back to normal.
-				if(isTractoringItem) {
-					if(itemBeingTractored is Ship) {
-						((Ship) itemBeingTractored).isTractored = false;
-						isTractoringItem = false;
-					}
+				if(itemBeingTractored != null) {
+					itemBeingTractored.TractorReleased();
+					itemBeingTractored = null;
 				}
+			}
+
+			if (itemBeingTractored != null && !itemBeingTractored.IsTractored) {
+				itemBeingTractored.TractorReleased();
+				itemBeingTractored = null;
+			}
+
+			if (itemBeingTractored != null) {
+				itemBeingTractored.UpdateTractor(specialPosition);
 			}
 
 			s.DesiredVelocity = (movement != Vector2.Zero) ? Vector2.Normalize(movement) * s.maxSpeed : Vector2.Zero;
@@ -227,7 +234,7 @@ namespace Sputnik
 					
 					// if we are tractoring something right now, then we arent allowed to tractor anything else
 					// we can shoot now.
-					if(!isTractoringItem) {
+					if (itemBeingTractored == null) {
 						List<Entity> list = VisionHelper.FindAll(m_env, s.Position, specialDirection, MathHelper.ToRadians(20.0f), 500.0f);
 						IOrderedEnumerable<Entity> sortedList = list.OrderBy(ent => Vector2.DistanceSquared(s.Position, ent.Position)); 
 
@@ -240,27 +247,15 @@ namespace Sputnik
 
 						if(collided is Tractorable) {
 							((Tractorable)collided).Tractored(s); // Disable ship
-							itemBeingTractored = collided;
-							isTractoringItem = true;
+							itemBeingTractored = (Tractorable) collided;
 
 							if(itemBeingTractored is Asteroid) {
 								((Asteroid)itemBeingTractored).CollisionBody.IsStatic = false;
 							}
 						}
 					} else {
-						if(itemBeingTractored.CollisionBody != null) { // case where what is being tractored dies before we can shoot it.
-							itemBeingTractored.CollisionBody.LinearDamping = 0.0f;
-							itemBeingTractored.SetPhysicsVelocityOnce(new Vector2(k_speed * (float)Math.Cos(s.shooterRotation), k_speed * (float)Math.Sin(s.shooterRotation)));
-						
-							// add this code after ship collides with a wall?
-							if(itemBeingTractored is Ship) {
-								((Ship)itemBeingTractored).isTractored = false;
-							} else if(itemBeingTractored is Asteroid) {
-								((Asteroid) itemBeingTractored).CollisionBody.IsStatic = true;
-								((Asteroid)itemBeingTractored).TractorReleased();
-							}
-						}
-						isTractoringItem = false;
+						itemBeingTractored.TractorReleased();
+						itemBeingTractored = null;
 					}
 				} else if(s is SquaretopiaShip) {
 					ForceField ff = new ForceField(m_env, s.Position, specialDirection, controlled);

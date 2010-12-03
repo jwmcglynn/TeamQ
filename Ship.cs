@@ -16,14 +16,12 @@ namespace Sputnik
 		internal ShipController ai;
 		private ShipController previousAI = null;
 		public int health = 100;
-		private bool m_shouldCull = false;
 		public float shooterRotation;
 		protected BulletEmitter shooter = null;
 		protected Ship attachedShip = null;
 		public float maxSpeed = 350.0f;
 		public bool isShooting;
 		public bool isFrozen;
-		public bool isTractored;
 		public Ship tractoringShip;
 		protected float passiveShield;
 
@@ -110,7 +108,7 @@ namespace Sputnik
 			this.ai = sp.GetAI();
 			this.attachedShip = sp;
 			isFrozen = false;
-			isTractored = false;
+			if (this is Tractorable) ((Tractorable) this).IsTractored = false;
 			sputnikDetached = false;
 			timeSinceDetached = 0;
 			Zindex = 0.26f;
@@ -154,7 +152,6 @@ namespace Sputnik
 		}
 
 		public override bool ShouldCull() {
-			if (m_shouldCull) return true;
 			if (attachedShip != null && this is TriangulusShip) return false;
 			
 			return !InsideCullRect(Rectangle.Union(VisibleRect, SpawnPoint.Rect));
@@ -203,7 +200,7 @@ namespace Sputnik
 			// Destory a ship
 			// TODO: Animations / explosions.
 			this.health = 0;
-			m_shouldCull = true;
+			OnNextUpdate += () => Dispose();
 
 			Environment.ExplosionEffect.Trigger(Position);
 		}
