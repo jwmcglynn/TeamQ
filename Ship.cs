@@ -217,8 +217,15 @@ namespace Sputnik
 
 		public virtual bool IsFriendly(Boss s)
 		{
-			//Current hack, might want to update this if we ever get more than one boss
-			return this is CircloidShip;
+			if (ai is AIController)
+			{
+				//GDD says so, so allied circloid ships do this too
+				return ((AIController)ai).Target != s;
+			}
+			else
+			{
+				return false;
+			}
 		}
 	}
 }
