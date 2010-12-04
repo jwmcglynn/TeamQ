@@ -256,9 +256,16 @@ namespace Sputnik
 
 			if (GetType() != s.GetType()) return false;
 
-			// Both are not part of player's clique.
+			// At this point both are not part of player's clique.
+
 			if (s is Ship) {
 				Ship ship = (Ship) s;
+
+				// They're attacking, not our friend!
+				if (ship.ai is AIController) {
+					if (((AIController) ship.ai).target == this) return false;
+				}
+
 				return !ship.sputnikDetached || ship.timeSinceDetached >= 3.0f; //Allied if Sputnik detached and 3 seconds passed
 			}
 
