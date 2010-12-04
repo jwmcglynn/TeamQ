@@ -162,10 +162,13 @@ namespace Sputnik
 			base.OnCollide(entB, contact);
 		}
 
+		public bool IsDead()
+		{
+			return m_shouldCull;
+		}
+
 		public override bool ShouldCull()
 		{
-			if (m_shouldCull)
-				return true;
 			if (attachedShip != null && this is TriangulusShip) return false;
 
 			return !InsideCullRect(Rectangle.Union(VisibleRect, SpawnPoint.Rect));

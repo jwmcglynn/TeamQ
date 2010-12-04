@@ -9,5 +9,6 @@ namespace Sputnik {
 		bool IsFriendly(Boss s);
 		void TakeHit(int damage);
 		void InstaKill();
+		bool IsDead();
 	}
 }

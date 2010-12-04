@@ -362,7 +362,7 @@ namespace Sputnik
 			if (((Ship)target).isShooting)
 				currentShip.Shoot(elapsedTime);
 			//Is my target dead
-			if (target.ShouldCull())
+			if (((TakesDamage)target).IsDead())
 			{
 				changeToNeutral();
 			}

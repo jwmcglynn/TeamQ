@@ -131,6 +131,11 @@ namespace Sputnik
 			m_shouldCull = true;
 		}
 
+		public bool IsDead()
+		{
+			return m_shouldCull;
+		}
+
 		public override bool ShouldCull()
 		{
 			if (m_shouldCull) return true;
