@@ -161,9 +161,9 @@ namespace Sputnik
 
 		public override void OnSeparate(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
 		{
-			if (entB is SputnikShip)
-			{
+			if (entB == shootTarget) {
 				isShooting = false;
+				shootTarget = null;
 			}
 			base.OnSeparate(entB, contact);
 		}
