@@ -17,23 +17,25 @@ namespace Sputnik
 		private ShipController previousAI = null;
 		public int health = 100;
 		public float shooterRotation;
-		protected BulletEmitter shooter = null;
+		internal BulletEmitter shooter = null;
 		protected Ship attachedShip = null;
 		public float maxSpeed = 350.0f;
 		public bool isShooting;
 		public bool isFrozen;
 		public Ship tractoringShip;
 		protected float passiveShield;
+		private bool m_isDead = false;
 
 		public Vector2 RelativeShooterPos = Vector2.Zero;
 
 		// Smooth rotation.
 		public float DesiredRotation;
 		private float m_lastRotDir = 1.0f;
-		public float MaxRotVel = 2.0f * (float) Math.PI;
+		public float MaxRotVel = 2.0f * (float)Math.PI;
 
-		public void ResetMaxRotVel() {
-			MaxRotVel = 2.0f * (float) Math.PI; // Up to 1 rotation per second.
+		public void ResetMaxRotVel()
+		{
+			MaxRotVel = 2.0f * (float)Math.PI; // Up to 1 rotation per second.
 		}
 
 		private static int k_zindexOffset = 0;
@@ -43,32 +45,39 @@ namespace Sputnik
 		float timeSinceDetached;
 
 		public Ship(GameEnvironment env, Vector2 pos)
-				: base(env)
+			: base(env)
 		{
 			Position = pos;
 			Initialize();
 		}
 
 		public Ship(GameEnvironment env, SpawnPoint sp)
-				: base(env, sp)
+			: base(env, sp)
 		{
 			Initialize();
 		}
 
-		private void Initialize() {
+		private void Initialize()
+		{
 			shooterRotation = Rotation;
 			sputnikDetached = false;
 			timeSinceDetached = 0;
 			ResetZIndex();
 		}
 
-		public void ResetZIndex() {
-			Zindex = 0.5f + MathHelper.Clamp((float) k_zindexOffset / 100000.0f, 0.0f, 0.5f);
+		public void ResetZIndex()
+		{
+			Zindex = 0.5f + MathHelper.Clamp((float)k_zindexOffset / 100000.0f, 0.0f, 0.5f);
 			++k_zindexOffset;
 		}
 
 		public override void Update(float elapsedTime)
 		{
+			if (timeSinceDetached > 3)
+			{
+				sputnikDetached = false;
+				timeSinceDetached = 0;
+			}
 			if (sputnikDetached)
 				timeSinceDetached += elapsedTime;
 			isShooting = false;
@@ -80,7 +89,7 @@ namespace Sputnik
 			{
 				// Update emitter position.
 				shooter.Rotation = shooterRotation;
-				
+
 				Matrix rotMatrix = Matrix.CreateRotationZ(Rotation);
 				shooter.Position = Position + Vector2.Transform(RelativeShooterPos, rotMatrix);
 			}
@@ -112,7 +121,7 @@ namespace Sputnik
 			this.ai = sp.GetAI();
 			this.attachedShip = sp;
 			isFrozen = false;
-			if (this is Tractorable) ((Tractorable) this).IsTractored = false;
+			if (this is Tractorable) ((Tractorable)this).IsTractored = false;
 			sputnikDetached = false;
 			timeSinceDetached = 0;
 			Zindex = 0.26f;
@@ -157,28 +166,41 @@ namespace Sputnik
 				contact.GetWorldManifold(out manifold);
 				if (ai != null) ai.HitWall(manifold.Points[0] * GameEnvironment.k_invPhysicsScale);
 			}
-				
+
 			base.OnCollide(entB, contact);
 		}
 
-		public override bool ShouldCull() {
+		public bool IsDead()
+		{
+			return m_isDead;
+		}
+
+		public override bool ShouldCull()
+		{
 			if (attachedShip != null && this is TriangulusShip) return false;
-			
+
 			return !InsideCullRect(Rectangle.Union(VisibleRect, SpawnPoint.Rect));
 		}
 
 		public virtual void TakeHit(int damage)
 		{
-			if(this is SquaretopiaShip) {
-				if(passiveShield > 0) {
+			if (this is SquaretopiaShip)
+			{
+				if (passiveShield > 0)
+				{
 					passiveShield -= damage;
-				} else {
+				}
+				else
+				{
 					health -= damage;
 				}
-			} else {
+			}
+			else
+			{
 				health -= damage;
 			}
-			if (health < 1) {
+			if (health < 1)
+			{
 				InstaKill();
 			}
 		}
@@ -209,6 +231,7 @@ namespace Sputnik
 			// Perform what ever actions are necessary to 
 			// Destory a ship
 			// TODO: Animations / explosions.
+			m_isDead = true;
 			this.health = 0;
 			OnNextUpdate += () => Dispose();
 

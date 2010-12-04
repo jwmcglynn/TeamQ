@@ -7,7 +7,7 @@ namespace Sputnik {
 	interface TakesDamage {
 		void TakeHit(int damage);
 		void InstaKill();
-
+		bool IsDead();
 		bool IsFriendly();
 		bool IsAllied(TakesDamage other);
 	}

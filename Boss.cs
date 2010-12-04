@@ -28,6 +28,7 @@ namespace Sputnik
 		protected SpawnPoint sp = null;
 		private GameEntity shootTarget;
 		public GameEntity ShootTarget { get { return shootTarget; } }
+		bool m_isDead = false;
 
 		public Boss(GameEnvironment env) : base(env)
 		{
@@ -129,6 +130,11 @@ namespace Sputnik
 			// Do nothing.
 		}
 
+		public bool IsDead()
+		{
+			return m_isDead;
+		}
+
 		public override bool ShouldCull()
 		{
 			return false;
@@ -174,6 +180,7 @@ namespace Sputnik
 				// TODO: Cool death sequence?
 				// TODO: End game screen.
 				Dispose();
+				m_isDead = true;
 			}
 		}
 	}
