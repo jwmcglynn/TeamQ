@@ -404,8 +404,8 @@ namespace Sputnik
 			}
 			if (s.CollisionBody.Position.Equals(f.CollisionBody.Position))
 			{
-				//This case would only occur if the ai for the player controlled ship tries to see things.
-				return false;
+				// If we are touching, we can see each other
+				return true;
 			}
 			float theta = Angle.Direction(s.Position, f.Position); //Angle that I want to see
 			if (Angle.DistanceMag(theta, s.Rotation) < (MathHelper.ToRadians(20))) // If within cone of vision (20 degrees), raycast
