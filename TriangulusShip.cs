@@ -111,7 +111,10 @@ namespace Sputnik
 			{
 				//Horrible Casting makes me sad.
 				foreach (TriangulusShip t in Environment.triangles)
-					t.ai.GotShotBy(t, (GameEntity)((Bullet)entB).owner);
+				{
+					if(t!=this)
+						t.ai.GotShotBy(this, (GameEntity)((Bullet)entB).owner);
+				}
 			}
 			base.OnCollide(entB, contact);
 		}

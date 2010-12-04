@@ -88,7 +88,10 @@ namespace Sputnik
 			{
 				//Horrible Casting makes me sad.
 				foreach (CircloidShip c in Environment.circles)
-					c.ai.GotShotBy(c, (GameEntity)((Bullet)entB).owner);
+				{
+					if(c != this)
+						c.ai.GotShotBy(this, (GameEntity)((Bullet)entB).owner);
+				}
 			}
 			base.OnCollide(entB, contact);
 		}

@@ -486,7 +486,7 @@ namespace Sputnik
 				}
 				else if (currentState != State.Hostile) //I don't become confused if im hostile
 				{
-					if (!recentlyChangedTargets)
+					if (!recentlyChangedTargets || s == currentShip) //Dont get confused too often, unless its me shot
 					{
 						changeToConfused(f, false);
 					}
