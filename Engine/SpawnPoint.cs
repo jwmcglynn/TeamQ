@@ -13,6 +13,7 @@ namespace Sputnik {
 
 		// Position.
 		public Vector2 Position;
+		private Vector2 OriginalPosition;
 
 		// Size.
 		public Vector2 Size;
@@ -98,12 +99,14 @@ namespace Sputnik {
 			SpawnController = spawner;
 			EntityType = type;
 			Position = position;
+			OriginalPosition = position;
 		}
 
 		internal SpawnPoint(SpawnController spawner, Squared.Tiled.Object obj) {
 			SpawnController = spawner;
 			Size = new Vector2(obj.Width, obj.Height);
 			Position = new Vector2(obj.X, obj.Y) + Size / 2;
+			OriginalPosition = new Vector2(obj.X, obj.Y) + Size / 2;
 
 			Name = obj.Name;
 			Properties = obj.Properties;
@@ -171,6 +174,7 @@ namespace Sputnik {
 			HasBeenOffscreen = false;
 
 			if (AllowRespawn) {
+				Position = OriginalPosition;
 				m_currentCooldown = 0.0f;
 				SpawnController.SpawnPoints.Add(this);
 			}
