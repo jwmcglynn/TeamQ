@@ -88,7 +88,7 @@ namespace Sputnik
 				: base(e, sp) {
 			Position = sp.Position;
 			initialize();
-
+			Environment.blackHoles.Add(this);
 			// Find where wormhole points.
 			wormHole = Environment.SpawnedBlackHoles.Find(spawn => spawn.Name == SpawnPoint.Name && spawn != SpawnPoint);
 		}

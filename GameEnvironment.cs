@@ -67,6 +67,9 @@ namespace Sputnik {
 		internal List<CircloidShip> circles = new List<CircloidShip>();
 		internal SputnikShip sputnik = null;
 
+		//Black Hole List
+		internal List<BlackHole> blackHoles = new List<BlackHole>();
+
 		// HUD.
 		public Menus.HUD HUD;
 

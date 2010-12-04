@@ -138,6 +138,14 @@ namespace Sputnik
 		/// </summary>
 		private void Neutral(float elapsedTime)
 		{
+			foreach (BlackHole bh in env.blackHoles)
+			{
+				float distance = env.BlackHoleController.MaxRadius / GameEnvironment.k_physicsScale + 100;
+				if (Vector2.Distance(currentShip.Position, bh.Position) < distance)
+				{
+					HitWall(bh.Position);
+				}
+			}
 			if (timeSinceMoved > 3)
 			{
 				timeSinceMoved = 0;
