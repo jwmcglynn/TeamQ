@@ -9,10 +9,14 @@ using FarseerPhysics.Collision.Shapes;
 
 namespace Sputnik
 {
-	class CircloidShip : Ship, Tractorable
-	{
+	class CircloidShip : Ship, Tractorable {
 		private bool m_tractored;
 		public bool IsTractored { get { return m_tractored; } set { m_tractored = value; } }
+
+		private Vector2 m_tractorTarget;
+		private bool m_fling = false;
+		private float m_flingTime = 0.0f;
+
 
 		public CircloidShip(GameEnvironment env, Vector2 pos, SpawnPoint sp) 
 			: base(env, pos)
@@ -33,8 +37,7 @@ namespace Sputnik
 			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(60.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
-			CollisionBody.IgnoreGravity = true; // The circloid will not be affected by its own black hole. 
-			CollisionBody.FixedRotation = true;
+			CollisionBody.IgnoreGravity = true; // The circloid will not be affected by its own black hole.
 		}
 
 		public CircloidShip(GameEnvironment env, SpawnPoint sp)
@@ -45,8 +48,26 @@ namespace Sputnik
 		}
 
 		public override void Update(float elapsedTime) {
+			if (m_fling) {
+				m_flingTime -= elapsedTime;
+				if (m_flingTime < 0.0f) {
+					m_fling = false;
+					IsTractored = false;
+					CollisionBody.LinearDamping = 8.0f;
+				}
+
+			} else if (IsTractored) {
+				const float moveSpeed = 1000.0f;
+
+				Vector2 dir = (m_tractorTarget - Position);
+				float distance = dir.Length();
+
+				if (distance < moveSpeed * elapsedTime) DesiredVelocity = dir * 60.0f;
+				else DesiredVelocity = Vector2.Normalize(dir) * moveSpeed;
+			}
+
 			// Thruster particle.
-			if (DesiredVelocity.LengthSquared() > (maxSpeed / 6) * (maxSpeed / 6)) {
+			if (!IsTractored && DesiredVelocity.LengthSquared() > (maxSpeed / 6) * (maxSpeed / 6)) {
 				Matrix rotMatrix = Matrix.CreateRotationZ(Rotation);
 				Environment.ThrusterEffect.Trigger(Position + Vector2.Transform(new Vector2(-90.0f, 0.0f), rotMatrix));
 			}
@@ -68,11 +89,14 @@ namespace Sputnik
 
 		public void TractorReleased()
 		{
-			IsTractored = false;
+			m_fling = true;
+			m_flingTime = 1.0f;
+			CollisionBody.LinearDamping = 0.0f;
+			CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
 		}
 		
-		public void UpdateTractor(Vector2 position) {
-			Position = position;
+		public void UpdateTractor(Vector2 targetPosition) {
+			m_tractorTarget = targetPosition;
 		}
 
 		public override void OnCull()

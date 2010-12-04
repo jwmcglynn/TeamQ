@@ -212,6 +212,7 @@ namespace Sputnik {
 			
 			body.BodyType = type;
 			body.Position = m_position * GameEnvironment.k_physicsScale;
+			if (!VisualRotationOnly) body.Rotation = m_rotation;
 			body.LinearVelocity = m_velocity * GameEnvironment.k_physicsScale;
 			body.FixedRotation = flags.HasFlag(CollisionFlags.FixedRotation);
 			body.SleepingAllowed = !flags.HasFlag(CollisionFlags.DisableSleep);
@@ -228,6 +229,7 @@ namespace Sputnik {
 			if (CollisionBody == null) return;
 
 			m_position = CollisionBody.Position * GameEnvironment.k_invPhysicsScale;
+			if (!VisualRotationOnly) m_rotation = CollisionBody.Rotation;
 
 			CollisionWorld.RemoveBody(CollisionBody);
 			CollisionWorld = null;

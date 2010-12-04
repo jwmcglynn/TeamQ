@@ -48,12 +48,11 @@ namespace Sputnik
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
 			if (entB is Bullet) return false; // Don't collide with other bullets.
+			if (entB == owner) return false;
 
 			if (entB is TakesDamage) {
-				if(entB is Ship)
-					return !((TakesDamage)owner).IsFriendly((Ship)entB);
-				else
-					return !((TakesDamage)owner).IsFriendly((Boss)entB);
+				if (owner is Ship && ((Ship) owner).ai is PlayerController) return true; // Sputnik can kill allies.
+				if (((TakesDamage) owner).IsAllied((TakesDamage) entB)) return false;
 			}
 
 			return true;

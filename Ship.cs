@@ -59,7 +59,6 @@ namespace Sputnik
 			shooterRotation = Rotation;
 			sputnikDetached = false;
 			timeSinceDetached = 0;
-			VisualRotationOnly = true;
 			ResetZIndex();
 		}
 
@@ -86,16 +85,21 @@ namespace Sputnik
 				shooter.Position = Position + Vector2.Transform(RelativeShooterPos, rotMatrix);
 			}
 
-			if (Rotation != DesiredRotation && !isFrozen) {
+			if (Rotation != DesiredRotation && !isFrozen && !((this is Tractorable) && ((Tractorable) this).IsTractored)) {
 				float distPos = Angle.Distance(DesiredRotation, Rotation);
 				float dir = Math.Sign(distPos);
 
 				if (Math.Abs(distPos) > Math.PI * 3 / 4) dir = m_lastRotDir;
 				if (dir != 0) m_lastRotDir = dir;
 
-				float del = dir * MaxRotVel * elapsedTime;
-				if (Math.Abs(del) > Math.Abs(distPos)) del = distPos;
-				Rotation += del;
+				float del = dir * MaxRotVel;
+				if (Math.Abs(del * elapsedTime) > Math.Abs(distPos)) del = distPos * 10.0f;
+
+				if (CollisionBody != null) {
+					CollisionBody.AngularVelocity = del;
+				} else {
+					Rotation += del * elapsedTime;
+				}
 			}
 			shooterRotation = Rotation;
 			base.Update(elapsedTime);
@@ -128,6 +132,12 @@ namespace Sputnik
 			SpawnPoint.Position = Position;
 			ai.gotDetached();
 			ResetZIndex();
+		}
+
+		public bool AvoidShips {
+			get {
+				return !(this is SputnikShip) && !isFrozen && !((this is Tractorable) && ((Tractorable) this).IsTractored);
+			}
 		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
@@ -205,47 +215,31 @@ namespace Sputnik
 			Environment.ExplosionEffect.Trigger(Position);
 		}
 
-		//Tells if this is friendly to s
-		public virtual bool IsFriendly(Ship s)
-		{
-			if (this.Equals(s)) //Im always friendly to myself
-				return true;
-			else if (s == Environment.sputnik.controlled ) //Nobody is ever friendly to Sputnik's ship unless they are allied
-				return ai.IsAlliedWithPlayer();
-			else if (Environment.sputnik.controlled == this) //Sputnik is friendly to nobody
-				return false;
-			else {
-				if (this.GetType().Equals(s.GetType()))
-				{
-					if (s.sputnikDetached)
-						return s.timeSinceDetached > 3;  //Friendly if Sputnik detached and 3 seconds passed
-					else
-						return true; //Otherwise friendly since both are same type
-				}
-				else{
-					if (ai is AIController)
-					{
-						return ((AIController)ai).target != s;
-					}
-					else
-					{
-						return false;  //If we get here, playercontroller hates everyone
-					}
-					}
-			}
+		/// <summary>
+		/// Is this ship a member of the player's clique?
+		/// </summary>
+		/// <returns></returns>
+		public bool IsFriendly() {
+			return ai.IsAlliedWithPlayer();
 		}
 
-		public virtual bool IsFriendly(Boss s)
-		{
-			if (ai is AIController)
-			{
-				//GDD says so, so allied circloid ships do this too
-				return ((AIController)ai).target != s;
+		//Tells if this is allied to s
+		public bool IsAllied(TakesDamage s) {
+			if (this == s) return true;
+			if (this is CircloidShip && s is SaphereBoss) return true;
+
+			// If both are allied.
+			if (IsFriendly() && s.IsFriendly()) return true;
+
+			if (GetType() != s.GetType()) return false;
+
+			// Both are not part of player's clique.
+			if (s is Ship) {
+				Ship ship = (Ship) s;
+				return !ship.sputnikDetached || ship.timeSinceDetached >= 3.0f; //Allied if Sputnik detached and 3 seconds passed
 			}
-			else
-			{
-				return false;
-			}
+
+			return false;
 		}
 	}
 }
