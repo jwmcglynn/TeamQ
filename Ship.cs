@@ -126,6 +126,9 @@ namespace Sputnik
 			timeSinceDetached = 0;
 			Zindex = 0.26f;
 
+			if (this.health < this.health / 2)
+				this.health = this.health / 2;
+
 			sp.SputnikAttach(this);
 		}
 
