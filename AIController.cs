@@ -248,17 +248,19 @@ namespace Sputnik
 			}
 
 			//Did i Kill the target
-			if (target.ShouldCull())
+			if (target is Ship)
 			{
-				changeToNeutral();
+				if(currentShip.IsFriendly((Ship)target))
+					changeToNeutral();
+				else if(((Ship)target).ShouldCull())
+					changeToNeutral();
 			}
-			else if (target is Ship && currentShip.IsFriendly((Ship)target)) //Darn, I can't kill my target anymore
+			else if (target is Boss)
 			{
-				changeToNeutral();
-			}
-			else if (target is Boss && currentShip.IsFriendly((Boss)target)) //Darn, I can't kill my target anymore
-			{
-				changeToNeutral();
+				if (currentShip.IsFriendly((Boss)target))
+					changeToNeutral();
+				else if (((Boss)target).ShouldCull())
+					changeToNeutral();
 			}
 			else if (timeSinceSawTarget > 5)
 				changeToNeutral();

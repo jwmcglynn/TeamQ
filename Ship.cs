@@ -24,6 +24,7 @@ namespace Sputnik
 		public bool isFrozen;
 		public Ship tractoringShip;
 		protected float passiveShield;
+		private bool m_shouldCull = false;
 
 		public Vector2 RelativeShooterPos = Vector2.Zero;
 
@@ -163,6 +164,8 @@ namespace Sputnik
 
 		public override bool ShouldCull()
 		{
+			if (m_shouldCull)
+				return true;
 			if (attachedShip != null && this is TriangulusShip) return false;
 
 			return !InsideCullRect(Rectangle.Union(VisibleRect, SpawnPoint.Rect));
@@ -217,6 +220,7 @@ namespace Sputnik
 			// Perform what ever actions are necessary to 
 			// Destory a ship
 			// TODO: Animations / explosions.
+			m_shouldCull = true;
 			this.health = 0;
 			OnNextUpdate += () => Dispose();
 
