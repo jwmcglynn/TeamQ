@@ -13,7 +13,6 @@ namespace Sputnik
 		private int health = 100;
 		protected BulletEmitter bm1, bm2, bm3;
 		protected BossAI ai;
-		private bool m_shouldCull = false;
 		protected bool isShooting = false;
 		public bool useSpecial = false;
 		public float maxSpeed = 50.0f;
@@ -55,10 +54,10 @@ namespace Sputnik
 
 			Registration = new Vector2(465.0f, 465.0f);
 			CreateCollisionBody(env.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
-			
+			Zindex = 0.3f;
+
 			takesDamage = AddCollisionCircle(170.0f, Vector2.Zero);
 			sensor = AddCollisionCircle(Texture.Width * 0.75f, Vector2.Zero);
-			sensor.IsSensor = true;
 
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true;
@@ -109,14 +108,13 @@ namespace Sputnik
 			}
 		}
 
-		public bool IsFriendly(Ship s)
-		{
-			return s != shootTarget;
+		public bool IsFriendly() {
+			// Boss != player.
+			return false;
 		}
 
-		public bool IsFriendly(Boss s)
-		{
-			return true;  //Of course the boss is freindly with itself
+		public bool IsAllied(TakesDamage s) {
+			return (s != shootTarget);
 		}
 
 		public void Shoot(float elapsedTime)
@@ -128,31 +126,31 @@ namespace Sputnik
 
 		public void InstaKill()
 		{
-			m_shouldCull = true;
+			// Do nothing.
 		}
 
 		public override bool ShouldCull()
 		{
-			if (m_shouldCull) return true;
-			return base.ShouldCull();
+			return false;
 		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture)
 		{
-			return ((fixture == takesDamage) && (entB is Bullet)) || ((entB is SputnikShip) && fixture == sensor);
+			return ((fixture == takesDamage) && (entB is Bullet)) || ((entB is Ship) && fixture == sensor);
 		}
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
 		{
-			base.OnCollide(entB, contact);
-			//This might not work if Jeff removes sputniks collision circle
-			if (entB is SputnikShip)
-			{
+			if (contact.FixtureA == sensor || contact.FixtureB == sensor) contact.Enabled = false;
+
+			if (entB is Ship && ((Ship) entB).IsFriendly()) {
 				isShooting = true;
 				shooterRotation = (float)Math.Atan2(entB.Position.Y - this.Position.Y, entB.Position.X - this.Position.X);
-				shootTarget = ((SputnikShip)entB).controlled;
+				shootTarget = (Ship) entB;
 				target = entB.Position;
 			}
+
+			base.OnCollide(entB, contact);
 		}
 
 		public override void OnSeparate(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
@@ -171,8 +169,12 @@ namespace Sputnik
 		public void TakeHit(int damage)
 		{
 			this.health -= damage;
-			if (this.health < 1)
-				InstaKill();
+			if (this.health < 1) {
+				SpawnPoint.AllowRespawn = false;
+				// TODO: Cool death sequence?
+				// TODO: End game screen.
+				Dispose();
+			}
 		}
 	}
 }

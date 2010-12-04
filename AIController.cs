@@ -17,7 +17,7 @@ namespace Sputnik {
 		public GameEntity target { get; private set; }//Current target of attention
 		private GameEntity lookingFor; //Entity that I can't see but I'm looking for
 		private enum State { Allied, Neutral, Alert, Hostile, Confused, Disabled }; //All possible states
-        private State oldState,currentState,nextState; // Used to control AI's FSM
+		private State oldState,currentState,nextState; // Used to control AI's FSM
 		private Ship currentShip;  //Current ship I'm controlling
 		private bool answeringDistressCall;  //Used to help Confused State transition
 		private float timeSinceLastStateChange;
@@ -245,11 +245,7 @@ namespace Sputnik {
             {
 				changeToNeutral();
             }
-			else if (target is Ship && currentShip.IsFriendly((Ship)target)) //Darn, I can't kill my target anymore
-			{
-				changeToNeutral();
-			}
-			else if (target is Boss && currentShip.IsFriendly((Boss)target)) //Darn, I can't kill my target anymore
+			else if (currentShip.IsAllied((TakesDamage) target)) //Darn, I can't kill my target anymore
 			{
 				changeToNeutral();
 			}
@@ -344,14 +340,13 @@ namespace Sputnik {
 			}
 			//Shoot if my target shoots
 			//Casting makes me sad, as long as ships dont follow boss, this works
-			if (((Ship)target).isShooting)
-				currentShip.Shoot(elapsedTime);
+			if (((Ship)target).isShooting) currentShip.Shoot(elapsedTime);
 			//Is my target dead
 			if (target.ShouldCull())
 			{
 				changeToNeutral();
 			}
-			else if (target != env.sputnik) //We don't follow non sputnik people
+			else if (!((Ship) target).IsFriendly()) //We don't follow non sputnik people
 			{
 				changeToNeutral();
 			}
@@ -518,9 +513,9 @@ namespace Sputnik {
 		/// </summary>
 		public void DistressCall(Ship s, GameEntity f)
 		{
-			if (currentState == State.Neutral) //Only non busy ships (neutral) answer
+			if (currentState == State.Neutral && !s.IsAllied((TakesDamage) f)) //Only non busy ships (neutral) answer
 			{
-				if (CanSee(currentShip, s) && !s.GetType().Equals(f.GetType()))//If i can see sputniks ship, go help him 
+				if (CanSee(currentShip, s))//If i can see sputniks ship, go help him 
 					//if there isnt some civil war going on
 				{
 					changeToAllied(s);

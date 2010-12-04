@@ -32,16 +32,16 @@
       <Modifiers>
         <Item Type="ProjectMercury.Modifiers.OpacityModifier">
           <Initial>0</Initial>
-          <Ultimate>0.75</Ultimate>
+          <Ultimate>0.4</Ultimate>
         </Item>
         <Item Type="ProjectMercury.Modifiers.ScaleModifier">
           <InitialScale>100</InitialScale>
           <UltimateScale>25</UltimateScale>
         </Item>
       </Modifiers>
-      <BlendMode>Add</BlendMode>
+      <BlendMode>Alpha</BlendMode>
       <TriggerOffset>0 0</TriggerOffset>
-      <MinimumTriggerPeriod>0.05</MinimumTriggerPeriod>
+      <MinimumTriggerPeriod>0</MinimumTriggerPeriod>
       <Radius>150</Radius>
       <Ring>true</Ring>
       <Radiate>true</Radiate>
@@ -86,7 +86,7 @@
       </Modifiers>
       <BlendMode>Alpha</BlendMode>
       <TriggerOffset>0 0</TriggerOffset>
-      <MinimumTriggerPeriod>0.05</MinimumTriggerPeriod>
+      <MinimumTriggerPeriod>0</MinimumTriggerPeriod>
       <Radius>50</Radius>
       <Ring>false</Ring>
       <Radiate>true</Radiate>

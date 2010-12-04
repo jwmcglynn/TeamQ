@@ -240,18 +240,13 @@ namespace Sputnik
 
 						Entity collided = sortedList.FirstOrDefault(ent =>
 						{
-							if (ent is Ship && controlled.IsFriendly((Ship)ent)) return false;
-							else if (ent is Boss && controlled.IsFriendly((Boss)ent)) return false;
+							if (ent is TakesDamage && ((TakesDamage) ent).IsFriendly()) return false;
 							return (ent is Tractorable);
 						});
 
 						if(collided is Tractorable) {
 							((Tractorable)collided).Tractored(s); // Disable ship
 							itemBeingTractored = (Tractorable) collided;
-
-							if(itemBeingTractored is Asteroid) {
-								((Asteroid)itemBeingTractored).CollisionBody.IsStatic = false;
-							}
 						}
 					} else {
 						itemBeingTractored.TractorReleased();

@@ -120,6 +120,7 @@
     <Compile Include="BulletEmitter.cs" />
     <Compile Include="CircloidShip.cs" />
     <Compile Include="Engine\Camera2D.cs" />
+    <Compile Include="Engine\RandomUtil.cs" />
     <Compile Include="Engine\GameEntity.cs" />
     <Compile Include="Engine\Angle.cs" />
     <Compile Include="Engine\OldGamePad.cs" />

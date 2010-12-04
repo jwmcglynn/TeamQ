@@ -13,6 +13,6 @@ namespace Sputnik
 		void Tractored(Ship shipTractoring);
 		void TractorReleased();
 
-		void UpdateTractor(Vector2 position);
+		void UpdateTractor(Vector2 targetPosition);
 	}
 }

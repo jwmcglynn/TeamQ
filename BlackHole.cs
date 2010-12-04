@@ -111,7 +111,7 @@ namespace Sputnik
 			else Texture = m_textures[0];
 
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
-			Zindex = 0.0f;
+			Zindex = 0.4f;
 			VisualRotationOnly = true;
 
 			Random rand = new Random();
