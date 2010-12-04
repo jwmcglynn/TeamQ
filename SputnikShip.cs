@@ -14,6 +14,7 @@ namespace Sputnik
 		public Ship controlled = null; 
 		private Ship recentlyControlled = null;
 		private ShipController playerAI = null;
+		private float timer = 3.0f;
 
 		public SputnikShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {
@@ -22,7 +23,7 @@ namespace Sputnik
 			Zindex = 0.25f;
 			Position = sp.Position;
 			
-			this.maxSpeed = 500;
+			this.maxSpeed = 600;
 
 			LoadTexture(env.contentManager, "Sputnik");
 			Registration = new Vector2(70.0f, 33.0f);
@@ -32,6 +33,14 @@ namespace Sputnik
 
 			// Adjust camera.
 			env.Camera.TeleportAndFocus(this);
+		}
+
+		public float Timer
+		{
+			get
+			{
+				return timer;
+			}
 		}
 
 		private void SputnikCreateCollision() {
@@ -48,10 +57,17 @@ namespace Sputnik
 			}
 
 			// Thruster particle.
-			if (!attached && DesiredVelocity.LengthSquared() > (maxSpeed / 4) * (maxSpeed / 4)) {
-				Environment.ThrusterEffect.Trigger(Position + Angle.Vector(Rotation + MathHelper.Pi) * 20.0f);
-			}
+			if (!attached)
+			{
+				timer -= elapsedTime;
+				if (timer < 0)
+					InstaKill();
 
+				if (DesiredVelocity.LengthSquared() > (maxSpeed / 4) * (maxSpeed / 4))
+				{
+					Environment.ThrusterEffect.Trigger(Position + Angle.Vector(Rotation + MathHelper.Pi) * 20.0f);
+				}
+			}
 			if (attached) {
 				if(!attaching) {
 					Rotation = controlled.Rotation;
@@ -106,6 +122,7 @@ namespace Sputnik
 		{
 			if (!attached) return;
 
+			timer = 3.0f;
 			recentlyControlled = controlled;
 			attached = false;
 			controlled = null;
