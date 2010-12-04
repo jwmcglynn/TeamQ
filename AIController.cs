@@ -218,6 +218,14 @@ namespace Sputnik
 		/// </summary>
 		private void Hostile(float elapsedTime)
 		{
+			if (CanSee(currentShip, target))
+			{
+				timeSinceSawTarget = 0;
+			}
+			else
+			{
+				timeSinceSawTarget += elapsedTime;
+			}
 			Vector2 destination = target.Position;  //Im going to my target's position
 			float wantedDirection = Angle.Direction(currentShip.Position, destination);  //I want to face my targets direction
 
