@@ -65,6 +65,7 @@ namespace Sputnik
 			m_fling = true;
 			m_flingTime = 1.0f;
 
+			DestroyCollisionBody();
 			CreateAsteroidCollision(false);
 			CollisionBody.LinearDamping = 0.0f;
 			CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
@@ -74,6 +75,7 @@ namespace Sputnik
 			tractoringShip = s;
 			IsTractored = true;
 			CollisionBody.IsStatic = false;
+			m_fling = false;
 
 			DestroyCollisionBody();
 		}

@@ -100,6 +100,7 @@ namespace Sputnik
 		{
 			tractoringShip = shipTractoring;
 			IsTractored = true;
+			m_fling = false;
 			ai.GotTractored();
 		}
 
