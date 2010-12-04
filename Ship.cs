@@ -30,10 +30,11 @@ namespace Sputnik
 		// Smooth rotation.
 		public float DesiredRotation;
 		private float m_lastRotDir = 1.0f;
-		public float MaxRotVel = 2.0f * (float) Math.PI;
+		public float MaxRotVel = 2.0f * (float)Math.PI;
 
-		public void ResetMaxRotVel() {
-			MaxRotVel = 2.0f * (float) Math.PI; // Up to 1 rotation per second.
+		public void ResetMaxRotVel()
+		{
+			MaxRotVel = 2.0f * (float)Math.PI; // Up to 1 rotation per second.
 		}
 
 		private static int k_zindexOffset = 0;
@@ -43,19 +44,20 @@ namespace Sputnik
 		float timeSinceDetached;
 
 		public Ship(GameEnvironment env, Vector2 pos)
-				: base(env)
+			: base(env)
 		{
 			Position = pos;
 			Initialize();
 		}
 
 		public Ship(GameEnvironment env, SpawnPoint sp)
-				: base(env, sp)
+			: base(env, sp)
 		{
 			Initialize();
 		}
 
-		private void Initialize() {
+		private void Initialize()
+		{
 			shooterRotation = Rotation;
 			sputnikDetached = false;
 			timeSinceDetached = 0;
@@ -63,13 +65,19 @@ namespace Sputnik
 			ResetZIndex();
 		}
 
-		public void ResetZIndex() {
-			Zindex = 0.5f + MathHelper.Clamp((float) k_zindexOffset / 100000.0f, 0.0f, 0.5f);
+		public void ResetZIndex()
+		{
+			Zindex = 0.5f + MathHelper.Clamp((float)k_zindexOffset / 100000.0f, 0.0f, 0.5f);
 			++k_zindexOffset;
 		}
 
 		public override void Update(float elapsedTime)
 		{
+			if (timeSinceDetached > 3)
+			{
+				sputnikDetached = false;
+				timeSinceDetached = 0;
+			}
 			if (sputnikDetached)
 				timeSinceDetached += elapsedTime;
 			isShooting = false;
@@ -81,12 +89,13 @@ namespace Sputnik
 			{
 				// Update emitter position.
 				shooter.Rotation = shooterRotation;
-				
+
 				Matrix rotMatrix = Matrix.CreateRotationZ(Rotation);
 				shooter.Position = Position + Vector2.Transform(RelativeShooterPos, rotMatrix);
 			}
 
-			if (Rotation != DesiredRotation && !isFrozen) {
+			if (Rotation != DesiredRotation && !isFrozen)
+			{
 				float distPos = Angle.Distance(DesiredRotation, Rotation);
 				float dir = Math.Sign(distPos);
 
@@ -108,7 +117,7 @@ namespace Sputnik
 			this.ai = sp.GetAI();
 			this.attachedShip = sp;
 			isFrozen = false;
-			if (this is Tractorable) ((Tractorable) this).IsTractored = false;
+			if (this is Tractorable) ((Tractorable)this).IsTractored = false;
 			sputnikDetached = false;
 			timeSinceDetached = 0;
 			Zindex = 0.26f;
@@ -130,7 +139,8 @@ namespace Sputnik
 			ResetZIndex();
 		}
 
-		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
+		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture)
+		{
 			return !(entB is Ship) || (entB is SputnikShip);
 		}
 
@@ -147,28 +157,36 @@ namespace Sputnik
 				contact.GetWorldManifold(out manifold);
 				if (ai != null) ai.HitWall(manifold.Points[0] * GameEnvironment.k_invPhysicsScale);
 			}
-				
+
 			base.OnCollide(entB, contact);
 		}
 
-		public override bool ShouldCull() {
+		public override bool ShouldCull()
+		{
 			if (attachedShip != null && this is TriangulusShip) return false;
-			
+
 			return !InsideCullRect(Rectangle.Union(VisibleRect, SpawnPoint.Rect));
 		}
 
 		public virtual void TakeHit(int damage)
 		{
-			if(this is SquaretopiaShip) {
-				if(passiveShield > 0) {
+			if (this is SquaretopiaShip)
+			{
+				if (passiveShield > 0)
+				{
 					passiveShield -= damage;
-				} else {
+				}
+				else
+				{
 					health -= damage;
 				}
-			} else {
+			}
+			else
+			{
 				health -= damage;
 			}
-			if (health < 1) {
+			if (health < 1)
+			{
 				InstaKill();
 			}
 		}
@@ -210,28 +228,23 @@ namespace Sputnik
 		{
 			if (this.Equals(s)) //Im always friendly to myself
 				return true;
-			else if (s == Environment.sputnik.controlled ) //Nobody is ever friendly to Sputnik's ship unless they are allied
+			else if (s == Environment.sputnik.controlled) //Nobody is ever friendly to Sputnik's ship unless they are allied
 				return ai.IsAlliedWithPlayer();
 			else if (Environment.sputnik.controlled == this) //Sputnik is friendly to nobody
 				return false;
-			else {
-				if (this.GetType().Equals(s.GetType()))
+			else //Normal Case
+			{
+				if (s.ai is AIController && ((AIController)(s.ai)).target == this)
+					return false;
+				else if (ai is AIController && ((AIController)(ai)).target == s)
 				{
 					if (s.sputnikDetached)
 						return s.timeSinceDetached > 3;  //Friendly if Sputnik detached and 3 seconds passed
 					else
-						return true; //Otherwise friendly since both are same type
+						return false;
 				}
-				else{
-					if (ai is AIController)
-					{
-						return ((AIController)ai).target != s;
-					}
-					else
-					{
-						return false;  //If we get here, playercontroller hates everyone
-					}
-					}
+				else
+					return true;
 			}
 		}
 
