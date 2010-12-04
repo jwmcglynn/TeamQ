@@ -218,6 +218,14 @@ namespace Sputnik
 		/// </summary>
 		private void Hostile(float elapsedTime)
 		{
+			if (CanSee(currentShip, target))
+			{
+				timeSinceSawTarget = 0;
+			}
+			else
+			{
+				timeSinceSawTarget += elapsedTime;
+			}
 			Vector2 destination = target.Position;  //Im going to my target's position
 			float wantedDirection = Angle.Direction(currentShip.Position, destination);  //I want to face my targets direction
 
@@ -324,13 +332,7 @@ namespace Sputnik
 				timeSinceSawTarget += elapsedTime;
 			}
 			Vector2 destination = target.Position - (Angle.Vector(target.Rotation) * 200);  //Im going behind my target
-			float wantedDirection;
-			if (Vector2.Distance(currentShip.Position, destination) < 75)
-				wantedDirection = target.Rotation;  //face towards my targets direction
-			else if (Angle.DistanceMag(target.Rotation, Angle.Direction(currentShip.Position, destination)) < MathHelper.PiOver4)
-				wantedDirection = target.Rotation;
-			else
-				wantedDirection = Angle.Direction(currentShip.Position, destination); //Face towards destination
+			float wantedDirection = Angle.Direction(currentShip.Position, destination); //Face towards destination
 			if (Vector2.Distance(currentShip.Position, destination) < 100) //Keep a certain distance from target
 			{
 				currentShip.DesiredVelocity = Vector2.Zero;
@@ -475,7 +477,7 @@ namespace Sputnik
 				}
 				else if (currentState != State.Hostile) //I don't become confused if im hostile
 				{
-					if (!recentlyChangedTargets)
+					if (!recentlyChangedTargets || s == currentShip) //Dont get confused too often, unless its me shot
 					{
 						changeToConfused(f, false);
 					}

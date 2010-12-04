@@ -77,7 +77,10 @@ namespace Sputnik
 			{
 				//Horrible Casting makes me sad.
 				foreach (SquaretopiaShip s in Environment.squares)
-					s.ai.GotShotBy(s, (GameEntity)((Bullet)entB).owner);
+				{
+					if(s!= this)
+						s.ai.GotShotBy(this, (GameEntity)((Bullet)entB).owner);
+				}
 			}
 			base.OnCollide(entB, contact);
 		}
