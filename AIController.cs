@@ -255,9 +255,9 @@ namespace Sputnik
 				timeSinceSawTarget += elapsedTime;
 			}
 
-			if(currentShip.IsAllied((TakesDamage) target) & ! ((TakesDamage) target).IsFriendly())
+			if(currentShip.IsAllied((TakesDamage) target) && !((TakesDamage) target).IsFriendly())
 				changeToNeutral();
-			else if(((Ship)target).IsDead())
+			else if (((TakesDamage)target).IsDead())
 				changeToNeutral();
 			else if (timeSinceSawTarget > 5)
 				changeToNeutral();
