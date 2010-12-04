@@ -208,7 +208,6 @@ namespace Sputnik
 			}
 
 			if (itemBeingTractored != null && !itemBeingTractored.IsTractored) {
-				itemBeingTractored.TractorReleased();
 				itemBeingTractored = null;
 			}
 

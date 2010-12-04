@@ -102,7 +102,7 @@ namespace Sputnik
 				if (dir != 0) m_lastRotDir = dir;
 
 				float del = dir * MaxRotVel;
-				if (Math.Abs(del * elapsedTime) > Math.Abs(distPos)) del = distPos * 10.0f;
+				if (Math.Abs(del * elapsedTime) > Math.Abs(distPos)) del = distPos;
 
 				if (CollisionBody != null) {
 					CollisionBody.AngularVelocity = del;

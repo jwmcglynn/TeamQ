@@ -34,6 +34,7 @@ namespace Sputnik {
 			Window.AllowUserResizing = true;
 			Window.Title = "Sputnik";
 			Content.RootDirectory = "Content";
+			Graphics.SynchronizeWithVerticalRetrace = true;
 
 			IsFixedTimeStep = false;
 
