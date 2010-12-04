@@ -325,6 +325,7 @@ namespace Sputnik
 		/// </summary>
 		private void Allied(float elapsedTime)
 		{
+			currentShip.shooter.Rotation = ((Ship)target).shooter.Rotation;
 			if (CanSee(currentShip, target))
 			{
 				timeSinceSawTarget = 0;

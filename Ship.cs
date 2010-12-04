@@ -17,7 +17,7 @@ namespace Sputnik
 		private ShipController previousAI = null;
 		public int health = 100;
 		public float shooterRotation;
-		protected BulletEmitter shooter = null;
+		internal BulletEmitter shooter = null;
 		protected Ship attachedShip = null;
 		public float maxSpeed = 350.0f;
 		public bool isShooting;
@@ -234,7 +234,11 @@ namespace Sputnik
 				return true;
 			else if (s == Environment.sputnik.controlled) //Nobody is ever friendly to Sputnik's ship unless they are allied
 				return ai.IsAlliedWithPlayer();
-			else if (Environment.sputnik.controlled == this) //Sputnik is friendly to nobody
+			else if (Environment.sputnik.controlled == this)
+			{ //Sputnik is friendly to nobody except his allied buddies
+				return ((AIController)s.ai).IsAlliedWithPlayer();
+			}
+			else if (ai.IsAlliedWithPlayer()) // I want allied ships to hit evertthing but sputnik
 				return false;
 			else //Normal Case
 			{
