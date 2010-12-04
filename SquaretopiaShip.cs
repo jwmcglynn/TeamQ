@@ -11,7 +11,8 @@ namespace Sputnik
 {
 	class SquaretopiaShip : Ship, Freezable
 	{
-
+		public Entity shield;
+		
 		public SquaretopiaShip(GameEnvironment env, Vector2 pos, SpawnPoint sp)
 			: base(env, pos)
 		{
@@ -33,6 +34,22 @@ namespace Sputnik
 			CollisionBody.LinearDamping = 8.0f;
 
 			passiveShield = 20.0f;
+
+			shield = new Entity();
+			shield.Zindex = 1.5f;
+			shield.Registration = new Vector2(125.0f, 115.0f);
+			shield.LoadTexture(Environment.contentManager, "shield");
+			shield.Position = Position;
+			AddChild(shield);
+
+			/*
+			List<Vector2> vertices = new List<Vector2>();
+			vertices.Add(new Vector2(0, 0));
+			vertices.Add(new Vector2(20, -(float)(Math.Tan(MathHelper.ToRadians(20)) * 20)));
+			vertices.Add(new Vector2(20, (float)(Math.Tan(MathHelper.ToRadians(20)) * 20)));
+			Fixture sensor = CollisionBody.CreateFixture(new PolygonShape(new Vertices(vertices)), 0);
+			sensor.IsSensor = true;
+			*/ 
 		}
 
 		public SquaretopiaShip(GameEnvironment env, SpawnPoint sp)

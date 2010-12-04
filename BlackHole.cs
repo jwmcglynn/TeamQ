@@ -146,6 +146,7 @@ namespace Sputnik
 		private bool goBackwards;
 		private float timeForAnimation = 2.0f;
 		private int numberOfFrames = 20;
+		public bool fullyFormed;
 
 		public override void Update(float elapsedTime)
 		{
@@ -153,6 +154,8 @@ namespace Sputnik
 			if (!animate || timeElapsed > timeForAnimation)
 			{
 				Texture = m_textures[currentTexture];
+
+				fullyFormed = true;
 
 				if(blackholeTimer > 0.1) {
 					if(goBackwards) {

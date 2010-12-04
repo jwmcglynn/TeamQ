@@ -110,6 +110,11 @@ namespace Sputnik
 					Rotation += del * elapsedTime;
 				}
 			}
+
+			if(this is SquaretopiaShip) {
+				((SquaretopiaShip)this).shield.Position = Position;
+			}
+
 			shooterRotation = Rotation;
 			base.Update(elapsedTime);
 		}
@@ -189,9 +194,8 @@ namespace Sputnik
 				if (passiveShield > 0)
 				{
 					passiveShield -= damage;
-				}
-				else
-				{
+					((SquaretopiaShip)this).shield.Alpha = 1.0f;
+				} else {
 					health -= damage;
 				}
 			}
