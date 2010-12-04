@@ -137,6 +137,7 @@ namespace Sputnik
 
 		public override void Dispose() {
 			if (CollisionBody != null) Environment.BlackHoleController.RemoveBody(CollisionBody);
+			Environment.blackHoles.Remove(this);
 			base.Dispose();
 		}
 
