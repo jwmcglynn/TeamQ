@@ -179,7 +179,7 @@ namespace Sputnik
 				SpawnPoint.AllowRespawn = false;
 				// TODO: Cool death sequence?
 				// TODO: End game screen.
-				Dispose();
+				OnNextUpdate += () => Dispose();
 				m_isDead = true;
 			}
 		}
