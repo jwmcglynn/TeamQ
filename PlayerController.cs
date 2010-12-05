@@ -216,6 +216,13 @@ namespace Sputnik
 			// Act on input.
 			s.shooterRotation = aimDirection;
 
+			if(!(s is TriangulusShip)) {
+				if (itemBeingTractored != null)
+				{
+					CancelTractorBeam();
+				}
+			}
+
 			// Detach from ship.
 			if (detachPressed)
 			{
@@ -235,6 +242,8 @@ namespace Sputnik
 			if (itemBeingTractored != null) {
 				if (m_justTeleported) ((Entity) itemBeingTractored).Position = specialPosition;
 				itemBeingTractored.UpdateTractor(specialPosition);
+				TractorBeamModifier.Position = s.Position;
+				m_env.TractorBeamEffect.Trigger(((Entity) itemBeingTractored).Position);
 			}
 
 			m_justTeleported = false;
