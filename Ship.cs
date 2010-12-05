@@ -187,6 +187,7 @@ namespace Sputnik
 			return !InsideCullRect(Rectangle.Union(VisibleRect, SpawnPoint.Rect));
 		}
 
+		private bool hasBeenDisposed;
 		public virtual void TakeHit(int damage)
 		{
 			if (this is SquaretopiaShip)
@@ -194,8 +195,12 @@ namespace Sputnik
 				if (passiveShield > 0)
 				{
 					passiveShield -= damage;
-					((SquaretopiaShip)this).shield.Alpha = 1.0f;
+					((SquaretopiaShip)this).shield.Alpha -= 0.05f;
 				} else {
+					if(((SquaretopiaShip)this).shield != null && !hasBeenDisposed) {
+						((SquaretopiaShip)this).shield.Dispose();
+						hasBeenDisposed = true;
+					}
 					health -= damage;
 				}
 			}

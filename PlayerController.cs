@@ -18,9 +18,11 @@ namespace Sputnik
 		private GameEnvironment m_env;
 		private const float timeBetweenControls = 0.0f;
 		private BlackHole.Pair m_playerBlackHoles;
+		private BlackHole.Pair previousBlackHoles;
 		private Tractorable itemBeingTractored;
 		private Ship controlled;
 		private static bool s_captureMouse = true;
+		private bool creatingBlackHole; // will make it so only 1 black hole can be created at a time.
 
 		const float k_speed = 600.0f; // pixels per second
 
@@ -223,12 +225,37 @@ namespace Sputnik
 			// need to check if sputnik is in a ship or not before you can shoot.
 			if (shoot) s.Shoot(elapsedTime);
 
+			if(useSpecialHeld) {
+				if(s is CircloidShip) {
+					if (!creatingBlackHole) {
+						m_playerBlackHoles = BlackHole.CreatePair(m_env, specialPosition);
+						creatingBlackHole = true;
+					}
+					if(creatingBlackHole && !((BlackHole)m_playerBlackHoles.First.Entity).fullyFormed) {
+						m_playerBlackHoles.First.Entity.Position = specialPosition;
+					}
+
+					// This code will execute if you succeed in creating the black hole.	
+					if(((BlackHole)m_playerBlackHoles.First.Entity).fullyFormed) {
+						Console.WriteLine("Created");
+						if (previousBlackHoles != null) previousBlackHoles.Destroy();
+						previousBlackHoles = m_playerBlackHoles;
+						creatingBlackHole = false;
+					}
+				}
+			} else {
+				if(creatingBlackHole) {
+					((BlackHole)m_playerBlackHoles.First.Entity).DissipateAnimation();
+				}
+				creatingBlackHole = false;
+			}
+
 			// Will spawn a blackhole when we first pressdown our right mouse button.
 			// if a blackhole has already been spawned this way, then the other one will be removed.
 			if(useSpecialPressed) { // See useSpecialHeld for moving the blackhole.
 				if(s is CircloidShip) {
-					if (m_playerBlackHoles != null) m_playerBlackHoles.Destroy();
-					m_playerBlackHoles = BlackHole.CreatePair(m_env, specialPosition);
+					//if (m_playerBlackHoles != null) m_playerBlackHoles.Destroy();
+					//m_playerBlackHoles = BlackHole.CreatePair(m_env, specialPosition);
 				} else if(s is TriangulusShip) {
 					
 					// if we are tractoring something right now, then we arent allowed to tractor anything else

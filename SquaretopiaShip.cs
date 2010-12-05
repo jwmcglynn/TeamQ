@@ -41,15 +41,6 @@ namespace Sputnik
 			shield.LoadTexture(Environment.contentManager, "shield");
 			shield.Position = Position;
 			AddChild(shield);
-
-			/*
-			List<Vector2> vertices = new List<Vector2>();
-			vertices.Add(new Vector2(0, 0));
-			vertices.Add(new Vector2(20, -(float)(Math.Tan(MathHelper.ToRadians(20)) * 20)));
-			vertices.Add(new Vector2(20, (float)(Math.Tan(MathHelper.ToRadians(20)) * 20)));
-			Fixture sensor = CollisionBody.CreateFixture(new PolygonShape(new Vertices(vertices)), 0);
-			sensor.IsSensor = true;
-			*/ 
 		}
 
 		public SquaretopiaShip(GameEnvironment env, SpawnPoint sp)

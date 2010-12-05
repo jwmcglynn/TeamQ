@@ -53,10 +53,17 @@ namespace Sputnik
 		}
 
 		private Texture2D[] m_textures = new Texture2D[21];
-
 		private float timeElapsed;
-
 		private static int s_uniqueId = 1;
+		SpawnPoint wormHole;
+		private bool animate;
+		private bool beginDestruction;
+		private int currentTexture = 12; // So that it will start from blackhole 11
+		private float blackholeTimer;
+		private bool goBackwards;
+		private float timeForAnimation = 2.0f;
+		private int numberOfFrames = 20;
+		public bool fullyFormed;
 
 		public static Pair CreatePair(GameEnvironment env, Vector2 pos) {
 			SpawnPoint sp = new SpawnPoint(env.SpawnController, "blackhole", pos);
@@ -79,10 +86,6 @@ namespace Sputnik
 			sp.Spawn();
 			return new Pair(env, sp, wormHole);
 		}
-
-		SpawnPoint wormHole;
-		private bool animate;
-		private bool beginDestruction;
 
 		public BlackHole(GameEnvironment e, SpawnPoint sp)
 				: base(e, sp) {
@@ -140,13 +143,6 @@ namespace Sputnik
 			Environment.blackHoles.Remove(this);
 			base.Dispose();
 		}
-
-		private int currentTexture = 12; // So that it will start from blackhole 11
-		private float blackholeTimer;
-		private bool goBackwards;
-		private float timeForAnimation = 2.0f;
-		private int numberOfFrames = 20;
-		public bool fullyFormed;
 
 		public override void Update(float elapsedTime)
 		{
