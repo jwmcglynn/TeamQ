@@ -21,6 +21,7 @@ namespace Sputnik
 		private Tractorable itemBeingTractored;
 		private Ship controlled;
 		private static bool s_captureMouse = true;
+		private bool m_justTeleported = false;
 
 		const float k_speed = 600.0f; // pixels per second
 
@@ -86,6 +87,15 @@ namespace Sputnik
 		public void gotDetached()
 		{
 			//Sputnik no care
+		}
+
+		/// <summary>
+		/// Ship was just teleported through a blackhole.
+		/// </summary>
+		/// <param name="blackhole">Start blackhole.</param>
+		/// <param name="destination">Position of destination.</param>
+		public void Teleport(BlackHole blackhole, Vector2 destination) {
+			m_justTeleported = true;
 		}
 
         /// <summary>
@@ -212,8 +222,11 @@ namespace Sputnik
 			}
 
 			if (itemBeingTractored != null) {
+				if (m_justTeleported) ((Entity) itemBeingTractored).Position = specialPosition;
 				itemBeingTractored.UpdateTractor(specialPosition);
 			}
+
+			m_justTeleported = false;
 
 			s.DesiredVelocity = (movement != Vector2.Zero) ? Vector2.Normalize(movement) * s.maxSpeed : Vector2.Zero;
 			if (s.DesiredVelocity != Vector2.Zero) {
@@ -252,7 +265,7 @@ namespace Sputnik
 						itemBeingTractored = null;
 					}
 				} else if(s is SquaretopiaShip) {
-					ForceField ff = new ForceField(m_env, s.Position, specialDirection, controlled);
+					ForceField ff = new ForceField(m_env, s.shooter.Position, specialDirection, controlled);
 					m_env.AddChild(ff);
 				}
 			}

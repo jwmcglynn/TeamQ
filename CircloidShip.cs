@@ -77,6 +77,11 @@ namespace Sputnik
 			base.Update(elapsedTime);
 		}
 
+		public override void Teleport(BlackHole blackhole, Vector2 destination, Vector2 exitVelocity) {
+			if (IsTractored && !m_fling) return;
+			base.Teleport(blackhole, destination, exitVelocity);
+		}
+
 		public override bool ShouldCull() {
 			if (IsTractored) return false;
 			return base.ShouldCull();

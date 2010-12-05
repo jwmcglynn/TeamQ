@@ -62,7 +62,7 @@ namespace Sputnik
 			: base(env, sp)
 		{
 			Initialize();
-			SpawnPoint.RespawnCooldown = 30.0f;
+			SpawnPoint.RespawnCooldown = 0.0f;
 		}
 
 		private void Initialize()
@@ -194,6 +194,11 @@ namespace Sputnik
 			}
 		}
 
+		public override void Teleport(BlackHole blackhole, Vector2 destination, Vector2 exitVelocity) {
+			if (ai != null) ai.Teleport(blackhole, destination);
+			base.Teleport(blackhole, destination, exitVelocity);
+		}
+
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
 			return !(entB is Ship) || (entB is SputnikShip);
 		}
@@ -288,6 +293,11 @@ namespace Sputnik
 				Environment.ExplosionEffect.Trigger(Position);
 				Sound.PlayCue("explosion", this);
 			};
+		}
+
+		public override void OnCull() {
+			if (m_isDead) SpawnPoint.RespawnCooldown = 30.0f;
+			base.OnCull();
 		}
 
 		/// <summary>

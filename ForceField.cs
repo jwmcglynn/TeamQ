@@ -83,10 +83,14 @@ namespace Sputnik
 		
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact) {
 			contact.Enabled = false;
-			
-			if (!(entB is Freezable || (!hasFrozen && (entB is Environment || entB is ForceField)))) {
+
+			// Don't collide if the entity is the owner.
+			// Don't collide if the entity is not freezable, but still allow collisions with the environment and other
+			// force fields if we are not frozen.
+			if (entB == owner || !(entB is Freezable || (!hasFrozen && (entB is Environment || entB is ForceField)))) {
 				return;
 			}
+
 
 			FarseerPhysics.Collision.WorldManifold manifold;
 			contact.GetWorldManifold(out manifold);
@@ -105,6 +109,7 @@ namespace Sputnik
 				if (!hasFrozen) {
 					hasFrozen = true;
 					CollisionBody.LinearVelocity = Vector2.Zero;
+					CollisionBody.IsStatic = true;
 					Position = posOfCollision;
 				}
 

@@ -16,5 +16,6 @@ namespace Sputnik
 		void DistressCall(Ship s, GameEntity f);
 		bool IsAlliedWithPlayer();
 		void gotDetached();
+		void Teleport(BlackHole blackhole, Vector2 destination);
 	}
 }

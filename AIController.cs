@@ -281,6 +281,7 @@ namespace Sputnik
 		{
 			if (!currentShip.IsFrozen && !(currentShip is Tractorable && ((Tractorable)currentShip).IsTractored))
 			{
+				Console.WriteLine("Exiting disabled");
 				//Im gonna be suspicious of whoever disabled me
 				if(CanSee(currentShip,target))
 					changeToAlert(target);
@@ -369,6 +370,15 @@ namespace Sputnik
 		{
 			currentShip.DesiredVelocity = Vector2.Zero;
 			changeToDisabled(s);
+		}
+
+		/// <summary>
+		/// Ship was just teleported through a blackhole.
+		/// </summary>
+		/// <param name="blackhole">Start blackhole.</param>
+		/// <param name="destination">Position of destination.</param>
+		public void Teleport(BlackHole blackhole, Vector2 destination) {
+			
 		}
 
 		/// <summary>

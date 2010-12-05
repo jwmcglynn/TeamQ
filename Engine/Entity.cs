@@ -34,9 +34,6 @@ namespace Sputnik {
 		private bool m_applyVelocity = false;
 		public bool VisualRotationOnly = false;
 
-		public float TimeSinceTeleport = float.PositiveInfinity;
-		public Vector2 TeleportInertiaDir;
-
 		// Sound.
 		public AudioEmitter SoundEmitter;
 
@@ -338,18 +335,6 @@ namespace Sputnik {
 					CollisionBody.LinearVelocity = m_velocity * GameEnvironment.k_physicsScale;
 				}
 			}
-
-			// Apply blackhole teleportation force.
-			if (CollisionBody != null) {
-				if (TimeSinceTeleport < 1.0f) {
-					CollisionBody.ApplyForce(TeleportInertiaDir * 50.0f * CollisionBody.Mass);
-					CollisionBody.IgnoreGravity = true;
-				} else {
-					CollisionBody.IgnoreGravity = false;
-				}
-			}
-
-			TimeSinceTeleport += elapsedTime;
 
 			// Use "RemoveAll" function to iterate over a list and handle removals.
 			Children.ForEach((Entity ent) => { ent.Update(elapsedTime); });

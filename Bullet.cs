@@ -31,6 +31,8 @@ namespace Sputnik
 			Position = position;
 			Rotation = (float) angle;
 			SetPhysicsVelocityOnce(new Vector2(k_speed * (float) Math.Cos(angle), k_speed * (float) Math.Sin(angle)));
+
+			AllowTeleport = true;
 		}
 
 		public override void Update(float elapsedTime)

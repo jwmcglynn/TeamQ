@@ -57,12 +57,14 @@ namespace Sputnik
 		public void Freeze(GameEntity s) {
 			++m_frozenCount;
 			if (m_frozenCount == 1) ai.GotFrozen(s);
+			Console.WriteLine("Frozen = " + m_frozenCount);
 		}
 
 		public void Unfreeze()
 		{
 			--m_frozenCount;
 			if (m_frozenCount < 0) m_frozenCount = 0;
+			Console.WriteLine("Frozen = " + m_frozenCount);
 		}
 
 		public override void OnCull()

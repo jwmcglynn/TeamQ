@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Sputnik
 {
-	class BlackHole : GameEntity
+	public class BlackHole : GameEntity
 	{
 		public class Pair {
 			private GameEnvironment Environment;
@@ -119,7 +119,6 @@ namespace Sputnik
 
 			CreateCollisionBody(Environment.CollisionWorld, FarseerPhysics.Dynamics.BodyType.Static, CollisionFlags.Default);
 			var circle = AddCollisionCircle(Texture.Height / 12, Vector2.Zero); // Using 12 here as an arbitrary value. Reason: Want the black hole to have a small collis
-			circle.IsSensor = true;
 			CollisionBody.Active = false;
 
 			Environment.BlackHoleController.AddBody(CollisionBody);
@@ -197,18 +196,13 @@ namespace Sputnik
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
 		{
-			if(entB is SputnikShip || entB is TriangulusShip || entB is Bullet) {
-				if (entB.TimeSinceTeleport > 0.75f) {
-					OnNextUpdate += () => {
-						Vector2 dir = Vector2.Normalize(Position - entB.Position);
-						entB.Position = wormHole.Position;
+			contact.Enabled = false;
 
-						entB.TimeSinceTeleport = 0.0f;
-						entB.TeleportInertiaDir = dir;
-					};
-				}
-			} else if (entB is TakesDamage) {
-				((TakesDamage) entB).InstaKill();
+			if (entB is GameEntity) {
+				OnNextUpdate += () => {
+					Vector2 exitVelocity = Vector2.Normalize(Position - entB.Position);
+					((GameEntity) entB).Teleport(this, wormHole.Position, exitVelocity);
+				};
 			}
 
 			base.OnCollide(entB, contact);

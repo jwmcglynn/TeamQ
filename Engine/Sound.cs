@@ -46,10 +46,19 @@ namespace Sputnik {
 			return m_soundBank.GetCue(name);
 		}
 
+		/// <summary>
+		/// Play a sound.
+		/// </summary>
+		/// <param name="name"></param>
 		public static void PlayCue(string name) {
 			m_soundBank.PlayCue(name);
 		}
 
+		/// <summary>
+		/// Play a locational sound at the Entity's position.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="source"></param>
 		public static void PlayCue(string name, Entity source) {
 			if (source.SoundEmitter == null) source.SoundEmitter = new AudioEmitter();
 			source.SoundEmitter.Position = new Vector3(source.Position.X, source.Position.Y, 0.0f);

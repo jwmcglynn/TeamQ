@@ -38,6 +38,8 @@ namespace Sputnik
 			AddCollisionCircle(40.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
 			this.maxSpeed *= 1.5f;
+
+			AllowTeleport = true;
 		}
 
 		public TriangulusShip(GameEnvironment env, SpawnPoint sp)
@@ -106,11 +108,6 @@ namespace Sputnik
 			ai.GotTractored(shipTractoring);
 		}
 
-		public override bool ShouldCull() {
-			if (IsTractored) return false;
-			return base.ShouldCull();
-		}
-
 		public void TractorReleased() {
 			m_fling = true;
 			m_flingTime = 1.0f;
@@ -120,6 +117,16 @@ namespace Sputnik
 
 		public void UpdateTractor(Vector2 position) {
 			m_tractorTarget = position;
+		}
+
+		public override void Teleport(BlackHole blackhole, Vector2 destination, Vector2 exitVelocity) {
+			if (IsTractored && !m_fling) return;
+			base.Teleport(blackhole, destination, exitVelocity);
+		}
+
+		public override bool ShouldCull() {
+			if (IsTractored) return false;
+			return base.ShouldCull();
 		}
 
 		public override void OnCull() {

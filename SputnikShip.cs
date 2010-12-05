@@ -46,6 +46,8 @@ namespace Sputnik
 			SpawnPoint.RespawnCooldown = 0.0f;
 			SpawnPoint.AllowRespawn = true;
 			SpawnPoint.HasBeenOffscreen = true;
+
+			AllowTeleport = true;
 		}
 
 		public float Timer

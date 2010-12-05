@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace Sputnik
 {
-	class Asteroid : GameEntity, Tractorable {
+	class Asteroid : GameEntity, Tractorable, TakesDamage {
 		private bool m_tractored;
 		public bool IsTractored { get { return m_tractored; } set { m_tractored = value; } }
 
@@ -84,9 +84,39 @@ namespace Sputnik
 			m_tractorTarget = position;
 		}
 
+		public override void Teleport(BlackHole blackhole, Vector2 destination, Vector2 exitVelocity) {
+			if (IsTractored && !m_fling) return;
+			base.Teleport(blackhole, destination, exitVelocity);
+		}
+
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
 			if (CollisionBody.IsStatic) return true;
 			else return !((entB is Ship) && ((Ship) entB).IsFriendly());
+		}
+
+		public void TakeHit(int damage) {
+			return;
+		}
+
+		public void InstaKill() {
+			// Hit by a blackhole, ouch.
+			OnNextUpdate += () => {
+				Dispose();
+				Environment.ExplosionEffect.Trigger(Position); // TODO: Asteroid-specific explosion?
+				Sound.PlayCue("explosion", this);
+			};
+		}
+
+		public bool IsDead() {
+			return false;
+		}
+
+		public bool IsFriendly() {
+			return false;
+		}
+
+		public bool IsAllied(TakesDamage other) {
+			return false;
 		}
 	}
 }
