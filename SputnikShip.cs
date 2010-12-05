@@ -16,7 +16,7 @@ namespace Sputnik
 		private Ship recentlyControlled = null;
 		private ShipController playerAI = null;
 		
-		private const float TotalTime = 5.0f;
+		private const float TotalTime = 3.0f;
 		private float timer = TotalTime;
 
 		private float m_respawnImmunity = 5.0f;

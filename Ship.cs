@@ -25,8 +25,9 @@ namespace Sputnik
 		protected float passiveShield;
 		private bool m_isDead = false;
 
-		private float m_friendlyColorTimer = 0.0f; // 0 for non-friendly color, 1 for friendly color.  Used for strobing effect.
-		private float m_friendlyColorDir = 1.0f; // Direction of fading.
+		private float m_colorTimer = 0.0f; // 0 for non-friendly color, 1 for friendly color.  Used for strobing effect.
+		private float m_colorDir = 1.0f; // Direction of fading.
+		private Color m_tintColor = Color.White;
 
 		public Vector2 RelativeShooterPos = Vector2.Zero;
 
@@ -105,29 +106,35 @@ namespace Sputnik
 
 			///// Change color based on friendliness.
 			const float s_friendlyColorVel = 1.0f;
-			if (IsFriendly() && !(this is SputnikShip)) {
-				m_friendlyColorTimer += m_friendlyColorDir * (s_friendlyColorVel * elapsedTime);
+			bool friendTimer = (IsFriendly() && !(this is SputnikShip));
+			bool frozenTimer = (IsFrozen || (this is Tractorable && ((Tractorable) this).IsTractored));
+
+			if (friendTimer) m_tintColor = new Color(0.6f, 1.0f, 0.6f); // Green.
+			if (frozenTimer) m_tintColor = new Color(1.0f, 0.8f, 0.0f); // Yellow.
+
+			if (friendTimer || frozenTimer) {
+				m_colorTimer += m_colorDir * (s_friendlyColorVel * elapsedTime);
 				
 				// Handle changing fade directions.
-				if (m_friendlyColorDir > 0.0f && m_friendlyColorTimer >= 1.0f) {
-					m_friendlyColorDir *= -1.0f;
-					m_friendlyColorTimer = 1.0f;
-				} else if (m_friendlyColorDir < 0.0f && m_friendlyColorTimer <= 0.5f) {
-					m_friendlyColorDir *= -1.0f;
-					m_friendlyColorTimer = 0.5f;
+				if (m_colorDir > 0.0f && m_colorTimer >= 1.0f) {
+					m_colorDir *= -1.0f;
+					m_colorTimer = 1.0f;
+				} else if (m_colorDir < 0.0f && m_colorTimer <= 0.5f) {
+					m_colorDir *= -1.0f;
+					m_colorTimer = 0.5f;
 				}
 
-				VertexColor = new Color(0.8f, 1.0f, 0.8f, Alpha);
+				VertexColor = m_tintColor;
 			} else {
-				m_friendlyColorDir = 1.0f;
-				m_friendlyColorTimer -= s_friendlyColorVel * elapsedTime;
-				if (m_friendlyColorTimer < 0.0f) m_friendlyColorTimer = 0.0f;
+				m_colorDir = 1.0f;
+				m_colorTimer -= s_friendlyColorVel * elapsedTime;
+				if (m_colorTimer < 0.0f) m_colorTimer = 0.0f;
 			}
 
-			if (m_friendlyColorTimer == 0.0f) {
-				VertexColor = new Color(1.0f, 1.0f, 1.0f, Alpha);
+			if (m_colorTimer == 0.0f) {
+				VertexColor = Color.White;
 			} else {
-				VertexColor = Color.Lerp(new Color(1.0f, 1.0f, 1.0f, Alpha), new Color(0.6f, 1.0f, 0.6f, Alpha), m_friendlyColorTimer);
+				VertexColor = Color.Lerp(Color.White, m_tintColor, m_colorTimer);
 			}
 
 			///// Smooth rotation.
