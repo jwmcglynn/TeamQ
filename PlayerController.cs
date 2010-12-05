@@ -165,10 +165,6 @@ namespace Sputnik
 					s_captureMouse = !s_captureMouse;
 				}
 
-				if (keyboard.IsKeyDown(Keys.Q)) {
-					m_env.ExplosionEffect.Trigger(s.Position);
-				}
-
 			} else {
 				GamePadState oldGamepad = OldGamePad.GetState();
 				Vector2 invertY = new Vector2(1.0f, -1.0f);
@@ -237,7 +233,6 @@ namespace Sputnik
 
 					// This code will execute if you succeed in creating the black hole.	
 					if(((BlackHole)m_playerBlackHoles.First.Entity).fullyFormed) {
-						Console.WriteLine("Created");
 						if (previousBlackHoles != null) previousBlackHoles.Destroy();
 						previousBlackHoles = m_playerBlackHoles;
 						creatingBlackHole = false;
