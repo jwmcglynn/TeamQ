@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Sputnik
 {
@@ -14,7 +15,12 @@ namespace Sputnik
 		public Ship controlled = null; 
 		private Ship recentlyControlled = null;
 		private ShipController playerAI = null;
-		private float timer = 5.0f;
+		
+		private const float TotalTime = 3.0f;
+		private float timer = TotalTime;
+
+		private float m_respawnImmunity = 5.0f;
+		private bool m_flashVisibility = true;
 
 		public SputnikShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {
@@ -23,7 +29,7 @@ namespace Sputnik
 			Zindex = 0.25f;
 			Position = sp.Position;
 			
-			this.maxSpeed = 600;
+			this.maxSpeed = 800;
 
 			LoadTexture(env.contentManager, "Sputnik");
 			Registration = new Vector2(70.0f, 33.0f);
@@ -33,6 +39,15 @@ namespace Sputnik
 
 			// Adjust camera.
 			env.Camera.TeleportAndFocus(this);
+
+			const float k_immuneTime = 3.0f;
+			m_respawnImmunity = k_immuneTime;
+
+			SpawnPoint.RespawnCooldown = 0.0f;
+			SpawnPoint.AllowRespawn = true;
+			SpawnPoint.HasBeenOffscreen = true;
+
+			AllowTeleport = true;
 		}
 
 		public float Timer
@@ -56,12 +71,27 @@ namespace Sputnik
 				Detach();
 			}
 
+			if (m_respawnImmunity > 0.0f) {
+				float last = m_respawnImmunity;
+				m_respawnImmunity -= elapsedTime;
+
+				// Beep every second while invulnerable.
+				if (Math.Floor(last) != Math.Floor(m_respawnImmunity)) {
+					Sound.PlayCue("invulnerable_beep");
+				}
+			}
+
 			// Thruster particle.
 			if (!attached)
 			{
-				timer -= elapsedTime;
-				if (timer < 0)
-					InstaKill();
+
+				if (!this.Environment.isFrostMode && m_respawnImmunity <= 0.0f)
+				{
+					timer -= elapsedTime;
+					if (timer < 0)
+						InstaKill();
+				}
+
 
 				if (DesiredVelocity.LengthSquared() > (maxSpeed / 4) * (maxSpeed / 4))
 				{
@@ -86,6 +116,16 @@ namespace Sputnik
 			}
 
 			base.Update(elapsedTime);
+		}
+
+		public override void Draw(SpriteBatch spriteBatch) {
+			// Only draw every other frame when player is invulnerable to make player blink.
+			if (m_respawnImmunity > 0.0f) {
+				m_flashVisibility = !m_flashVisibility;
+				if (m_flashVisibility) base.Draw(spriteBatch);
+			} else {
+				base.Draw(spriteBatch);
+			}
 		}
 
 		public override void Dispose() {
@@ -116,19 +156,25 @@ namespace Sputnik
 			this.ai = null;
 
 			Environment.AttachEffect.Trigger(target.Position);
+
+			m_respawnImmunity = 0.0f;
+
+			Sound.PlayCue("attach_success");
 		}
 
 		public override void Detach()
 		{
 			if (!attached) return;
 
-			timer = 3.0f;
+			timer = TotalTime;
 			recentlyControlled = controlled;
 			attached = false;
 			controlled = null;
 			ai = playerAI;
 
 			SputnikCreateCollision();
+
+			Sound.PlayCue("detach");
 		}
 
 		public override void OnSeparate(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
@@ -139,11 +185,12 @@ namespace Sputnik
 		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
-			return !(entB is Environment) && !(entB is Bullet);
+			return !(entB is Environment) && !(attached && entB is Bullet);
 		}
 
 		public override void TakeHit(int damage) {
-			// Do nothing.
+			// Disabling for now, it seems cruel by causing near-instant death from boss.
+			// timer -= (TotalTime / 0.2f);
 		}
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)

@@ -5,9 +5,13 @@ using System.Text;
 using Microsoft.Xna.Framework;
 
 namespace Sputnik {
-	class GameEntity : Entity {
+	public class GameEntity : Entity {
 		public GameEnvironment Environment;
 		public SpawnPoint SpawnPoint;
+
+		public float TimeSinceTeleport = float.PositiveInfinity;
+		public Vector2 TeleportInertiaDir;
+		public bool AllowTeleport = false;
 		
 		public GameEntity(GameEnvironment env) {
 			Environment = env;
@@ -20,6 +24,18 @@ namespace Sputnik {
 
 		public override void Update(float elapsedTime) {
 			if (ShouldCull()) Dispose();
+
+			// Apply blackhole teleportation force.
+			if (CollisionBody != null) {
+				if (TimeSinceTeleport < 1.0f) {
+					CollisionBody.ApplyForce(TeleportInertiaDir * 50.0f * CollisionBody.Mass);
+					CollisionBody.IgnoreGravity = true;
+				} else {
+					CollisionBody.IgnoreGravity = false;
+				}
+			}
+
+			TimeSinceTeleport += elapsedTime;
 
 			base.Update(elapsedTime);
 		}
@@ -36,6 +52,29 @@ namespace Sputnik {
 		}
 
 		/// <summary>
+		/// Teleport entity through a blackhole.
+		/// </summary>
+		/// <param name="position"></param>
+		/// <param name="exitVelocity"></param>
+		public virtual void Teleport(BlackHole blackhole, Vector2 destination, Vector2 exitVelocity) {
+			if (AllowTeleport) {
+				if (TimeSinceTeleport > 0.75f) {
+					// Play sound, unless it is a bullet in which case it just gets annoying.
+					if (!(this is Bullet)) Sound.PlayCue("thru_black_hole", blackhole);
+
+					Position = destination;
+					TimeSinceTeleport = 0.0f;
+					TeleportInertiaDir = exitVelocity;
+				}
+			} else if (this is TakesDamage) {
+				((TakesDamage) this).InstaKill();
+			}
+		}
+
+		/*********************************************************************/
+		// Culling.
+
+		/// <summary>
 		/// Should this Entity cull right now?  Called within Update.
 		/// 
 		/// If an Entity should not cull override this and return false.
@@ -45,6 +84,11 @@ namespace Sputnik {
 			return !InsideCullRect(VisibleRect);
 		}
 
+		/// <summary>
+		/// Does the provided rectangle intersect the cull rect?
+		/// </summary>
+		/// <param name="rect"></param>
+		/// <returns></returns>
 		protected bool InsideCullRect(Rectangle rect) {
 			int halfwidth = (int) (GameEnvironment.k_maxVirtualSize.X / 2 + GameEnvironment.k_cullRadius);
 			int halfheight = (int) (GameEnvironment.k_maxVirtualSize.Y / 2 + GameEnvironment.k_cullRadius);

@@ -30,11 +30,8 @@ namespace Sputnik {
 						SpawnPoint sp = new SpawnPoint(this, obj);
 						if (sp.Entity == null) SpawnPoints.Add(sp);
 
-						if (obj.Type == "blackhole") {
-							Environment.SpawnedBlackHoles.Add(sp);
-						}
-
-						if (sp.EntityType == "spawn") spawnedPlayer = true;
+						if (sp.EntityType == "blackhole") Environment.SpawnedBlackHoles.Add(sp);
+						else if (sp.EntityType == "spawn") spawnedPlayer = true;
 					}
 				}
 			}

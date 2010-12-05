@@ -32,7 +32,7 @@ namespace Sputnik
 			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(50.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
-
+			this.health = this.MaxHealth = (int)(this.MaxHealth * 1.5);
 			passiveShield = 20.0f;
 
 			shield = new Entity();
@@ -63,13 +63,16 @@ namespace Sputnik
 		}
 
 		public void Freeze(GameEntity s) {
-			isFrozen = true;
-			ai.GotFrozen(s);
+			++m_frozenCount;
+			if (m_frozenCount == 1) ai.GotFrozen(s);
+			Console.WriteLine("Frozen = " + m_frozenCount);
 		}
 
 		public void Unfreeze()
 		{
-			isFrozen = false;
+			--m_frozenCount;
+			if (m_frozenCount < 0) m_frozenCount = 0;
+			Console.WriteLine("Frozen = " + m_frozenCount);
 		}
 
 		public override void OnCull()

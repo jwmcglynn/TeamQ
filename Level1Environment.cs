@@ -13,7 +13,7 @@ namespace Sputnik {
 			: base(ctrl) {
 
 			LoadMap("Level_1.tmx");
-			Sound.PlayCue("music");
+			Sound.PlayCue("bg_music");
 		}
 	}
 }

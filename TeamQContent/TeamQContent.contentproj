@@ -157,8 +157,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="tractor_beam.png">
-      <Name>tractor_beam</Name>
+    <Compile Include="tractor_beam_cone.png">
+      <Name>tractor_beam_cone</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -202,15 +202,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Thruster.xml">
-      <Name>Thruster</Name>
+    <Compile Include="ThrusterEffect.xml">
+      <Name>ThrusterEffect</Name>
       <Importer>XmlImporter</Importer>
       <Processor>PassThroughProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Explosion.xml">
-      <Name>Explosion</Name>
+    <Compile Include="ExplosionEffect.xml">
+      <Name>ExplosionEffect</Name>
       <Importer>XmlImporter</Importer>
       <Processor>PassThroughProcessor</Processor>
     </Compile>
@@ -404,11 +404,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="attach_success.mp3">
-      <Name>attach_success</Name>
-      <Importer>Mp3Importer</Importer>
-      <Processor>SongProcessor</Processor>
-    </Compile>
     <Compile Include="bg1.png">
       <Name>bg1</Name>
       <Importer>TextureImporter</Importer>
@@ -426,26 +421,6 @@
     </Compile>
     <Compile Include="bullet_fire.wav">
       <Name>bullet_fire</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-    </Compile>
-    <Compile Include="crash.mp3">
-      <Name>crash</Name>
-      <Importer>Mp3Importer</Importer>
-      <Processor>SongProcessor</Processor>
-    </Compile>
-    <Compile Include="detach.mp3">
-      <Name>detach</Name>
-      <Importer>Mp3Importer</Importer>
-      <Processor>SongProcessor</Processor>
-    </Compile>
-    <Compile Include="hit_by_bullet.mp3">
-      <Name>hit_by_bullet</Name>
-      <Importer>Mp3Importer</Importer>
-      <Processor>SongProcessor</Processor>
-    </Compile>
-    <Compile Include="music.wav">
-      <Name>music</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
@@ -469,25 +444,10 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="thrusters.mp3">
-      <Name>thrusters</Name>
-      <Importer>Mp3Importer</Importer>
-      <Processor>SongProcessor</Processor>
-    </Compile>
-    <Compile Include="thru_black_hole.mp3">
-      <Name>thru_black_hole</Name>
-      <Importer>Mp3Importer</Importer>
-      <Processor>SongProcessor</Processor>
-    </Compile>
     <Compile Include="trash.png">
       <Name>trash</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="zap.mp3">
-      <Name>zap</Name>
-      <Importer>Mp3Importer</Importer>
-      <Processor>SongProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -629,8 +589,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attach.xml">
-      <Name>Attach</Name>
+    <Compile Include="AttachEffect.xml">
+      <Name>AttachEffect</Name>
       <Importer>XmlImporter</Importer>
       <Processor>PassThroughProcessor</Processor>
     </Compile>
@@ -650,8 +610,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlackHole.xml">
-      <Name>BlackHole</Name>
+    <Compile Include="BlackHoleEffect.xml">
+      <Name>BlackHoleEffect</Name>
       <Importer>XmlImporter</Importer>
       <Processor>PassThroughProcessor</Processor>
     </Compile>
@@ -661,6 +621,75 @@
       <Name>AlertEffect</Name>
       <Importer>XmlImporter</Importer>
       <Processor>PassThroughProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="attach_success.wav">
+      <Name>attach_success</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="beep-7.wav">
+      <Name>beep-7</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="beep-8.wav">
+      <Name>beep-8</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="bg_music.wav">
+      <Name>bg_music</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="crash.wav">
+      <Name>crash</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="detach.wav">
+      <Name>detach</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="freeze_zap.wav">
+      <Name>freeze_zap</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="hit_by_bullet.wav">
+      <Name>hit_by_bullet</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="main_theme.wav">
+      <Name>main_theme</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="thruster.wav">
+      <Name>thruster</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="thru_black_hole.wav">
+      <Name>thru_black_hole</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="tractor_beam.wav">
+      <Name>tractor_beam</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="explosion.wav">
+      <Name>explosion</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

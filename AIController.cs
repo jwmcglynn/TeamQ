@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using FarseerPhysics.Dynamics;
 using System.IO;
+using Microsoft.Xna.Framework.Input;
 
 namespace Sputnik
 {
@@ -149,8 +150,7 @@ namespace Sputnik
 				else //Im not facing the correct direction
 				{
 					currentShip.DesiredRotation = wantedDirection;
-					currentShip.DesiredVelocity = Vector2.Zero;
-					currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed / 3;
+					currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed / 6;
 				}
 			}
 		}
@@ -185,7 +185,7 @@ namespace Sputnik
 			}
 			else  //Im not facing my target
 			{
-				currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed;
+				currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed / 2;
 				currentShip.DesiredRotation = wantedDirection;
 			}
 
@@ -217,7 +217,7 @@ namespace Sputnik
 			}
 			else //Im not facing my target
 			{
-				currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed;
+				currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed / 2;
 				currentShip.DesiredRotation = wantedDirection;
 			}
 			//Shoot if I see my target
@@ -279,8 +279,9 @@ namespace Sputnik
 		/// </summary>
 		private void Disabled(float elapsedTime)
 		{
-			if (!currentShip.isFrozen && !(currentShip is Tractorable && ((Tractorable)currentShip).IsTractored))
+			if (!currentShip.IsFrozen && !(currentShip is Tractorable && ((Tractorable)currentShip).IsTractored))
 			{
+				Console.WriteLine("Exiting disabled");
 				//Im gonna be suspicious of whoever disabled me
 				if(CanSee(currentShip,target))
 					changeToAlert(target);
@@ -296,7 +297,21 @@ namespace Sputnik
 		/// </summary>
 		private void Allied(float elapsedTime)
 		{
-			currentShip.shooter.Rotation = ((Ship)target).shooter.Rotation;
+			GamePadState gamepad = GamePad.GetState(PlayerIndex.One);
+			if (gamepad.IsConnected)
+			{
+				const float k_aimRadius = 250.0f;
+				Vector2 invertY = new Vector2(1.0f, -1.0f);
+				float gamePadDirection = Angle.Direction(currentShip.Position, gamepad.ThumbSticks.Right * k_aimRadius * invertY);
+				currentShip.shooter.Rotation = gamePadDirection;
+			}
+			else
+			{
+				MouseState mouse = Mouse.GetState();
+				Vector2 mousePosition = env.Camera.ScreenToWorld(new Vector2(mouse.X, mouse.Y));
+				float mouseDirection = (Angle.Direction(currentShip.Position, mousePosition));
+				currentShip.shooter.Rotation = mouseDirection;
+			}
 			if (CanSee(currentShip, target))
 			{
 				timeSinceSawTarget = 0;
@@ -319,7 +334,7 @@ namespace Sputnik
 			}
 			else //Im not facing my target
 			{
-				currentShip.DesiredVelocity = Vector2.Zero;
+				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed / 2;
 				currentShip.DesiredRotation = wantedDirection;
 			}
 			//Shoot if my target shoots
@@ -355,6 +370,15 @@ namespace Sputnik
 		{
 			currentShip.DesiredVelocity = Vector2.Zero;
 			changeToDisabled(s);
+		}
+
+		/// <summary>
+		/// Ship was just teleported through a blackhole.
+		/// </summary>
+		/// <param name="blackhole">Start blackhole.</param>
+		/// <param name="destination">Position of destination.</param>
+		public void Teleport(BlackHole blackhole, Vector2 destination) {
+			
 		}
 
 		/// <summary>

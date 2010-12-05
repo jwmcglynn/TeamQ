@@ -37,9 +37,15 @@ namespace Sputnik
 			Vector2 temp = boss.Position - points[index];
 			if (Math.Abs(temp.X) < 5 && Math.Abs(temp.Y) < 5)  
 				index++;
-			if(boss.Shooting)
+
+			bool canSeeTarget = false;
+			if (boss.ShootTarget != null) {
+				canSeeTarget = (VisionHelper.ClosestEntity(boss.CollisionWorld, boss.Position, boss.ShootTarget.Position) == boss.ShootTarget);
+			}
+
+			if(canSeeTarget && boss.Shooting)
 				boss.Shoot(elapsedTime);
-			if (boss.Shooting && new Random().Next() % 500 < 2)
+			if (canSeeTarget && boss.Shooting && RandomUtil.Next() % 500 < 2)
 				boss.useSpecial = true;
 			
 		}

@@ -38,6 +38,8 @@ namespace Sputnik
 			AddCollisionCircle(60.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true; // The circloid will not be affected by its own black hole.
+			this.maxSpeed *= 1.25f;
+			this.health = this.MaxHealth = (int)(this.MaxHealth * 1.25);
 		}
 
 		public CircloidShip(GameEnvironment env, SpawnPoint sp)
@@ -75,6 +77,11 @@ namespace Sputnik
 			base.Update(elapsedTime);
 		}
 
+		public override void Teleport(BlackHole blackhole, Vector2 destination, Vector2 exitVelocity) {
+			if (IsTractored && !m_fling) return;
+			base.Teleport(blackhole, destination, exitVelocity);
+		}
+
 		public override bool ShouldCull() {
 			if (IsTractored) return false;
 			return base.ShouldCull();
@@ -86,6 +93,9 @@ namespace Sputnik
 			IsTractored = true;
 			m_fling = false;
 			ai.GotTractored(shipTractoring);
+
+			// Give a random amount of angular impulse for cool unstable rotating!
+			CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
 		}
 
 		public void TractorReleased()

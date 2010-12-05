@@ -9,7 +9,7 @@ namespace Sputnik
 	class Bullet : GameEntity
 	{
 		private int bulletStrength = 1;
-		const float k_speed = 600.0f; // pixels per second
+		const float k_speed = 1000.0f; // pixels per second
         public TakesDamage owner;
 		private bool m_shouldCull = false;
 		private float m_lifetime = 0.0f;
@@ -31,6 +31,8 @@ namespace Sputnik
 			Position = position;
 			Rotation = (float) angle;
 			SetPhysicsVelocityOnce(new Vector2(k_speed * (float) Math.Cos(angle), k_speed * (float) Math.Sin(angle)));
+
+			AllowTeleport = true;
 		}
 
 		public override void Update(float elapsedTime)

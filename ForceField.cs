@@ -13,6 +13,7 @@ namespace Sputnik
 		float timeElapsed;
 		GameEntity owner;
 		private Texture2D[] m_textures = new Texture2D[10];
+		private List<Freezable> m_frozen = new List<Freezable>();
 
 		// Create force field dynamically.
 		public ForceField(GameEnvironment env, Vector2 pos, float angle, GameEntity o)
@@ -35,21 +36,19 @@ namespace Sputnik
 
 			Texture = m_textures[0];
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
-			Zindex = 0.0f;
+			Zindex = 0.4f;
 
 			CreateCollisionBody(Environment.CollisionWorld, FarseerPhysics.Dynamics.BodyType.Dynamic, CollisionFlags.Default);
 			var circle = AddCollisionCircle(Texture.Height / 3, Vector2.Zero);
 		
 			CollisionBody.LinearDamping = 0.0f;
 			SetPhysicsVelocityOnce(new Vector2(k_speed * (float)Math.Cos(m_angle), k_speed * (float)Math.Sin(m_angle)));
-			//DesiredVelocity = new Vector2(k_speed * (float)Math.Cos(m_angle), k_speed * (float)Math.Sin(m_angle));
 		}
 
-		private Entity entityCollidedWith = null;
-		private Vector2 posOfCollision;
 		private bool hasFrozen;
 		private float timeForAnimation = 1.0f;
 		private int numberOfFrames = 10;
+		private float frozenDuration = 0.0f;
 
 		public override void Update(float elapsedTime)
 		{
@@ -60,32 +59,71 @@ namespace Sputnik
 				Texture = m_textures[(int)(timeElapsed / timeForAnimation * numberOfFrames)];
 			}
 
-			if(entityCollidedWith != null && !hasFrozen) {
-				CollisionBody.LinearVelocity = Vector2.Zero;
-				Position = posOfCollision;
-				hasFrozen = true;
+			timeElapsed += elapsedTime;
 
-				if (entityCollidedWith is Freezable)
-				{
-					((Freezable)entityCollidedWith).Freeze(owner);
+			if (hasFrozen) {
+				frozenDuration += elapsedTime;
+				if (frozenDuration > 5.0f) {
+					// Fade out alpha after five seconds.
+					if (frozenDuration >= 6.0f) {
+						// Unfreeze after six seconds.
+						foreach (Freezable f in m_frozen) {
+							f.Unfreeze();
+						}
+
+						Dispose();
+					} else {
+						// Alpha will be 1.0f at five seconds, 0.0f at six seconds.
+						Alpha = 6.0f - frozenDuration;
+					}
 				}
 			}
-
-			timeElapsed += elapsedTime;
 			base.Update(elapsedTime);
 		}
 		
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact) {
 			contact.Enabled = false;
-			entityCollidedWith = entB;			
+
+			// Don't collide if the entity is the owner.
+			// Don't collide if the entity is not freezable, but still allow collisions with the environment and other
+			// force fields if we are not frozen.
+			if (entB == owner || !(entB is Freezable || (!hasFrozen && (entB is Environment || entB is ForceField)))) {
+				return;
+			}
+
+
 			FarseerPhysics.Collision.WorldManifold manifold;
 			contact.GetWorldManifold(out manifold);
-			posOfCollision = manifold.Points[0]*GameEnvironment.k_invPhysicsScale;
-		} 
+			Vector2 posOfCollision = manifold.Points[0]*GameEnvironment.k_invPhysicsScale;
+
+
+			if (entB is Freezable) {
+				if (m_frozen.Contains((Freezable) entB)) {
+					return;
+				} else {
+					m_frozen.Add((Freezable) entB);
+				}
+			}
+
+			OnNextUpdate += () => {
+				if (!hasFrozen) {
+					hasFrozen = true;
+					CollisionBody.LinearVelocity = Vector2.Zero;
+					CollisionBody.IsStatic = true;
+					Position = posOfCollision;
+				}
+
+				if (entB is Freezable) {
+					Sound.PlayCue("freeze_zap", entB);
+					((Freezable) entB).Freeze(owner);
+					entB.Zindex = Zindex + RandomUtil.NextFloat(0.001f, 0.009f);
+				}
+			};
+		}
 	
 		// Collide with non-circloid bullets and non-circloid ships.
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
-			if (entB is ForceField || entB is CircloidShip || entB is Boss || entB is Bullet || entB is SputnikShip) return false;
+			if (entB is CircloidShip || entB is Boss || entB is Bullet || entB is SputnikShip) return false;
 
 			if (entB is TakesDamage && ((TakesDamage) entB).IsFriendly()) {
 				return false;

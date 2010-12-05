@@ -72,6 +72,7 @@ namespace Sputnik {
 
 		// HUD.
 		public Menus.HUD HUD;
+		public bool isFrostMode = false;
 
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {
@@ -88,10 +89,10 @@ namespace Sputnik {
 				GraphicsDeviceService = ctrl.Graphics
 			};
 
-			ExplosionEffect = contentManager.Load<ParticleEffect>("Explosion");
-			ThrusterEffect = contentManager.Load<ParticleEffect>("Thruster");
-			AttachEffect = contentManager.Load<ParticleEffect>("Attach");
-			BlackHoleEffect = contentManager.Load<ParticleEffect>("BlackHole");
+			ExplosionEffect = contentManager.Load<ParticleEffect>("ExplosionEffect");
+			ThrusterEffect = contentManager.Load<ParticleEffect>("ThrusterEffect");
+			AttachEffect = contentManager.Load<ParticleEffect>("AttachEffect");
+			BlackHoleEffect = contentManager.Load<ParticleEffect>("BlackHoleEffect");
 			AlertEffect = contentManager.Load<ParticleEffect>("AlertEffect");
 
 			EffectsBelowShip.Add(ThrusterEffect);
@@ -243,6 +244,10 @@ namespace Sputnik {
 				Controller.ChangeEnvironment(new Menus.DebugMenu(Controller));
 			}
 
+			if (Keyboard.GetState().IsKeyDown(Keys.F4) && !OldKeyboard.GetState().IsKeyDown(Keys.F4))
+			{
+				this.isFrostMode = !this.isFrostMode;
+			}
 
 			// Fullscreen toggle with Alt+Enter.
 			if ((Keyboard.GetState().IsKeyDown(Keys.LeftAlt) || Keyboard.GetState().IsKeyDown(Keys.RightAlt))

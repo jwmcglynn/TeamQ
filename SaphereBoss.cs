@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Sputnik
 {
 	class SaphereBoss : Boss
 	{
 		private BlackHole.Pair m_blackHolePair;
+		Texture2D m_unhappyTex;
 
 		public SaphereBoss(GameEnvironment env) : base(env) 
 		{
@@ -19,11 +21,12 @@ namespace Sputnik
 		{
 		}
 
-		protected override void initialize(GameEnvironment env)
+		protected override void initialize()
 		{
-			LoadTexture(env.contentManager, "saphere");
+			LoadTexture(Environment.contentManager, "saphere");
+			m_unhappyTex = Environment.contentManager.Load<Texture2D>("saphere_hurt");
 
-			base.initialize(env);
+			base.initialize();
 		}
 
 		public override void Dispose() {
@@ -40,10 +43,27 @@ namespace Sputnik
 		{
 			useSpecial = false;
 
+			position.X += (RandomUtil.Next() % 200) - 100;
+			position.Y += (RandomUtil.Next() % 200) - 100;
+
+			if (VisionHelper.ClosestEntity(this.CollisionWorld, this.Position, position) != null)
+				return;
+
 			if (m_blackHolePair != null) m_blackHolePair.Destroy();
-			m_blackHolePair = BlackHole.CreatePair(this.env, position);
+			m_blackHolePair = BlackHole.CreatePair(Environment, position);
 
 			base.ShootSpecial(position);
+		}
+
+		public override void TakeHit(int damage)
+		{
+			base.TakeHit(damage);
+
+			if (!isUnhappy && this.health < MaxHP / 3)
+			{
+				isUnhappy = true;
+				Texture = m_unhappyTex;
+			}
 		}
 	}
 }

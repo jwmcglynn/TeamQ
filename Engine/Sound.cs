@@ -20,6 +20,7 @@ namespace Sputnik {
 			m_soundBank = new SoundBank(m_audioEngine, @"Content\Sound Bank.xsb");
 			m_waveBank.Add(new WaveBank(m_audioEngine, @"Content\Music.xwb", 0, 16));
 			m_waveBank.Add(new WaveBank(m_audioEngine, @"Content\SFX.xwb"));
+			m_waveBank.Add(new WaveBank(m_audioEngine, @"Content\Looping SFX.xwb"));
 
 			// Prime the audio engine for use
 			m_audioEngine.Update();
@@ -42,19 +43,29 @@ namespace Sputnik {
 			}
 		}
 
-		public static Cue Cue(string name) {
-			return m_soundBank.GetCue(name);
+		/// <summary>
+		/// Play a sound.
+		/// </summary>
+		/// <param name="name"></param>
+		public static Cue PlayCue(string name) {
+			Cue sound = m_soundBank.GetCue(name);
+			sound.Play();
+			return sound;
 		}
 
-		public static void PlayCue(string name) {
-			m_soundBank.PlayCue(name);
-		}
-
-		public static void PlayCue(string name, Entity source) {
+		/// <summary>
+		/// Play a locational sound at the Entity's position.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="source"></param>
+		public static Cue PlayCue(string name, Entity source) {
+			Cue sound = m_soundBank.GetCue(name);
 			if (source.SoundEmitter == null) source.SoundEmitter = new AudioEmitter();
 			source.SoundEmitter.Position = new Vector3(source.Position.X, source.Position.Y, 0.0f);
 
-			m_soundBank.PlayCue(name, Listener, source.SoundEmitter);
+			sound.Apply3D(Listener, source.SoundEmitter);
+			sound.Play();
+			return sound;
 		}
 	}
 }

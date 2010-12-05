@@ -37,6 +37,9 @@ namespace Sputnik
 			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(40.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
+			this.maxSpeed *= 1.5f;
+			this.health = this.MaxHealth;
+			AllowTeleport = true;
 		}
 
 		public TriangulusShip(GameEnvironment env, SpawnPoint sp)
@@ -87,13 +90,14 @@ namespace Sputnik
 
 		public void Freeze(GameEntity s)
 		{
-			isFrozen = true;
-			ai.GotFrozen(s);
+			++m_frozenCount;
+			if (m_frozenCount == 1) ai.GotFrozen(s);
 		}
 
 		public void Unfreeze()
 		{
-			isFrozen = false;
+			--m_frozenCount;
+			if (m_frozenCount < 0) m_frozenCount = 0;
 		}
 
 		public void Tractored(Ship shipTractoring)
@@ -102,11 +106,9 @@ namespace Sputnik
 			IsTractored = true;
 			m_fling = false;
 			ai.GotTractored(shipTractoring);
-		}
 
-		public override bool ShouldCull() {
-			if (IsTractored) return false;
-			return base.ShouldCull();
+			// Give a random amount of angular impulse for cool unstable rotating!
+			CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
 		}
 
 		public void TractorReleased() {
@@ -118,6 +120,16 @@ namespace Sputnik
 
 		public void UpdateTractor(Vector2 position) {
 			m_tractorTarget = position;
+		}
+
+		public override void Teleport(BlackHole blackhole, Vector2 destination, Vector2 exitVelocity) {
+			if (IsTractored && !m_fling) return;
+			base.Teleport(blackhole, destination, exitVelocity);
+		}
+
+		public override bool ShouldCull() {
+			if (IsTractored) return false;
+			return base.ShouldCull();
 		}
 
 		public override void OnCull() {

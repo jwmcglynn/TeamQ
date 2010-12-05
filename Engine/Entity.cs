@@ -21,6 +21,9 @@ namespace Sputnik {
 		public Vector2 Registration = new Vector2(0, 0);
 		public float Zindex = 1.0f;
 
+		public Color VertexColor = Color.White;
+		public float Alpha = 1.0f;
+
 		// Entity tree.
 		public Entity Parent;
 		public List<Entity> Children = new List<Entity>();
@@ -31,17 +34,12 @@ namespace Sputnik {
 		private bool m_applyVelocity = false;
 		public bool VisualRotationOnly = false;
 
-		public float TimeSinceTeleport = float.PositiveInfinity;
-		public Vector2 TeleportInertiaDir;
-
 		// Sound.
 		public AudioEmitter SoundEmitter;
 
 		// Update helper.
 		public delegate void UpdateTask();
 		public event UpdateTask OnNextUpdate;
-
-		public float Alpha = 1.0f;
 
 		/*************************************************************************/
 		// Entity tree.
@@ -338,18 +336,6 @@ namespace Sputnik {
 				}
 			}
 
-			// Apply blackhole teleportation force.
-			if (CollisionBody != null) {
-				if (TimeSinceTeleport < 1.0f) {
-					CollisionBody.ApplyForce(TeleportInertiaDir * 50.0f * CollisionBody.Mass);
-					CollisionBody.IgnoreGravity = true;
-				} else {
-					CollisionBody.IgnoreGravity = false;
-				}
-			}
-
-			TimeSinceTeleport += elapsedTime;
-
 			// Use "RemoveAll" function to iterate over a list and handle removals.
 			Children.ForEach((Entity ent) => { ent.Update(elapsedTime); });
 		}
@@ -360,7 +346,7 @@ namespace Sputnik {
 		/// <param name="spriteBatch">SpriteBatch to render to.</param>
 		public virtual void Draw(SpriteBatch spriteBatch) {
 			if (Texture != null) {
-				spriteBatch.Draw(Texture, Position, null, new Color(1.0f, 1.0f, 1.0f, Alpha), Rotation, Registration, 1.0f, SpriteEffects.None, Zindex);
+				spriteBatch.Draw(Texture, Position, null, VertexColor * Alpha, Rotation, Registration, 1.0f, SpriteEffects.None, Zindex);
 			}
 
 			foreach (Entity ent in Children) {
