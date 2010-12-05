@@ -280,13 +280,14 @@ namespace Sputnik
 		{
 			// Perform what ever actions are necessary to 
 			// Destory a ship
-			// TODO: Animations / explosions.
 			m_isDead = true;
 			this.health = 0;
-			OnNextUpdate += () => Dispose();
 
-			Environment.ExplosionEffect.Trigger(Position);
-			Sound.PlayCue("explosion", this);
+			OnNextUpdate += () => {
+				Dispose();
+				Environment.ExplosionEffect.Trigger(Position);
+				Sound.PlayCue("explosion", this);
+			};
 		}
 
 		/// <summary>
