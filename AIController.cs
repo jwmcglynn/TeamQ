@@ -296,10 +296,21 @@ namespace Sputnik
 		/// </summary>
 		private void Allied(float elapsedTime)
 		{
-			MouseState mouse = Mouse.GetState();
-			Vector2 mousePosition = env.Camera.ScreenToWorld(new Vector2(mouse.X, mouse.Y));
-			float mouseDirection = (Angle.Direction(currentShip.Position, mousePosition));
-			currentShip.shooter.Rotation = mouseDirection;
+			GamePadState gamepad = GamePad.GetState(PlayerIndex.One);
+			if (gamepad.IsConnected)
+			{
+				const float k_aimRadius = 250.0f;
+				Vector2 invertY = new Vector2(1.0f, -1.0f);
+				float gamePadDirection = Angle.Direction(currentShip.Position, gamepad.ThumbSticks.Right * k_aimRadius * invertY);
+				currentShip.shooter.Rotation = gamePadDirection;
+			}
+			else
+			{
+				MouseState mouse = Mouse.GetState();
+				Vector2 mousePosition = env.Camera.ScreenToWorld(new Vector2(mouse.X, mouse.Y));
+				float mouseDirection = (Angle.Direction(currentShip.Position, mousePosition));
+				currentShip.shooter.Rotation = mouseDirection;
+			}
 			if (CanSee(currentShip, target))
 			{
 				timeSinceSawTarget = 0;
