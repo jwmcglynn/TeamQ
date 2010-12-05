@@ -244,7 +244,7 @@ namespace Sputnik {
 				Controller.ChangeEnvironment(new Menus.DebugMenu(Controller));
 			}
 
-			if (Keyboard.GetState().IsKeyDown(Keys.F3) && !OldKeyboard.GetState().IsKeyDown(Keys.F3))
+			if (Keyboard.GetState().IsKeyDown(Keys.F4) && !OldKeyboard.GetState().IsKeyDown(Keys.F4))
 			{
 				this.isFrostMode = !this.isFrostMode;
 			}
