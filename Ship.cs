@@ -140,9 +140,6 @@ namespace Sputnik
 			///// Smooth rotation.
 			if (IsFrozen || ((this is Tractorable) && ((Tractorable) this).IsTractored)) {
 				// Don't smooth rotate when tractored or frozen.
-				if (CollisionBody != null) {
-					CollisionBody.AngularVelocity = 0.0f;
-				}
 			} else if (Rotation != DesiredRotation) {
 				float distPos = Angle.Distance(DesiredRotation, Rotation);
 				float dir = Math.Sign(distPos);
