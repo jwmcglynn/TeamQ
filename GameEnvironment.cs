@@ -72,6 +72,7 @@ namespace Sputnik {
 
 		// HUD.
 		public Menus.HUD HUD;
+		public bool isFrostMode = false;
 
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {
@@ -243,6 +244,10 @@ namespace Sputnik {
 				Controller.ChangeEnvironment(new Menus.DebugMenu(Controller));
 			}
 
+			if (Keyboard.GetState().IsKeyDown(Keys.F3) && !OldKeyboard.GetState().IsKeyDown(Keys.F3))
+			{
+				this.isFrostMode = !this.isFrostMode;
+			}
 
 			// Fullscreen toggle with Alt+Enter.
 			if ((Keyboard.GetState().IsKeyDown(Keys.LeftAlt) || Keyboard.GetState().IsKeyDown(Keys.RightAlt))

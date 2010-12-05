@@ -40,6 +40,12 @@ namespace Sputnik
 		{
 			useSpecial = false;
 
+			position.X += (RandomUtil.Next() % 200) - 100;
+			position.Y += (RandomUtil.Next() % 200) - 100;
+
+			if (VisionHelper.ClosestEntity(this.CollisionWorld, this.Position, position) != null)
+				return;
+
 			if (m_blackHolePair != null) m_blackHolePair.Destroy();
 			m_blackHolePair = BlackHole.CreatePair(this.env, position);
 
