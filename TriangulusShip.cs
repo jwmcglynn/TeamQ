@@ -37,6 +37,7 @@ namespace Sputnik
 			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(40.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
+			this.maxSpeed *= 1.5f;
 		}
 
 		public TriangulusShip(GameEnvironment env, SpawnPoint sp)

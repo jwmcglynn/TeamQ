@@ -51,5 +51,16 @@ namespace Sputnik
 
 			base.ShootSpecial(position);
 		}
+
+		public override void TakeHit(int damage)
+		{
+			base.TakeHit(damage);
+
+			if (!isUnhappy && this.health < MaxHP / 3)
+			{
+				isUnhappy = true;
+				LoadTexture(env.contentManager, "saphere_hurt");
+			}
+		}
 	}
 }

@@ -38,6 +38,8 @@ namespace Sputnik
 			AddCollisionCircle(60.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true; // The circloid will not be affected by its own black hole.
+			this.maxSpeed *= 1.25f;
+			this.health = (int)(this.health * 1.25);
 		}
 
 		public CircloidShip(GameEnvironment env, SpawnPoint sp)

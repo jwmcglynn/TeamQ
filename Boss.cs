@@ -10,7 +10,8 @@ namespace Sputnik
 {
 	class Boss : GameEntity, TakesDamage
 	{
-		private int health = 100;
+		protected const int MaxHP = 400;
+		protected int health = MaxHP;
 		protected BulletEmitter bm1, bm2, bm3;
 		protected BossAI ai;
 		protected bool isShooting = false;
@@ -29,6 +30,7 @@ namespace Sputnik
 		private GameEntity shootTarget;
 		public GameEntity ShootTarget { get { return shootTarget; } }
 		bool m_isDead = false;
+		protected bool isUnhappy = false;
 
 		public Boss(GameEnvironment env) : base(env)
 		{
@@ -172,7 +174,7 @@ namespace Sputnik
 		{
 		}
 
-		public void TakeHit(int damage)
+		public virtual void TakeHit(int damage)
 		{
 			this.health -= damage;
 			if (this.health < 1) {

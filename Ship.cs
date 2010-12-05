@@ -15,7 +15,7 @@ namespace Sputnik
 	{
 		internal ShipController ai;
 		private ShipController previousAI = null;
-		public int health = 100;
+		public int health = 30;
 		public float shooterRotation;
 		internal BulletEmitter shooter = null;
 		protected Ship attachedShip = null;

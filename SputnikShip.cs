@@ -25,7 +25,7 @@ namespace Sputnik
 			Zindex = 0.25f;
 			Position = sp.Position;
 			
-			this.maxSpeed = 600;
+			this.maxSpeed = 800;
 
 			LoadTexture(env.contentManager, "Sputnik");
 			Registration = new Vector2(70.0f, 33.0f);
