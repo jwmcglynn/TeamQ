@@ -69,10 +69,6 @@ namespace Sputnik
 
 		public void Update(Ship s, float elapsedTime)
 		{
-			if (currentState == State.Disabled && nextState != State.Disabled)
-			{
-				throw new ArgumentException("If this happens, Matthew screwed up somewhere");
-			}
 			if ((currentShip != null) && (oldPosition.Equals(new Vector2(-1000, 1000)) || !oldPosition.Equals(currentShip.Position)))
 			{
 				timeSinceMoved = 0;
