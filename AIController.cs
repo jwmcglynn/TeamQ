@@ -79,7 +79,6 @@ namespace Sputnik
 			}
 			else
 			{
-				//currentShip==null defaults here, but it wont matter
 				timeSinceMoved += elapsedTime;
 			}
 			timeSinceHitWall += elapsedTime;
@@ -116,7 +115,7 @@ namespace Sputnik
 		/// </summary>
 		private void Neutral(float elapsedTime)
 		{
-			foreach (BlackHole bh in env.blackHoles)
+			foreach (BlackHole bh in env.blackHoles)  //Black holes are scary, run away!
 			{
 				float distance = env.BlackHoleController.MaxRadius / GameEnvironment.k_physicsScale + 100;
 				if (Vector2.Distance(currentShip.Position, bh.Position) < distance)
@@ -124,18 +123,17 @@ namespace Sputnik
 					HitWall(bh.Position);
 				}
 			}
-			if (timeSinceMoved > 3)
+			if (timeSinceMoved > 3) // I hit a ship and it wont move (hopefully)
 			{
 				timeSinceMoved = 0;
 				patrolPoints.RemoveAt(0);
 				patrolPoints.Add(randomPatrolPoint());
-				//Actually, I might want to put my new collision wall behavior here
 			}
 			waitTimer -= elapsedTime;
-			if (waitTimer <= 0)
+			if (waitTimer <= 0)  //No more waiting, time to move
 			{
 				Vector2 destination = patrolPoints.First();
-				currentShip.MaxRotVel = MathHelper.Pi / 2; //Take my time turning
+				currentShip.MaxRotVel = currentShip.MaxRotVel / 2; //Take my time turning
 				float wantedDirection = Angle.Direction(currentShip.Position, destination); //Ships want to face the direction their destination is
 				if (Vector2.Distance(currentShip.Position, destination) < currentShip.maxSpeed * 0.3f) // Close to destination
 				{
@@ -144,7 +142,7 @@ namespace Sputnik
 					currentShip.DesiredVelocity = Vector2.Zero;
 					waitTimer = (float)(r.NextDouble() * 3 + 0.3);
 				}
-				else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2) //Im facing the direction I want to go in
+				else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2) //Im almost facing the direction I want to go in
 				{
 					currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed / 3;
 					currentShip.DesiredRotation = wantedDirection; //Turn a little bit for any rounding, does not count as turning
@@ -153,6 +151,7 @@ namespace Sputnik
 				{
 					currentShip.DesiredRotation = wantedDirection;
 					currentShip.DesiredVelocity = Vector2.Zero;
+					currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed / 3;
 				}
 			}
 		}
@@ -187,7 +186,7 @@ namespace Sputnik
 			}
 			else  //Im not facing my target
 			{
-				currentShip.DesiredVelocity = Vector2.Zero;
+				currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed;
 				currentShip.DesiredRotation = wantedDirection;
 			}
 
@@ -227,7 +226,7 @@ namespace Sputnik
 			}
 			else //Im not facing my target
 			{
-				currentShip.DesiredVelocity = Vector2.Zero;
+				currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed;
 				currentShip.DesiredRotation = wantedDirection;
 			}
 			//Shoot if I see my target
@@ -346,7 +345,7 @@ namespace Sputnik
 			{
 				changeToNeutral();
 			}
-			else if (timeSinceSawTarget > 10)
+			else if (timeSinceSawTarget > 30)
 				changeToNeutral();
 		}
 
