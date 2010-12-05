@@ -69,7 +69,10 @@ namespace Sputnik
 
 		public void Update(Ship s, float elapsedTime)
 		{
-			if ((currentShip != null) && (oldPosition.Equals(new Vector2(-1000, 1000)) || !oldPosition.Equals(currentShip.Position)))
+			currentShip = s;
+			currentState = nextState;
+			currentShip.ResetMaxRotVel();//For the turning speed slowdown of neutral state
+			if ((oldPosition.Equals(new Vector2(-1000, 1000)) || !oldPosition.Equals(currentShip.Position)))
 			{
 				timeSinceMoved = 0;
 				oldPosition = currentShip.Position;
@@ -83,9 +86,6 @@ namespace Sputnik
 			timeSinceChangedTargets += elapsedTime;
 			timeSinceLastStateChange += elapsedTime;
 			timeSinceAnsweredDistressCall += elapsedTime;
-			currentShip = s;
-			currentState = nextState;
-			currentShip.ResetMaxRotVel();//For the turning speed slowdown;
 			switch (currentState)
 			{
 				case State.Allied:
