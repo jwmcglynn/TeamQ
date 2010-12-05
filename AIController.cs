@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using FarseerPhysics.Dynamics;
 using System.IO;
+using Microsoft.Xna.Framework.Input;
 
 namespace Sputnik
 {
@@ -295,7 +296,10 @@ namespace Sputnik
 		/// </summary>
 		private void Allied(float elapsedTime)
 		{
-			currentShip.shooter.Rotation = ((Ship)target).shooter.Rotation;
+			MouseState mouse = Mouse.GetState();
+			Vector2 mousePosition = env.Camera.ScreenToWorld(new Vector2(mouse.X, mouse.Y));
+			float mouseDirection = (Angle.Direction(currentShip.Position, mousePosition));
+			currentShip.shooter.Rotation = mouseDirection;
 			if (CanSee(currentShip, target))
 			{
 				timeSinceSawTarget = 0;
