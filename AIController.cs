@@ -19,7 +19,7 @@ namespace Sputnik
 		private GameEntity lookingFor; //Entity that I can't see but I'm looking for
 		private enum State { Allied, Neutral, Alert, Hostile, Confused, Disabled }; //All possible states
 		private State oldState,currentState,nextState; // Used to control AI's FSM
-		private Ship currentShip;  //Current ship I'm controlling
+		private Ship currentShip;  //Current ship I'm controlling, code mostly assumes this ship is constant
 		private bool answeringDistressCall;  //Used to help Confused State transition
 		private float timeSinceLastStateChange;  //Counter used to tell time since a state change
 		private GameEntity rayCastTarget;  //Target of a raycast
@@ -66,7 +66,6 @@ namespace Sputnik
 		/// <summary>
 		///  Updates the State of a ship
 		/// </summary>
-
 		public void Update(Ship s, float elapsedTime)
 		{
 			currentShip = s;
@@ -145,7 +144,7 @@ namespace Sputnik
 				else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2) //Im almost facing the direction I want to go in
 				{
 					currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed / 3;
-					currentShip.DesiredRotation = wantedDirection; //Turn a little bit for any rounding, does not count as turning
+					currentShip.DesiredRotation = wantedDirection; 
 				}
 				else //Im not facing the correct direction
 				{
@@ -179,10 +178,10 @@ namespace Sputnik
 				currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection;  //Even though I want to keep a certain distance, I will still turn to face you
 			}
-			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2) //Im facing my target
+			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2)  //Im almost facing the direction I want to go in
 			{
 				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
-				currentShip.DesiredRotation = wantedDirection;  //Doesnt count as turning
+				currentShip.DesiredRotation = wantedDirection; 
 			}
 			else  //Im not facing my target
 			{
@@ -190,9 +189,9 @@ namespace Sputnik
 				currentShip.DesiredRotation = wantedDirection;
 			}
 
-			if (timeSinceLastStateChange > 5)
+			if (timeSinceLastStateChange > 5) //I lose interest in 5 seconds
 				changeToNeutral();
-			else if (timeSinceSawTarget > 3)
+			else if (timeSinceSawTarget > 3) //I lose interest if I haven't seen my target for 3 seconds
 				changeToNeutral();
 		}
 
@@ -203,14 +202,6 @@ namespace Sputnik
 		/// </summary>
 		private void Hostile(float elapsedTime)
 		{
-			if (CanSee(currentShip, target))
-			{
-				timeSinceSawTarget = 0;
-			}
-			else
-			{
-				timeSinceSawTarget += elapsedTime;
-			}
 			Vector2 destination = target.Position;  //Im going to my target's position
 			float wantedDirection = Angle.Direction(currentShip.Position, destination);  //I want to face my targets direction
 
@@ -219,7 +210,7 @@ namespace Sputnik
 				currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection; //Even though I dont move, I want to face my targets direction
 			}
-			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2) // Im facing my target
+			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2)  //Im almost facing the direction I want to go in
 			{
 				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
 				currentShip.DesiredRotation = wantedDirection; //Does not count as rotation
@@ -240,11 +231,11 @@ namespace Sputnik
 				timeSinceSawTarget += elapsedTime;
 			}
 
-			if(currentShip.IsAllied((TakesDamage) target) && !((TakesDamage) target).IsFriendly())
+			if (currentShip.IsAllied((TakesDamage)target)) //If I cant shoot target. time to move on
 				changeToNeutral();
-			else if (((TakesDamage)target).IsDead())
+			else if (((TakesDamage)target).IsDead()) //If target is dead, time to move on
 				changeToNeutral();
-			else if (timeSinceSawTarget > 5)
+			else if (timeSinceSawTarget > 5) //Lose interest after 5 seconds if I can't see target
 				changeToNeutral();
 		}
 
