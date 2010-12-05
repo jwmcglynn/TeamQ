@@ -31,7 +31,7 @@ namespace Sputnik
 			CreateCollisionBody(Environment.CollisionWorld, BodyType.Dynamic, CollisionFlags.Default);
 			AddCollisionCircle(50.0f, Vector2.Zero);
 			CollisionBody.LinearDamping = 8.0f;
-
+			this.health = (int)(this.health * 1.5);
 			passiveShield = 20.0f;
 		}
 
