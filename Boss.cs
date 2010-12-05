@@ -58,7 +58,7 @@ namespace Sputnik
 			Zindex = 0.3f;
 
 			takesDamage = AddCollisionCircle(170.0f, Vector2.Zero);
-			sensor = AddCollisionCircle(Texture.Width * 0.75f, Vector2.Zero);
+			sensor = AddCollisionCircle(Texture.Width * 1.25f, Vector2.Zero);
 
 			CollisionBody.LinearDamping = 8.0f;
 			CollisionBody.IgnoreGravity = true;
