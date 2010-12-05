@@ -149,8 +149,7 @@ namespace Sputnik
 				else //Im not facing the correct direction
 				{
 					currentShip.DesiredRotation = wantedDirection;
-					currentShip.DesiredVelocity = Vector2.Zero;
-					currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed / 3;
+					currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed / 6;
 				}
 			}
 		}
@@ -185,7 +184,7 @@ namespace Sputnik
 			}
 			else  //Im not facing my target
 			{
-				currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed;
+				currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed / 2;
 				currentShip.DesiredRotation = wantedDirection;
 			}
 
@@ -217,7 +216,7 @@ namespace Sputnik
 			}
 			else //Im not facing my target
 			{
-				currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed;
+				currentShip.DesiredVelocity = Angle.Vector(currentShip.Rotation) * currentShip.maxSpeed / 2;
 				currentShip.DesiredRotation = wantedDirection;
 			}
 			//Shoot if I see my target
@@ -319,7 +318,7 @@ namespace Sputnik
 			}
 			else //Im not facing my target
 			{
-				currentShip.DesiredVelocity = Vector2.Zero;
+				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed / 2;
 				currentShip.DesiredRotation = wantedDirection;
 			}
 			//Shoot if my target shoots
