@@ -187,6 +187,9 @@ namespace Sputnik
 
 		public virtual void TakeHit(int damage)
 		{
+			if (isSputnik() && this.Environment.isFrostMode)
+				return;
+
 			if (this is SquaretopiaShip)
 			{
 				if (passiveShield > 0)

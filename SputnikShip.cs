@@ -14,7 +14,9 @@ namespace Sputnik
 		public Ship controlled = null; 
 		private Ship recentlyControlled = null;
 		private ShipController playerAI = null;
-		private float timer = 5.0f;
+		
+		private const float TotalTime = 3.0f;
+		private float timer = TotalTime;
 
 		public SputnikShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {
@@ -59,9 +61,14 @@ namespace Sputnik
 			// Thruster particle.
 			if (!attached)
 			{
-				timer -= elapsedTime;
-				if (timer < 0)
-					InstaKill();
+
+				if (!this.Environment.isFrostMode)
+				{
+					timer -= elapsedTime;
+					if (timer < 0)
+						InstaKill();
+				}
+
 
 				if (DesiredVelocity.LengthSquared() > (maxSpeed / 4) * (maxSpeed / 4))
 				{
@@ -122,7 +129,7 @@ namespace Sputnik
 		{
 			if (!attached) return;
 
-			timer = 3.0f;
+			timer = TotalTime;
 			recentlyControlled = controlled;
 			attached = false;
 			controlled = null;
@@ -139,11 +146,11 @@ namespace Sputnik
 		}
 
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
-			return !(entB is Environment) && !(entB is Bullet);
+			return !(entB is Environment) && !(attached && entB is Bullet);
 		}
 
 		public override void TakeHit(int damage) {
-			// Do nothing.
+			timer -= (TotalTime / 0.2f);
 		}
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
