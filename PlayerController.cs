@@ -216,6 +216,13 @@ namespace Sputnik
 			// Act on input.
 			s.shooterRotation = aimDirection;
 
+			if(!(s is TriangulusShip)) {
+				if (itemBeingTractored != null)
+				{
+					CancelTractorBeam();
+				}
+			}
+
 			// Detach from ship.
 			if (detachPressed)
 			{
