@@ -413,7 +413,7 @@ namespace Sputnik
 		/// </summary>
 		public void GotShotBy(Ship s, GameEntity f)
 		{
-			if (currentState != State.Disabled && currentState != State.Allied)
+			if (currentState != State.Disabled && currentState != State.Allied) //Allied and Disabled ships don't react
 			{
 				if (CanSee(currentShip, f)) //If I can see the shooter
 				{
@@ -504,19 +504,19 @@ namespace Sputnik
 		/// </summary>
 		public void DistressCall(Ship s, GameEntity f)
 		{
-			if (timeSinceAnsweredDistressCall <= 5) return;
-			timeSinceAnsweredDistressCall = 0;
-
-			if (currentState == State.Neutral && !s.IsAllied((TakesDamage) f)) //Only non busy ships (neutral) answer
+			if (timeSinceAnsweredDistressCall > 5)
 			{
-				if (CanSee(currentShip, s))//If i can see sputniks ship, go help him 
-				//if there isnt some civil war going on
-				{
-					changeToAllied(s);
-				}
-				else  //If I can't see Sputnik's ship, go look for it.
-				{
-					changeToConfused(s, true);
+				timeSinceAnsweredDistressCall = 0;
+				if (currentState == State.Neutral && !s.IsAllied((TakesDamage)f)) //Only non busy ships (neutral) answer
+				{//Don't answer of some weird civil war is going on
+					if (CanSee(currentShip, s))//If i can see sputniks ship, go help him 
+					{
+						changeToAllied(s);
+					}
+					else  //If I can't see Sputnik's ship, go look for it.
+					{
+						changeToConfused(s, true);
+					}
 				}
 			}
 		}
@@ -527,6 +527,10 @@ namespace Sputnik
 		public void gotDetached()
 		{
 			spawn.Position = spawn.Entity.Position;
+			//Its probably a good idea to generate a new patrolpoint for the new spawn
+			patrolPoints.RemoveAt(0); 
+			patrolPoints.Add(randomPatrolPoint());
+			changeToNeutral(); //Ships that are freed go to neutral
 		}
 
 		/// <summary>
@@ -573,7 +577,6 @@ namespace Sputnik
 			{
 				env.AlertEffect.Trigger(currentShip.Position);
 			}
-
 			timeSinceSawTarget = 0;
 			oldTarget = target;
 			target = t;
