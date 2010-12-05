@@ -281,6 +281,7 @@ namespace Sputnik
 		{
 			if (!currentShip.isFrozen && !(currentShip is Tractorable && ((Tractorable)currentShip).IsTractored))
 			{
+				//Im gonna be suspicious of whoever disabled me
 				if(CanSee(currentShip,target))
 					changeToAlert(target);
 				else
@@ -311,10 +312,10 @@ namespace Sputnik
 				currentShip.DesiredVelocity = Vector2.Zero;
 				currentShip.DesiredRotation = wantedDirection; //Even though I dont move, I want to face my targets direction
 			}
-			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2) // Im facing my target
+			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2) // Im nearly facing my target
 			{
 				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
-				currentShip.DesiredRotation = wantedDirection; //Does not count as rotation
+				currentShip.DesiredRotation = wantedDirection;
 			}
 			else //Im not facing my target
 			{
@@ -334,8 +335,8 @@ namespace Sputnik
 			{
 				changeToNeutral();
 			}
-			else if (timeSinceSawTarget > 30)
-				changeToNeutral();
+			else if (timeSinceSawTarget > 30)  //I can't see my target, go look for him
+				changeToConfused(target,true);
 		}
 
 		/// <summary>
@@ -394,11 +395,8 @@ namespace Sputnik
 		/// </summary>
 		private float RayCastHit(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
 		{
-			//Faction ships can see through their own faction, unless we happen to be looking at our target
-			if (currentShip.GetType() == fixture.Body.UserData.GetType() && fixture.Body.UserData != rayCastTarget)
-				return -1;
 			//Ignore Bullets
-			else if (fixture.Body.IsBullet)
+			if (fixture.Body.IsBullet)
 				return -1;
 			//Ignore Ships, weird things happen when ships block the way
 			else if (fixture.Body.UserData is Ship && fixture.Body.UserData != rayCastTarget)
