@@ -13,7 +13,8 @@ namespace Sputnik
 	{
 		internal ShipController ai;
 		private ShipController previousAI = null;
-		public int health = 30;
+		protected int MaxHealth = 30;
+		public int health;
 		public float shooterRotation;
 		internal BulletEmitter shooter = null;
 		protected Ship attachedShip = null;
@@ -168,8 +169,8 @@ namespace Sputnik
 			timeSinceDetached = 0;
 			Zindex = 0.26f;
 
-			if (this.health < this.health / 2)
-				this.health = this.health / 2;
+			if (this.health < this.MaxHealth / 2)
+				this.health = this.MaxHealth / 2;
 
 			sp.SputnikAttach(this);
 		}
