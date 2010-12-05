@@ -54,9 +54,9 @@ namespace Sputnik
 			base.Update(elapsedTime);
 		}
 
-		public void Freeze() {
+		public void Freeze(GameEntity s) {
 			isFrozen = true;
-			ai.GotFrozen();
+			ai.GotFrozen(s);
 		}
 
 		public void Unfreeze()

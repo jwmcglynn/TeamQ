@@ -57,12 +57,12 @@ namespace Sputnik
 			}
 		}
 
-		public void GotTractored()
+		public void GotTractored(GameEntity s)
 		{
 			//Chaos
 		}
 
-		public void GotFrozen()
+		public void GotFrozen(GameEntity s)
 		{
 			//Chaos
 		}

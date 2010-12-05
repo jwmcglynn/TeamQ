@@ -7,7 +7,7 @@ namespace Sputnik
 {
 	interface Freezable
 	{
-		void Freeze();
+		void Freeze(GameEntity s);
 		void Unfreeze();
 	}
 }

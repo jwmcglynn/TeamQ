@@ -242,7 +242,7 @@ namespace Sputnik
 		/// <summary>
 		///  AI behavior for Confused State
 		///  Looks around for lookingFor
-		///  Inputs : lookingFor, currentShip , startedRotation, startingAngle, answeringDistressCall
+		///  Inputs : lookingFor, currentShip, answeringDistressCall
 		///  Outputs : target, nextState
 		/// </summary>
 		/// Maybe I should rotate in the direction I was shot in, NOT IMPLEMENTED
@@ -267,7 +267,6 @@ namespace Sputnik
 			{
 				if (timeSinceLastStateChange > 1) //I spin for 1 second now
 				{
-					//changeToOld();
 					changeToNeutral();
 				}
 			}
@@ -282,11 +281,10 @@ namespace Sputnik
 		{
 			if (!currentShip.isFrozen && !(currentShip is Tractorable && ((Tractorable)currentShip).IsTractored))
 			{
-				//changeToOld();
-				changeToNeutral();
-				// I would like to do something else here
-				//Id like to up the alertness level, ie, if you tractor or freeze me, i become alert or hostile
-				//I can currently do this for tractor due to knowing the tractoring ship, but can't for freezing.
+				if(CanSee(currentShip,target))
+					changeToAlert(target);
+				else
+					changeToConfused(target, false);
 			}
 		}
 
@@ -341,21 +339,21 @@ namespace Sputnik
 		}
 
 		/// <summary>
-		///  Call when controlled ship gets frozen
+		///  Call when controlled ship gets frozen by s
 		/// </summary>
-		public void GotFrozen()
+		public void GotFrozen(GameEntity s)
 		{
 			currentShip.DesiredVelocity = Vector2.Zero;
-			changeToDisabled();
+			changeToDisabled(s);
 		}
 
 		/// <summary>
-		///  Call when controlled ship gets tractored
+		///  Call when controlled ship gets tractored by s
 		/// </summary>
-		public void GotTractored()
+		public void GotTractored(GameEntity s)
 		{
 			currentShip.DesiredVelocity = Vector2.Zero;
-			changeToDisabled();
+			changeToDisabled(s);
 		}
 
 		/// <summary>
@@ -624,11 +622,11 @@ namespace Sputnik
 		/// <summary>
 		///  Method to call to change to disabled state
 		/// </summary>
-		private void changeToDisabled()
+		private void changeToDisabled(GameEntity t)
 		{
 			timeSinceSawTarget = 0;
 			oldTarget = target;
-			target = null;
+			target = t;
 			lookingFor = null;
 			oldState = currentState;
 			nextState = State.Disabled;
