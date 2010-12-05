@@ -21,6 +21,9 @@ namespace Sputnik {
 		public Vector2 Registration = new Vector2(0, 0);
 		public float Zindex = 1.0f;
 
+		public Color VertexColor = Color.White;
+		public float Alpha = 1.0f;
+
 		// Entity tree.
 		public Entity Parent;
 		public List<Entity> Children = new List<Entity>();
@@ -40,8 +43,6 @@ namespace Sputnik {
 		// Update helper.
 		public delegate void UpdateTask();
 		public event UpdateTask OnNextUpdate;
-
-		public float Alpha = 1.0f;
 
 		/*************************************************************************/
 		// Entity tree.
@@ -360,7 +361,7 @@ namespace Sputnik {
 		/// <param name="spriteBatch">SpriteBatch to render to.</param>
 		public virtual void Draw(SpriteBatch spriteBatch) {
 			if (Texture != null) {
-				spriteBatch.Draw(Texture, Position, null, new Color(1.0f, 1.0f, 1.0f, Alpha), Rotation, Registration, 1.0f, SpriteEffects.None, Zindex);
+				spriteBatch.Draw(Texture, Position, null, VertexColor * Alpha, Rotation, Registration, 1.0f, SpriteEffects.None, Zindex);
 			}
 
 			foreach (Entity ent in Children) {

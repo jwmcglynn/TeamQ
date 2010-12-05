@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Sputnik.Menus {
 	public class Widget : Entity {
-		public Color VertexColor = Color.White;
 		public Menu Menu;
 
 		private bool m_hasButton = false;
@@ -83,7 +82,7 @@ namespace Sputnik.Menus {
 		/// <param name="spriteBatch">SpriteBatch to render to.</param>
 		public override void Draw(SpriteBatch spriteBatch) {
 			if (Visible && Texture != null) {
-				spriteBatch.Draw(Texture, AbsolutePosition, null, VertexColor, Rotation, Registration, 1.0f, SpriteEffects.None, Zindex);
+				spriteBatch.Draw(Texture, AbsolutePosition, null, VertexColor * Alpha, Rotation, Registration, 1.0f, SpriteEffects.None, Zindex);
 			}
 
 			foreach (Entity ent in Children) {

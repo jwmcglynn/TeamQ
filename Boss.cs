@@ -176,6 +176,8 @@ namespace Sputnik
 
 		public virtual void TakeHit(int damage)
 		{
+			Sound.PlayCue("hit_by_bullet", this);
+
 			this.health -= damage;
 			if (this.health < 1) {
 				SpawnPoint.AllowRespawn = false;

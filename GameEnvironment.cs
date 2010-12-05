@@ -89,10 +89,10 @@ namespace Sputnik {
 				GraphicsDeviceService = ctrl.Graphics
 			};
 
-			ExplosionEffect = contentManager.Load<ParticleEffect>("Explosion");
-			ThrusterEffect = contentManager.Load<ParticleEffect>("Thruster");
-			AttachEffect = contentManager.Load<ParticleEffect>("Attach");
-			BlackHoleEffect = contentManager.Load<ParticleEffect>("BlackHole");
+			ExplosionEffect = contentManager.Load<ParticleEffect>("ExplosionEffect");
+			ThrusterEffect = contentManager.Load<ParticleEffect>("ThrusterEffect");
+			AttachEffect = contentManager.Load<ParticleEffect>("AttachEffect");
+			BlackHoleEffect = contentManager.Load<ParticleEffect>("BlackHoleEffect");
 			AlertEffect = contentManager.Load<ParticleEffect>("AlertEffect");
 
 			EffectsBelowShip.Add(ThrusterEffect);

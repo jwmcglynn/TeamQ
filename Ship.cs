@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
-
-// Comment out later
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using ProjectMercury;
@@ -21,12 +19,21 @@ namespace Sputnik
 		protected Ship attachedShip = null;
 		public float maxSpeed = 350.0f;
 		public bool isShooting;
-		public bool isFrozen;
+		protected int m_frozenCount;
 		public Ship tractoringShip;
 		protected float passiveShield;
 		private bool m_isDead = false;
 
+		private float m_friendlyColorTimer = 0.0f; // 0 for non-friendly color, 1 for friendly color.  Used for strobing effect.
+		private float m_friendlyColorDir = 1.0f; // Direction of fading.
+
 		public Vector2 RelativeShooterPos = Vector2.Zero;
+
+		public bool IsFrozen {
+			get {
+				return (m_frozenCount > 0);
+			}
+		}
 
 		// Smooth rotation.
 		public float DesiredRotation;
@@ -55,6 +62,7 @@ namespace Sputnik
 			: base(env, sp)
 		{
 			Initialize();
+			SpawnPoint.RespawnCooldown = 30.0f;
 		}
 
 		private void Initialize()
@@ -85,7 +93,7 @@ namespace Sputnik
 			{
 				ai.Update(this, elapsedTime);
 			}
-			if (shooter != null && !isFrozen)
+			if (shooter != null && !IsFrozen)
 			{
 				// Update emitter position.
 				shooter.Rotation = shooterRotation;
@@ -94,7 +102,40 @@ namespace Sputnik
 				shooter.Position = Position + Vector2.Transform(RelativeShooterPos, rotMatrix);
 			}
 
-			if (Rotation != DesiredRotation && !isFrozen && !((this is Tractorable) && ((Tractorable) this).IsTractored)) {
+			///// Change color based on friendliness.
+			const float s_friendlyColorVel = 1.0f;
+			if (IsFriendly() && !(this is SputnikShip)) {
+				m_friendlyColorTimer += m_friendlyColorDir * (s_friendlyColorVel * elapsedTime);
+				
+				// Handle changing fade directions.
+				if (m_friendlyColorDir > 0.0f && m_friendlyColorTimer >= 1.0f) {
+					m_friendlyColorDir *= -1.0f;
+					m_friendlyColorTimer = 1.0f;
+				} else if (m_friendlyColorDir < 0.0f && m_friendlyColorTimer <= 0.5f) {
+					m_friendlyColorDir *= -1.0f;
+					m_friendlyColorTimer = 0.5f;
+				}
+
+				VertexColor = new Color(0.8f, 1.0f, 0.8f, Alpha);
+			} else {
+				m_friendlyColorDir = 1.0f;
+				m_friendlyColorTimer -= s_friendlyColorVel * elapsedTime;
+				if (m_friendlyColorTimer < 0.0f) m_friendlyColorTimer = 0.0f;
+			}
+
+			if (m_friendlyColorTimer == 0.0f) {
+				VertexColor = new Color(1.0f, 1.0f, 1.0f, Alpha);
+			} else {
+				VertexColor = Color.Lerp(new Color(1.0f, 1.0f, 1.0f, Alpha), new Color(0.6f, 1.0f, 0.6f, Alpha), m_friendlyColorTimer);
+			}
+
+			///// Smooth rotation.
+			if (IsFrozen || ((this is Tractorable) && ((Tractorable) this).IsTractored)) {
+				// Don't smooth rotate when tractored or frozen.
+				if (CollisionBody != null) {
+					CollisionBody.AngularVelocity = 0.0f;
+				}
+			} else if (Rotation != DesiredRotation) {
 				float distPos = Angle.Distance(DesiredRotation, Rotation);
 				float dir = Math.Sign(distPos);
 
@@ -110,6 +151,7 @@ namespace Sputnik
 					Rotation += del * elapsedTime;
 				}
 			}
+
 			shooterRotation = Rotation;
 			base.Update(elapsedTime);
 		}
@@ -120,7 +162,7 @@ namespace Sputnik
 			this.previousAI = this.ai;
 			this.ai = sp.GetAI();
 			this.attachedShip = sp;
-			isFrozen = false;
+			m_frozenCount = 0;
 			if (this is Tractorable) ((Tractorable)this).IsTractored = false;
 			sputnikDetached = false;
 			timeSinceDetached = 0;
@@ -148,7 +190,7 @@ namespace Sputnik
 
 		public bool AvoidShips {
 			get {
-				return !(this is SputnikShip) && !isFrozen && !((this is Tractorable) && ((Tractorable) this).IsTractored);
+				return !(this is SputnikShip) && !IsFrozen && !((this is Tractorable) && ((Tractorable) this).IsTractored);
 			}
 		}
 
@@ -187,6 +229,8 @@ namespace Sputnik
 
 		public virtual void TakeHit(int damage)
 		{
+			Sound.PlayCue("hit_by_bullet", this);
+
 			if (isSputnik() && this.Environment.isFrostMode)
 				return;
 
@@ -242,6 +286,7 @@ namespace Sputnik
 			OnNextUpdate += () => Dispose();
 
 			Environment.ExplosionEffect.Trigger(Position);
+			Sound.PlayCue("explosion", this);
 		}
 
 		/// <summary>
@@ -249,7 +294,7 @@ namespace Sputnik
 		/// </summary>
 		/// <returns></returns>
 		public bool IsFriendly() {
-			return ai.IsAlliedWithPlayer();
+			return (ai != null) && ai.IsAlliedWithPlayer();
 		}
 
 		//Tells if this is allied to s

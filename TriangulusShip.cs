@@ -88,13 +88,14 @@ namespace Sputnik
 
 		public void Freeze(GameEntity s)
 		{
-			isFrozen = true;
-			ai.GotFrozen(s);
+			++m_frozenCount;
+			if (m_frozenCount == 1) ai.GotFrozen(s);
 		}
 
 		public void Unfreeze()
 		{
-			isFrozen = false;
+			--m_frozenCount;
+			if (m_frozenCount < 0) m_frozenCount = 0;
 		}
 
 		public void Tractored(Ship shipTractoring)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Sputnik
 {
@@ -15,8 +16,11 @@ namespace Sputnik
 		private Ship recentlyControlled = null;
 		private ShipController playerAI = null;
 		
-		private const float TotalTime = 3.0f;
+		private const float TotalTime = 5.0f;
 		private float timer = TotalTime;
+
+		private float m_respawnImmunity = 5.0f;
+		private bool m_flashVisibility = true;
 
 		public SputnikShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {
@@ -35,6 +39,13 @@ namespace Sputnik
 
 			// Adjust camera.
 			env.Camera.TeleportAndFocus(this);
+
+			const float k_immuneTime = 3.0f;
+			m_respawnImmunity = k_immuneTime;
+
+			SpawnPoint.RespawnCooldown = 0.0f;
+			SpawnPoint.AllowRespawn = true;
+			SpawnPoint.HasBeenOffscreen = true;
 		}
 
 		public float Timer
@@ -58,11 +69,21 @@ namespace Sputnik
 				Detach();
 			}
 
+			if (m_respawnImmunity > 0.0f) {
+				float last = m_respawnImmunity;
+				m_respawnImmunity -= elapsedTime;
+
+				// Beep every second while invulnerable.
+				if (Math.Floor(last) != Math.Floor(m_respawnImmunity)) {
+					Sound.PlayCue("invulnerable_beep");
+				}
+			}
+
 			// Thruster particle.
 			if (!attached)
 			{
 
-				if (!this.Environment.isFrostMode)
+				if (!this.Environment.isFrostMode && m_respawnImmunity <= 0.0f)
 				{
 					timer -= elapsedTime;
 					if (timer < 0)
@@ -95,6 +116,16 @@ namespace Sputnik
 			base.Update(elapsedTime);
 		}
 
+		public override void Draw(SpriteBatch spriteBatch) {
+			// Only draw every other frame when player is invulnerable to make player blink.
+			if (m_respawnImmunity > 0.0f) {
+				m_flashVisibility = !m_flashVisibility;
+				if (m_flashVisibility) base.Draw(spriteBatch);
+			} else {
+				base.Draw(spriteBatch);
+			}
+		}
+
 		public override void Dispose() {
 			Environment.Camera.Focus = null;
 			base.Dispose();
@@ -123,6 +154,10 @@ namespace Sputnik
 			this.ai = null;
 
 			Environment.AttachEffect.Trigger(target.Position);
+
+			m_respawnImmunity = 0.0f;
+
+			Sound.PlayCue("attach_success");
 		}
 
 		public override void Detach()
@@ -136,6 +171,8 @@ namespace Sputnik
 			ai = playerAI;
 
 			SputnikCreateCollision();
+
+			Sound.PlayCue("detach");
 		}
 
 		public override void OnSeparate(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
@@ -150,7 +187,8 @@ namespace Sputnik
 		}
 
 		public override void TakeHit(int damage) {
-			timer -= (TotalTime / 0.2f);
+			// Disabling for now, it seems cruel by causing near-instant death from boss.
+			// timer -= (TotalTime / 0.2f);
 		}
 
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)

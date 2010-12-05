@@ -93,6 +93,9 @@ namespace Sputnik {
 		// Has the entity been offscreen since it was culled?
 		public bool HasBeenOffscreen = true;
 
+		// Should always be spawned?  Used for player ship so that schlee respawns when dying.
+		public bool AlwaysSpawned = false;
+
 		#endregion
 
 		public SpawnPoint(SpawnController spawner, string type, Vector2 position) {
@@ -116,6 +119,7 @@ namespace Sputnik {
 			switch (EntityType) {
 				case "spawn":
 				case "boss":
+					AlwaysSpawned = true;
 					Spawn();
 					break;
 			}
@@ -126,13 +130,16 @@ namespace Sputnik {
 
 			if (!HasBeenOffscreen) {
 				HasBeenOffscreen = !spawnRect.Intersects(Rect);
-			} else if (m_currentCooldown > RespawnCooldown && spawnRect.Intersects(Rect)) {
+			} else if (AlwaysSpawned || (m_currentCooldown >= RespawnCooldown && spawnRect.Intersects(Rect))) {
 				Spawn();
 			}
 		}
 
 		internal Entity Spawn() {
 			SpawnController.SpawnPoints.Remove(this);
+
+			// Update SpawnPoint in case it gets triggered again.
+			HasBeenOffscreen = false;
 
 			switch (EntityType) {
 				case "spawn":
@@ -167,12 +174,11 @@ namespace Sputnik {
 			}
 
 			SpawnController.Environment.AddChild(Entity);
+
 			return Entity;
 		}
 
 		public void Reset() {
-			HasBeenOffscreen = false;
-
 			if (AllowRespawn) {
 				Position = OriginalPosition;
 				m_currentCooldown = 0.0f;

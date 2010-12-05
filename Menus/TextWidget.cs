@@ -74,7 +74,7 @@ namespace Sputnik.Menus {
 				drawPos.X = (float) Math.Round((double) drawPos.X);
 				drawPos.Y = (float) Math.Round((double) drawPos.Y);
 
-				spriteBatch.DrawString(Font, Text, drawPos, VertexColor);
+				spriteBatch.DrawString(Font, Text, drawPos, VertexColor * Alpha);
 			}
 
 			foreach (Entity ent in Children) {

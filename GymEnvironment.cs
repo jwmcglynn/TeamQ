@@ -35,7 +35,7 @@ namespace Sputnik
 
 			LoadMap("gym.tmx");
 
-			Sound.PlayCue("music");
+			Sound.PlayCue("bg_music");
 		}
 	}
 }

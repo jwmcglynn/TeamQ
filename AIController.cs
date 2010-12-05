@@ -279,7 +279,7 @@ namespace Sputnik
 		/// </summary>
 		private void Disabled(float elapsedTime)
 		{
-			if (!currentShip.isFrozen && !(currentShip is Tractorable && ((Tractorable)currentShip).IsTractored))
+			if (!currentShip.IsFrozen && !(currentShip is Tractorable && ((Tractorable)currentShip).IsTractored))
 			{
 				//Im gonna be suspicious of whoever disabled me
 				if(CanSee(currentShip,target))
