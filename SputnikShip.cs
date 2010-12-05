@@ -14,7 +14,7 @@ namespace Sputnik
 		public Ship controlled = null; 
 		private Ship recentlyControlled = null;
 		private ShipController playerAI = null;
-		private float timer = 3.0f;
+		private float timer = 5.0f;
 
 		public SputnikShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {

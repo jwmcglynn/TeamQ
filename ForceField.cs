@@ -11,11 +11,11 @@ namespace Sputnik
 		const float k_speed = 600.0f; // pixels per second
 		float m_angle;
 		float timeElapsed;
-		TakesDamage owner;
+		GameEntity owner;
 		private Texture2D[] m_textures = new Texture2D[10];
 
 		// Create force field dynamically.
-		public ForceField(GameEnvironment env, Vector2 pos, float angle, TakesDamage o)
+		public ForceField(GameEnvironment env, Vector2 pos, float angle, GameEntity o)
 			: base(env)
 		{
 			Position = pos;
@@ -67,7 +67,7 @@ namespace Sputnik
 
 				if (entityCollidedWith is Freezable)
 				{
-					((Freezable)entityCollidedWith).Freeze();
+					((Freezable)entityCollidedWith).Freeze(owner);
 				}
 			}
 

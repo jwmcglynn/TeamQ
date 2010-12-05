@@ -85,10 +85,10 @@ namespace Sputnik
 			return base.ShouldCollide(entB, fixture, entBFixture);
 		}
 
-		public void Freeze()
+		public void Freeze(GameEntity s)
 		{
 			isFrozen = true;
-			ai.GotFrozen();
+			ai.GotFrozen(s);
 		}
 
 		public void Unfreeze()
@@ -101,7 +101,7 @@ namespace Sputnik
 			tractoringShip = shipTractoring;
 			IsTractored = true;
 			m_fling = false;
-			ai.GotTractored();
+			ai.GotTractored(shipTractoring);
 		}
 
 		public override bool ShouldCull() {

@@ -31,11 +31,11 @@ namespace Sputnik
 		// Smooth rotation.
 		public float DesiredRotation;
 		private float m_lastRotDir = 1.0f;
-		public float MaxRotVel = 2.0f * (float)Math.PI;
+		public float MaxRotVel = 1.5f * (float)Math.PI;
 
 		public void ResetMaxRotVel()
 		{
-			MaxRotVel = 2.0f * (float)Math.PI; // Up to 1 rotation per second.
+			MaxRotVel = 1.5f * (float)Math.PI; // Up to 3/4 rotation per second.
 		}
 
 		private static int k_zindexOffset = 0;
@@ -130,6 +130,9 @@ namespace Sputnik
 			sputnikDetached = false;
 			timeSinceDetached = 0;
 			Zindex = 0.26f;
+
+			if (this.health < this.health / 2)
+				this.health = this.health / 2;
 
 			sp.SputnikAttach(this);
 		}
