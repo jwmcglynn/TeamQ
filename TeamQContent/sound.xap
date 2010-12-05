@@ -16,8 +16,8 @@ Global Settings
     Header File = gameplay.h;
     Exclude Category Names = 0;
     Exclude Variable Names = 0;
-    Last Modified Low = 48557980;
-    Last Modified High = 30119043;
+    Last Modified Low = 30119043;
+    Last Modified High = 48557980;
 
     Category
     {
@@ -221,7 +221,7 @@ Global Settings
 
         RPC Curve
         {
-            Name = Sound::bd1acd55-5410-44f7-ad9d-a6187ad788df;
+            Name = Sound::ebf9bbd1-d85f-4b02-bc8d-8d89e9e96421;
             Property = 0;
             Sound = 1;
             Line Color = 4290075837;
@@ -298,6 +298,12 @@ Wave Bank
     Windows Bank Path Edited = 0;
     Seek Tables = 1;
     Compression Preset Name = SFX;
+    Xbox Bank Last Modified Low = 0;
+    Xbox Bank Last Modified High = 0;
+    PC Bank Last Modified Low = 0;
+    PC Bank Last Modified High = 0;
+    Header Last Modified Low = 0;
+    Header Last Modified High = 0;
     Bank Last Revised Low = 2575712698;
     Bank Last Revised High = 30119049;
 
@@ -565,6 +571,12 @@ Wave Bank
     Streaming = 1;
     Seek Tables = 1;
     Compression Preset Name = Music;
+    Xbox Bank Last Modified Low = 0;
+    Xbox Bank Last Modified High = 0;
+    PC Bank Last Modified Low = 0;
+    PC Bank Last Modified High = 0;
+    Header Last Modified Low = 0;
+    Header Last Modified High = 0;
     Bank Last Revised Low = 61448718;
     Bank Last Revised High = 30119043;
 
@@ -628,6 +640,8 @@ Wave Bank
     Xbox Bank Last Modified High = 0;
     PC Bank Last Modified Low = 61548723;
     PC Bank Last Modified High = 30119043;
+    Header Last Modified Low = 0;
+    Header Last Modified High = 0;
     Bank Last Revised Low = 61548723;
     Bank Last Revised High = 30119043;
 
@@ -662,6 +676,8 @@ Sound Bank
     Windows File = Win\Sound Bank.xsb;
     Xbox Bank Path Edited = 0;
     Windows Bank Path Edited = 0;
+    Header Last Modified High = 0;
+    Header Last Modified Low = 0;
 
     Sound
     {
@@ -743,6 +759,11 @@ Sound Bank
             Name = Default;
         }
 
+        RPC Entry
+        {
+            RPC Name = Attenuation;
+        }
+
         Track
         {
             Volume = 0;
@@ -791,6 +812,11 @@ Sound Bank
         Category Entry
         {
             Name = Default;
+        }
+
+        RPC Entry
+        {
+            RPC Name = Attenuation;
         }
 
         Track
@@ -939,6 +965,11 @@ Sound Bank
             Name = Default;
         }
 
+        RPC Entry
+        {
+            RPC Name = Attenuation;
+        }
+
         Track
         {
             Volume = 0;
@@ -992,6 +1023,11 @@ Sound Bank
         Category Entry
         {
             Name = Default;
+        }
+
+        RPC Entry
+        {
+            RPC Name = Attenuation;
         }
 
         Track
@@ -1049,6 +1085,11 @@ Sound Bank
             Name = Default;
         }
 
+        RPC Entry
+        {
+            RPC Name = Attenuation;
+        }
+
         Track
         {
             Volume = 0;
@@ -1104,6 +1145,11 @@ Sound Bank
             Name = Default;
         }
 
+        RPC Entry
+        {
+            RPC Name = Attenuation;
+        }
+
         Track
         {
             Volume = 0;
@@ -1157,6 +1203,11 @@ Sound Bank
         Category Entry
         {
             Name = Default;
+        }
+
+        RPC Entry
+        {
+            RPC Name = Attenuation;
         }
 
         Track
@@ -1222,6 +1273,11 @@ Sound Bank
             Name = Default;
         }
 
+        RPC Entry
+        {
+            RPC Name = Attenuation;
+        }
+
         Track
         {
             Volume = 0;
@@ -1275,6 +1331,11 @@ Sound Bank
         Category Entry
         {
             Name = Default;
+        }
+
+        RPC Entry
+        {
+            RPC Name = Attenuation;
         }
 
         Track
@@ -1335,6 +1396,11 @@ Sound Bank
             Name = Default;
         }
 
+        RPC Entry
+        {
+            RPC Name = Attenuation;
+        }
+
         Track
         {
             Volume = 0;
@@ -1343,7 +1409,7 @@ Sound Bank
             Play Wave Event
             {
                 Loop Count = 255;
-                Break Loop = 1;
+                Break Loop = 0;
                 Use Speaker Position = 0;
                 Use Center Speaker = 1;
                 New Speaker Position On Loop = 1;
@@ -1381,6 +1447,11 @@ Sound Bank
         Category Entry
         {
             Name = Default;
+        }
+
+        RPC Entry
+        {
+            RPC Name = Attenuation;
         }
 
         Track

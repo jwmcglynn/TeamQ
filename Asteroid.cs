@@ -14,6 +14,9 @@ namespace Sputnik
 		private bool m_fling = false;
 		private float m_flingTime = 0.0f;
 
+		private float m_colorTimer = 0.0f; // 0 for non-friendly color, 1 for friendly color.  Used for strobing effect.
+		private float m_colorDir = 1.0f; // Direction of fading.
+
 		Ship tractoringShip;
 
 		public Asteroid(GameEnvironment env, SpawnPoint sp)
@@ -39,6 +42,7 @@ namespace Sputnik
 					m_fling = false;
 					IsTractored = false;
 
+					// Destroy collision and re-create a static one so we don't move.
 					DestroyCollisionBody();
 					CreateAsteroidCollision(true);
 				}
@@ -53,6 +57,35 @@ namespace Sputnik
 				else DesiredVelocity = Vector2.Normalize(dir) * moveSpeed;
 			}
 
+			///// Change color if we are tractored.
+			const float s_colorVel = 1.0f;
+			Color tintColor = new Color(1.0f, 0.8f, 0.0f); // Yellow.
+
+			if (IsTractored) {
+				m_colorTimer += m_colorDir * (s_colorVel * elapsedTime);
+
+				// Handle changing fade directions.
+				if (m_colorDir > 0.0f && m_colorTimer >= 1.0f) {
+					m_colorDir *= -1.0f;
+					m_colorTimer = 1.0f;
+				} else if (m_colorDir < 0.0f && m_colorTimer <= 0.5f) {
+					m_colorDir *= -1.0f;
+					m_colorTimer = 0.5f;
+				}
+
+				VertexColor = tintColor;
+			} else {
+				m_colorDir = 1.0f;
+				m_colorTimer -= s_colorVel * elapsedTime;
+				if (m_colorTimer < 0.0f) m_colorTimer = 0.0f;
+			}
+
+			if (m_colorTimer == 0.0f) {
+				VertexColor = Color.White;
+			} else {
+				VertexColor = Color.Lerp(Color.White, tintColor, m_colorTimer);
+			}
+
 			base.Update(elapsedTime);
 		}
 
@@ -65,8 +98,6 @@ namespace Sputnik
 			m_fling = true;
 			m_flingTime = 1.0f;
 
-			DestroyCollisionBody();
-			CreateAsteroidCollision(false);
 			CollisionBody.LinearDamping = 0.0f;
 			CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
 		}
@@ -74,10 +105,14 @@ namespace Sputnik
 		public void Tractored(Ship s){
 			tractoringShip = s;
 			IsTractored = true;
-			CollisionBody.IsStatic = false;
 			m_fling = false;
 
+			// Destroy collision and re-create a static one so the asteroid can be moved.
 			DestroyCollisionBody();
+			CreateAsteroidCollision(false);
+
+			// Give a random amount of angular impulse for cool unstable rotating!
+			CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
 		}
 
 		public void UpdateTractor(Vector2 position) {

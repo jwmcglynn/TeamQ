@@ -104,8 +104,8 @@ namespace Sputnik
 				shooter.Position = Position + Vector2.Transform(RelativeShooterPos, rotMatrix);
 			}
 
-			///// Change color based on friendliness.
-			const float s_friendlyColorVel = 1.0f;
+			///// Change color based on friendliness and frozen-ness.
+			const float s_colorVel = 1.0f;
 			bool friendTimer = (IsFriendly() && !(this is SputnikShip));
 			bool frozenTimer = (IsFrozen || (this is Tractorable && ((Tractorable) this).IsTractored));
 
@@ -113,7 +113,7 @@ namespace Sputnik
 			if (frozenTimer) m_tintColor = new Color(1.0f, 0.8f, 0.0f); // Yellow.
 
 			if (friendTimer || frozenTimer) {
-				m_colorTimer += m_colorDir * (s_friendlyColorVel * elapsedTime);
+				m_colorTimer += m_colorDir * (s_colorVel * elapsedTime);
 				
 				// Handle changing fade directions.
 				if (m_colorDir > 0.0f && m_colorTimer >= 1.0f) {
@@ -127,7 +127,7 @@ namespace Sputnik
 				VertexColor = m_tintColor;
 			} else {
 				m_colorDir = 1.0f;
-				m_colorTimer -= s_friendlyColorVel * elapsedTime;
+				m_colorTimer -= s_colorVel * elapsedTime;
 				if (m_colorTimer < 0.0f) m_colorTimer = 0.0f;
 			}
 
