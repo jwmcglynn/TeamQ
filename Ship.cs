@@ -22,7 +22,6 @@ namespace Sputnik
 		public bool isShooting;
 		protected int m_frozenCount;
 		public Ship tractoringShip;
-		protected float passiveShield;
 		private bool m_isDead = false;
 
 		private float m_colorTimer = 0.0f; // 0 for non-friendly color, 1 for friendly color.  Used for strobing effect.
@@ -157,10 +156,6 @@ namespace Sputnik
 				}
 			}
 
-			if(this is SquaretopiaShip) {
-				((SquaretopiaShip)this).shield.Position = Position;
-			}
-
 			shooterRotation = Rotation;
 			base.Update(elapsedTime);
 		}
@@ -241,36 +236,15 @@ namespace Sputnik
 			return !InsideCullRect(Rectangle.Union(VisibleRect, SpawnPoint.Rect));
 		}
 
-		private bool hasBeenDisposed;
 		public virtual void TakeHit(int damage)
 		{
 			Sound.PlayCue("hit_by_bullet", this);
 
-			if (isSputnik() && this.Environment.isFrostMode)
-				return;
+			if (isSputnik() && this.Environment.isFrostMode) return;
 
-			if (this is SquaretopiaShip)
-			{
-				if (passiveShield > 0)
-				{
-					passiveShield -= damage;
-					((SquaretopiaShip)this).shield.Alpha -= 0.05f;
-				} else {
-					if(((SquaretopiaShip)this).shield != null && !hasBeenDisposed) {
-						((SquaretopiaShip)this).shield.Dispose();
-						hasBeenDisposed = true;
-					}
-					health -= damage;
-				}
-			}
-			else
-			{
-				health -= damage;
-			}
-			if (health < 1)
-			{
-				InstaKill();
-			}
+			health -= damage;
+			
+			if (health < 1) InstaKill();
 		}
 
 		public virtual void Shoot(float elapsedTime)

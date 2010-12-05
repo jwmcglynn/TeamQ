@@ -266,19 +266,15 @@ namespace Sputnik
 				}
 			} else {
 				if(creatingBlackHole) {
-					((BlackHole)m_playerBlackHoles.First.Entity).DissipateAnimation();
+					m_playerBlackHoles.Destroy();
 				}
 				creatingBlackHole = false;
 			}
 
 			// Will spawn a blackhole when we first pressdown our right mouse button.
 			// if a blackhole has already been spawned this way, then the other one will be removed.
-			if(useSpecialPressed) { // See useSpecialHeld for moving the blackhole.
-				if(s is CircloidShip) {
-					//if (m_playerBlackHoles != null) m_playerBlackHoles.Destroy();
-					//m_playerBlackHoles = BlackHole.CreatePair(m_env, specialPosition);
-				} else if(s is TriangulusShip) {
-					
+			if(useSpecialPressed) {
+				if(s is TriangulusShip) {
 					// if we are tractoring something right now, then we arent allowed to tractor anything else
 					// we can shoot now.
 					if (itemBeingTractored == null) {

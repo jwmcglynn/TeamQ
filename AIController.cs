@@ -302,7 +302,7 @@ namespace Sputnik
 			{
 				const float k_aimRadius = 250.0f;
 				Vector2 invertY = new Vector2(1.0f, -1.0f);
-				float gamePadDirection = Angle.Direction(currentShip.Position, gamepad.ThumbSticks.Right * k_aimRadius * invertY);
+				float gamePadDirection = Angle.Direction(Vector2.Zero, gamepad.ThumbSticks.Right * k_aimRadius * invertY);
 				currentShip.shooter.Rotation = gamePadDirection;
 			}
 			else
