@@ -95,7 +95,6 @@ namespace Sputnik
 		public void Freeze(GameEntity s) {
 			++m_frozenCount;
 			if (m_frozenCount == 1) ai.GotFrozen(s);
-			Console.WriteLine("Frozen = " + m_frozenCount);
 		}
 
 		public void Unfreeze()
