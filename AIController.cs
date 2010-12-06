@@ -565,6 +565,14 @@ namespace Sputnik
 		}
 
 		/// <summary>
+		///  Tells if this ship is disabled
+		/// </summary>
+		public bool IsDisabled()
+		{
+			return currentState == State.Disabled;
+		}
+
+		/// <summary>
 		///  returns a random point within spawn point
 		/// </summary>
 		private Vector2 randomPatrolPoint()

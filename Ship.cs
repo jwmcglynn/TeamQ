@@ -317,7 +317,11 @@ namespace Sputnik
 			}
 			else if (s is Ship) //Im a ship, and I better have the AI controlling me and my target is a ship
 			{
-				if (!(ai is AIController))
+				if (((Ship)s).ai.IsDisabled())
+				{
+					return false;  //No mercy for the weak
+				}
+				else if (!(ai is AIController))
 					return false;  //This case is strange, I'm actually not sure when this happens, but I don't like it
 				else if (((AIController)ai).target == s) //You are my target
 				{
@@ -331,7 +335,14 @@ namespace Sputnik
 			}
 			else if (s is Boss)  //Im a ship and my target is a boss
 			{
-				return !IsFriendly(); //Only friendly people hate boss
+				if (((Ship)s).ai.IsDisabled())
+				{
+					return false;  //No mercy for the weak
+				}
+				else
+				{
+					return !IsFriendly(); //Only friendly people hate boss
+				}
 			}
 			else
 			{

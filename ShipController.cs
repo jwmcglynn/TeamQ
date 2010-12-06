@@ -15,6 +15,7 @@ namespace Sputnik
 		void GotFrozen(GameEntity s);
 		void DistressCall(Ship s, GameEntity f);
 		bool IsAlliedWithPlayer();
+		bool IsDisabled();
 		void gotDetached();
 		void Teleport(BlackHole blackhole, Vector2 destination);
 	}

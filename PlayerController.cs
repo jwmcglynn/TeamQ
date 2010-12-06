@@ -87,6 +87,11 @@ namespace Sputnik
 			return true;
 		}
 
+		public bool IsDisabled()
+		{
+			return false;  //Currently this is impossible, so yeah
+		}
+
 		public void gotDetached()
 		{
 			//Sputnik no care
