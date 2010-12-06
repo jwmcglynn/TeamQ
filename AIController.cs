@@ -297,10 +297,34 @@ namespace Sputnik
 		/// </summary>
 		private void Allied(float elapsedTime)
 		{
+			Vector2 destination = target.Position - (Angle.Vector(target.Rotation) * 200);  //Im going behind my target
+			float wantedDirection = Angle.Direction(currentShip.Position, destination); //Face towards destination
+			if (Vector2.Distance(currentShip.Position, destination) < 100) //Keep a certain distance from target
+			{
+				currentShip.DesiredVelocity = Vector2.Zero;
+				currentShip.DesiredRotation = wantedDirection; //Even though I dont move, I want to face my targets direction
+			}
+			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2) // Im nearly facing my target
+			{
+				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
+				currentShip.DesiredRotation = wantedDirection;
+			}
+			else //Im not facing my target
+			{
+				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed / 2;
+				currentShip.DesiredRotation = wantedDirection;
+			}
+
+			while (targetList.Count > 0 && ((TakesDamage)targetList.First()).IsDead())
+			{
+				targetList.RemoveAt(0);
+			}
+			
 			if (targetList.Count() > 0)
 			{
 				float targetDirection = Angle.Direction(currentShip.Position, targetList.First().Position);
 				currentShip.shooter.Rotation = targetDirection;
+				currentShip.Shoot(elapsedTime);
 			}
 			else
 			{
@@ -319,7 +343,10 @@ namespace Sputnik
 					float mouseDirection = (Angle.Direction(currentShip.Position, mousePosition));
 					currentShip.shooter.Rotation = mouseDirection;
 				}
+				if (((Ship)target).isShooting)
+					currentShip.Shoot(elapsedTime);
 			}
+
 			if (CanSee(currentShip, target))
 			{
 				timeSinceSawTarget = 0;
@@ -328,27 +355,6 @@ namespace Sputnik
 			{
 				timeSinceSawTarget += elapsedTime;
 			}
-			Vector2 destination = target.Position - (Angle.Vector(target.Rotation) * 200);  //Im going behind my target
-			float wantedDirection = Angle.Direction(currentShip.Position, destination); //Face towards destination
-			if (Vector2.Distance(currentShip.Position, destination) < 100) //Keep a certain distance from target
-			{
-				currentShip.DesiredVelocity = Vector2.Zero;
-				currentShip.DesiredRotation = wantedDirection; //Even though I dont move, I want to face my targets direction
-			}
-			else if (Angle.DistanceMag(currentShip.Rotation, wantedDirection) < MathHelper.PiOver2) // Im nearly facing my target
-			{
-				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed;
-				currentShip.DesiredRotation = wantedDirection;
-			}
-			else //Im not facing my target
-			{
-				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed / 2;
-				currentShip.DesiredRotation = wantedDirection;
-			}
-			if(targetList.Count > 0)
-				currentShip.Shoot(elapsedTime);
-			else if (((Ship)target).isShooting)
-				currentShip.Shoot(elapsedTime);
 			//Is my target dead
 			if (((TakesDamage)target).IsDead())
 			{
@@ -360,10 +366,6 @@ namespace Sputnik
 			}
 			else if (timeSinceSawTarget > 30)  //I can't see my target, go look for him
 				changeToConfused(target,true);
-			if (targetList.Count > 0 && ((TakesDamage)targetList.First()).IsDead())
-			{
-				targetList.RemoveAt(0);
-			}
 		}
 
 		/// <summary>

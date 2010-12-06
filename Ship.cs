@@ -22,7 +22,7 @@ namespace Sputnik
 		public bool isShooting;
 		protected int m_frozenCount;
 		public Ship tractoringShip;
-		private bool m_isDead = false;
+		private bool m_isDead;
 
 		private float m_colorTimer = 0.0f; // 0 for non-friendly color, 1 for friendly color.  Used for strobing effect.
 		private float m_colorDir = 1.0f; // Direction of fading.
@@ -72,6 +72,7 @@ namespace Sputnik
 			sputnikDetached = false;
 			timeSinceDetached = 0;
 			ResetZIndex();
+			m_isDead = false;
 		}
 
 		public void ResetZIndex()
