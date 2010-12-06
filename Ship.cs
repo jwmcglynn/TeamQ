@@ -12,7 +12,7 @@ namespace Sputnik
 	class Ship : GameEntity, TakesDamage
 	{
 		internal ShipController ai;
-		private ShipController previousAI = null;
+		internal ShipController m_originalAI = null;
 		protected int MaxHealth = 30;
 		public int health;
 		public float shooterRotation;
@@ -175,7 +175,6 @@ namespace Sputnik
 		// Attach Sputnik to the ship
 		public virtual void Attach(SputnikShip sp)
 		{
-			this.previousAI = this.ai;
 			this.ai = sp.GetAI();
 			this.attachedShip = sp;
 			m_frozenCount = 0;
@@ -200,7 +199,7 @@ namespace Sputnik
 		{
 			if (attachedShip == null) return;
 
-			this.ai = this.previousAI;
+			this.ai = this.m_originalAI;
 			this.attachedShip.Detach();
 			this.attachedShip = null;
 			sputnikDetached = true;

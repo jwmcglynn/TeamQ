@@ -195,7 +195,7 @@ namespace Sputnik
 
 		public override void Detach()
 		{
-			if (!attached) {
+			if (attached || attaching) {
 				Sound.PlayCue("detach");
 				timer = TotalTime;
 			}
@@ -206,6 +206,7 @@ namespace Sputnik
 			}
 
 			attached = false;
+			attaching = false;
 			ai = playerAI;
 
 			if (CollisionBody == null) SputnikCreateCollision();

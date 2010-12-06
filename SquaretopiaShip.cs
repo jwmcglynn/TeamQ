@@ -34,7 +34,7 @@ namespace Sputnik
 			AddChild(shooter);
 			RelativeShooterPos = new Vector2(50.0f, 0.0f);
 
-			ai = new AIController(sp, Environment);
+			ai = m_originalAI = new AIController(sp, Environment);
 			LoadTexture(Environment.contentManager, "squaretopia");
 
 			Registration = new Vector2(100.0f, 125.0f);
