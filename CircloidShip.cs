@@ -82,6 +82,12 @@ namespace Sputnik
 			base.Teleport(blackhole, destination, exitVelocity);
 		}
 
+		public override void Dispose() {
+			m_tractored = false;
+			base.Dispose();
+		}
+
+
 		public override bool ShouldCull() {
 			if (IsTractored) return false;
 			return base.ShouldCull();
@@ -102,10 +108,12 @@ namespace Sputnik
 
 		public void TractorReleased()
 		{
+			m_tractored = false;
 			m_fling = true;
 			m_flingTime = 1.0f;
 
-			if (CollisionBody != null) return;
+			if (CollisionBody == null) return;
+
 			CollisionBody.LinearDamping = 0.0f;
 			CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
 		}
@@ -116,7 +124,6 @@ namespace Sputnik
 
 		public override void OnCull()
 		{
-			IsTractored = false;
 			Environment.circles.Remove(this);
 			base.OnCull();
 		}

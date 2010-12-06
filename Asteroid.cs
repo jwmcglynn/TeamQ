@@ -16,6 +16,10 @@ namespace Sputnik
 
 		private float m_colorTimer = 0.0f; // 0 for non-friendly color, 1 for friendly color.  Used for strobing effect.
 		private float m_colorDir = 1.0f; // Direction of fading.
+		
+		private int tractoredDmg = 10;
+		private float m_lastCollideTime = 0.0f;
+		private int asteroidHealth = 30;
 
 		Ship tractoringShip;
 
@@ -36,6 +40,8 @@ namespace Sputnik
 		}
 
 		public override void Update(float elapsedTime) {
+			m_lastCollideTime -= elapsedTime;
+
 			if (m_fling) {
 				m_flingTime -= elapsedTime;
 				if (m_flingTime < 0.0f) {
@@ -94,9 +100,16 @@ namespace Sputnik
 			return base.ShouldCull();
 		}
 
+		public override void Dispose() {
+			m_tractored = false;
+			base.Dispose();
+		}
+
+
 		public void TractorReleased() {
 			m_fling = true;
 			m_flingTime = 1.0f;
+			m_tractored = false;
 
 			if (CollisionBody == null) return;
 
@@ -129,6 +142,23 @@ namespace Sputnik
 		public override bool ShouldCollide(Entity entB, FarseerPhysics.Dynamics.Fixture fixture, FarseerPhysics.Dynamics.Fixture entBFixture) {
 			if (CollisionBody.IsStatic) return true;
 			else return !((entB is Ship) && ((Ship) entB).IsFriendly());
+		}
+
+		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+		{
+			if(IsTractored && m_lastCollideTime <= 0.0f) {
+				Console.WriteLine((ActualVelocity - entB.ActualVelocity).Length());
+				if(entB is TakesDamage && (ActualVelocity - entB.ActualVelocity).Length() > 700.0f) /*&& if contact force is strong*/ {
+					((TakesDamage)entB).TakeHit(tractoredDmg);
+					m_lastCollideTime = 0.5f;
+					Sound.PlayCue("crash", this);
+					asteroidHealth -= tractoredDmg;
+
+					if(asteroidHealth <= 0) InstaKill();
+				}
+			}
+
+			base.OnCollide(entB, contact);
 		}
 
 		public void TakeHit(int damage) {
