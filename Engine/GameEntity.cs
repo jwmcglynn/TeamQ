@@ -31,7 +31,7 @@ namespace Sputnik {
 					CollisionBody.ApplyForce(TeleportInertiaDir * 50.0f * CollisionBody.Mass);
 					CollisionBody.IgnoreGravity = true;
 				} else {
-					CollisionBody.IgnoreGravity = false;
+					if (AllowTeleport) CollisionBody.IgnoreGravity = false;
 				}
 			}
 

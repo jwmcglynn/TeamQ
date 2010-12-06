@@ -48,7 +48,7 @@ namespace Sputnik
 				}
 
 			} else if (IsTractored) {
-				const float moveSpeed = 500.0f;
+				const float moveSpeed = 750.0f;
 
 				Vector2 dir = (m_tractorTarget - Position);
 				float distance = dir.Length();
