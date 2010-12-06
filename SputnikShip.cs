@@ -195,17 +195,20 @@ namespace Sputnik
 
 		public override void Detach()
 		{
-			if (!attached) return;
+			if (!attached) {
+				Sound.PlayCue("detach");
+				timer = TotalTime;
+			}
 
-			timer = TotalTime;
-			recentlyControlled = controlled;
+			if (controlled != null) {
+				recentlyControlled = controlled;
+				controlled = null;
+			}
+
 			attached = false;
-			controlled = null;
 			ai = playerAI;
 
-			SputnikCreateCollision();
-
-			Sound.PlayCue("detach");
+			if (CollisionBody == null) SputnikCreateCollision();
 		}
 
 		public override void OnSeparate(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)

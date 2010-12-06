@@ -60,7 +60,7 @@
   <object name="asteroid" type="asteroid3" x="11680" y="72" width="432" height="328"/>
   <object name="asteroid" type="asteroid2" x="9248" y="2912" width="296" height="424"/>
   <object name="asteroid" type="asteroid1" x="9248" y="3360" width="288" height="528"/>
-  <object name="asteroid1" x="9240" y="3928" width="304" height="360"/>
+  <object name="asteroid1" type="asteroid1" x="9240" y="3928" width="304" height="360"/>
   <object name="force" type="forcefield" x="12400" y="5208" width="328" height="224"/>
   <object name="asteroid" type="asteroid3" x="7544" y="3720" width="360" height="544"/>
   <object name="force" type="forcefield" x="5512" y="9064" width="376" height="192"/>
