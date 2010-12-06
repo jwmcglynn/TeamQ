@@ -309,9 +309,11 @@ namespace Sputnik
 			{
 				return IsFriendly(); //Nobody but allied ships like sputnik
 			}
-			else if (s is Ship) //Im a ship, and I better have the AI controlling me
+			else if (s is Ship) //Im a ship, and I better have the AI controlling me and my target is a ship
 			{
-				if (ai is AIController && ((AIController)ai).target == s) //You are my target
+				if (!(ai is AIController))
+					return false;  //This case is strange, I'm actually not sure when this happens, but I don't like it
+				else if (((AIController)ai).target == s) //You are my target
 				{
 					if (((Ship)s).sputnikDetached) //We forgive you if sputnik did bad things to you
 						return ((Ship)s).timeSinceDetached >= 3.0f;
@@ -321,7 +323,7 @@ namespace Sputnik
 				else
 					return true;  //You aren't my target, you are okay
 			}
-			else if (s is Boss)
+			else if (s is Boss)  //Im a ship and my target is a boss
 			{
 				return !IsFriendly(); //Only friendly people hate boss
 			}
