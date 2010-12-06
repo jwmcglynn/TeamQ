@@ -12,6 +12,7 @@ namespace Sputnik.Menus {
 		private bool m_hasButton = false;
 		private Rectangle m_buttonRect; // In pixel-space relative to position.
 
+		public float Scale = 1.0f;
 		public bool Visible = true;
 
 		/// <summary>
@@ -82,7 +83,7 @@ namespace Sputnik.Menus {
 		/// <param name="spriteBatch">SpriteBatch to render to.</param>
 		public override void Draw(SpriteBatch spriteBatch) {
 			if (Visible && Texture != null) {
-				spriteBatch.Draw(Texture, AbsolutePosition, null, VertexColor * Alpha, Rotation, Registration, 1.0f, SpriteEffects.None, Zindex);
+				spriteBatch.Draw(Texture, AbsolutePosition, null, VertexColor * Alpha, Rotation, Registration, Scale, SpriteEffects.None, Zindex);
 			}
 
 			foreach (Entity ent in Children) {
