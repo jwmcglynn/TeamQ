@@ -96,7 +96,6 @@ namespace Sputnik
 			++m_frozenCount;
 			if (m_frozenCount == 1) ai.GotFrozen(s);
 			CollisionBody.AngularVelocity = 0.0f;
-			Console.WriteLine("Frozen = " + m_frozenCount);
 		}
 
 		public void Unfreeze()

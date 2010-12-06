@@ -18,8 +18,8 @@ namespace Sputnik
 		private Vector2 hitBodyPosition;  //Position of the body hit by a raycast
 		public GameEntity target { get; private set; }//Current target of attention
 		private GameEntity lookingFor; //Entity that I can't see but I'm looking for
-		private enum State { Allied, Neutral, Alert, Hostile, Confused, Disabled }; //All possible states
-		private State oldState,currentState,nextState; // Used to control AI's FSM
+		private enum State {Allied, Neutral, Alert, Hostile, Confused, Disabled} //All possible states
+		private State currentState,nextState; // Used to control AI's FSM
 		private Ship currentShip;  //Current ship I'm controlling, code mostly assumes this ship is constant
 		private bool answeringDistressCall;  //Used to help Confused State transition
 		private float timeSinceLastStateChange;  //Counter used to tell time since a state change
@@ -38,8 +38,7 @@ namespace Sputnik
 
 		/// <summary>
 		///  Creates a new AI with given spawnpoint and given environment
-		///  Currrently sets start and finsih for patrol to top left and bottom right of spawnpoint
-		///  Initial state is Neutral and going towards start;
+		///  Initial state is Neutral
 		/// </summary>
 		public AIController(SpawnPoint sp, GameEnvironment e)
 		{
@@ -281,7 +280,6 @@ namespace Sputnik
 		{
 			if (!currentShip.IsFrozen && !(currentShip is Tractorable && ((Tractorable)currentShip).IsTractored))
 			{
-				Console.WriteLine("Exiting disabled");
 				//Im gonna be suspicious of whoever disabled me
 				if(CanSee(currentShip,target))
 					changeToAlert(target);
@@ -585,7 +583,7 @@ namespace Sputnik
 			oldTarget = target;
 			target = null;
 			lookingFor = null;
-			oldState = currentState;
+			currentState = State.Neutral;
 			nextState = State.Neutral;
 			answeringDistressCall = false;
 			timeSinceLastStateChange = 0;
@@ -605,7 +603,7 @@ namespace Sputnik
 			oldTarget = target;
 			target = t;
 			lookingFor = null;
-			oldState = currentState;
+			currentState = State.Alert;
 			nextState = State.Alert;
 			answeringDistressCall = false;
 			timeSinceLastStateChange = 0;
@@ -621,7 +619,7 @@ namespace Sputnik
 			oldTarget = target;
 			target = t;
 			lookingFor = null;
-			oldState = currentState;
+			currentState = State.Hostile;
 			nextState = State.Hostile;
 			answeringDistressCall = false;
 			timeSinceLastStateChange = 0;
@@ -637,7 +635,7 @@ namespace Sputnik
 			oldTarget = target;
 			target = t;
 			lookingFor = null;
-			oldState = currentState;
+			currentState = State.Allied;
 			nextState = State.Allied;
 			answeringDistressCall = false;
 			timeSinceLastStateChange = 0;
@@ -653,7 +651,7 @@ namespace Sputnik
 			oldTarget = target;
 			target = t;
 			lookingFor = null;
-			oldState = currentState;
+			currentState = State.Disabled;
 			nextState = State.Disabled;
 			answeringDistressCall = false;
 			timeSinceLastStateChange = 0;
@@ -669,8 +667,7 @@ namespace Sputnik
 			oldTarget = target;
 			target = null;
 			lookingFor = l;
-			if (currentState != State.Confused)
-				oldState = currentState;
+			currentState = State.Confused;
 			nextState = State.Confused;
 			answeringDistressCall = adc;
 			timeSinceLastStateChange = 0;
