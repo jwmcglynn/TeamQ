@@ -3,3 +3,5 @@ obj
 *.suo
 *.user
 *.cachefile
+
+/Tools/Mercury Particle Editor/Plugins/MercuryModifier.dll

@@ -11,7 +11,10 @@ namespace Sputnik
 {
 	class SquaretopiaShip : Ship, Freezable
 	{
-
+		public Entity shield;
+		private float passiveShield;
+		private bool destroyShield = false;
+		
 		public SquaretopiaShip(GameEnvironment env, Vector2 pos, SpawnPoint sp)
 			: base(env, pos)
 		{
@@ -33,13 +36,35 @@ namespace Sputnik
 			CollisionBody.LinearDamping = 8.0f;
 			this.health = this.MaxHealth = (int)(this.MaxHealth * 1.5);
 			passiveShield = 20.0f;
+
+			shield = new Entity();
+			shield.Zindex = 0.0f;
+			shield.Registration = new Vector2(125.0f, 115.0f);
+			shield.LoadTexture(Environment.contentManager, "shield");
+			shield.Position = Position;
+			shield.Alpha = 0.0f;
+			AddChild(shield);
 		}
 
 		public SquaretopiaShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {
 			Position = sp.Position;
-			Initialize(sp); // FIXME: Find a better way to get positions.
+			Initialize(sp);
 			env.squares.Add(this);
+		}
+
+		public override void TakeHit(int damage)
+		{
+			if (passiveShield > 0)
+			{
+				passiveShield -= damage;
+				shield.Alpha = 0.5f;
+			}
+			else
+			{
+				destroyShield = true;
+				base.TakeHit(damage);
+			}
 		}
 
 		public override void Update(float elapsedTime) {
@@ -51,13 +76,26 @@ namespace Sputnik
 				Environment.ThrusterEffect.Trigger(Position + Vector2.Transform(new Vector2(-75.0f, 30.0f), rotMatrix));
 			}
 
+			// Update shield alpha/position.
+			if (shield != null) {
+				shield.Position = Position;
+
+				if (shield.Alpha > 0.0f) {
+					shield.Alpha -= 2.0f * elapsedTime;
+					if (shield.Alpha < 0.0f) shield.Alpha = 0.0f;
+				} else if (destroyShield) {
+					shield.Dispose();
+					shield = null;
+				}
+			}
+
 			base.Update(elapsedTime);
 		}
 
 		public void Freeze(GameEntity s) {
 			++m_frozenCount;
 			if (m_frozenCount == 1) ai.GotFrozen(s);
-			Console.WriteLine("Frozen = " + m_frozenCount);
+			CollisionBody.AngularVelocity = 0.0f;
 		}
 
 		public void Unfreeze()

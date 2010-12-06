@@ -41,6 +41,7 @@ namespace Sputnik {
 		public ParticleEffect AttachEffect;
 		public ParticleEffect BlackHoleEffect;
 		public ParticleEffect AlertEffect;
+		public ParticleEffect TractorBeamEffect;
 
 		private List<ParticleEffect> EffectsBelowShip = new List<ParticleEffect>();
 		private List<ParticleEffect> EffectsAboveShip = new List<ParticleEffect>();
@@ -59,6 +60,10 @@ namespace Sputnik {
 		public List<SpawnPoint> PossibleBlackHoleLocations = new List<SpawnPoint>();
 		public List<SpawnPoint> SpawnedBlackHoles = new List<SpawnPoint>();
 
+		//Black Hole List
+		internal List<BlackHole> blackHoles = new List<BlackHole>();
+
+		// Boss Patrol points.
 		public List<Vector2> SpawnedBossPatrolPoints = new List<Vector2>();
 
 		//Shiplists
@@ -66,9 +71,6 @@ namespace Sputnik {
 		internal List<TriangulusShip> triangles = new List<TriangulusShip>();
 		internal List<CircloidShip> circles = new List<CircloidShip>();
 		internal SputnikShip sputnik = null;
-
-		//Black Hole List
-		internal List<BlackHole> blackHoles = new List<BlackHole>();
 
 		// HUD.
 		public Menus.HUD HUD;
@@ -94,8 +96,11 @@ namespace Sputnik {
 			AttachEffect = contentManager.Load<ParticleEffect>("AttachEffect");
 			BlackHoleEffect = contentManager.Load<ParticleEffect>("BlackHoleEffect");
 			AlertEffect = contentManager.Load<ParticleEffect>("AlertEffect");
+			TractorBeamEffect = contentManager.Load<ParticleEffect>("TractorBeamEffect");
 
 			EffectsBelowShip.Add(ThrusterEffect);
+			EffectsBelowShip.Add(TractorBeamEffect);
+
 			EffectsAboveShip.Add(ExplosionEffect);
 			EffectsAboveShip.Add(AttachEffect);
 			EffectsAboveShip.Add(BlackHoleEffect);

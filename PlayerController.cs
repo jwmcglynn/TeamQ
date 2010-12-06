@@ -13,25 +13,28 @@ using Microsoft.Xna.Framework.Storage;
 
 namespace Sputnik
 {
-    class PlayerController : ShipController
-    {
+	class PlayerController : ShipController
+	{
 		private GameEnvironment m_env;
 		private const float timeBetweenControls = 0.0f;
 		private BlackHole.Pair m_playerBlackHoles;
+		private BlackHole.Pair previousBlackHoles;
 		private Tractorable itemBeingTractored;
 		private Ship controlled;
 		private static bool s_captureMouse = true;
+		private bool creatingBlackHole; // will make it so only 1 black hole can be created at a time.
 		private bool m_justTeleported = false;
+		private Cue m_tractorSound;
 
 		const float k_speed = 600.0f; // pixels per second
 
-        /// <summary>
-        ///  Creates a new Player
-        /// </summary>
-        public PlayerController(GameEnvironment env)
-        {
+		/// <summary>
+		///  Creates a new Player
+		/// </summary>
+		public PlayerController(GameEnvironment env)
+		{
 			m_env = env;
-        }
+		}
 
 		public void GotShotBy(Ship s, GameEntity f) 
 		{
@@ -96,6 +99,16 @@ namespace Sputnik
 		/// <param name="destination">Position of destination.</param>
 		public void Teleport(BlackHole blackhole, Vector2 destination) {
 			m_justTeleported = true;
+		}
+
+		private void CancelTractorBeam() {
+			// Release entity.
+			itemBeingTractored.TractorReleased();
+			itemBeingTractored = null;
+
+			// Stop Sound.
+			if (m_tractorSound != null) m_tractorSound.Stop(AudioStopOptions.AsAuthored);
+			m_tractorSound = null;
 		}
 
         /// <summary>
@@ -173,10 +186,6 @@ namespace Sputnik
 					s_captureMouse = !s_captureMouse;
 				}
 
-				if (keyboard.IsKeyDown(Keys.Q)) {
-					m_env.ExplosionEffect.Trigger(s.Position);
-				}
-
 			} else {
 				GamePadState oldGamepad = OldGamePad.GetState();
 				Vector2 invertY = new Vector2(1.0f, -1.0f);
@@ -207,23 +216,34 @@ namespace Sputnik
 			// Act on input.
 			s.shooterRotation = aimDirection;
 
+			if(!(s is TriangulusShip)) {
+				if (itemBeingTractored != null)
+				{
+					CancelTractorBeam();
+				}
+			}
+
+			// Detach from ship.
 			if (detachPressed)
 			{
 				s.Detach();
 				// If i am tractoring something, and i detach from it, then they should go back to normal.
 				if(itemBeingTractored != null) {
-					itemBeingTractored.TractorReleased();
-					itemBeingTractored = null;
+					CancelTractorBeam();
 				}
 			}
 
+			// The item I am tractoring died.
 			if (itemBeingTractored != null && !itemBeingTractored.IsTractored) {
-				itemBeingTractored = null;
+				CancelTractorBeam();
 			}
 
+			// Update tractored entity's position.
 			if (itemBeingTractored != null) {
 				if (m_justTeleported) ((Entity) itemBeingTractored).Position = specialPosition;
 				itemBeingTractored.UpdateTractor(specialPosition);
+				TractorBeamModifier.Position = s.Position;
+				m_env.TractorBeamEffect.Trigger(((Entity) itemBeingTractored).Position);
 			}
 
 			m_justTeleported = false;
@@ -236,14 +256,34 @@ namespace Sputnik
 			// need to check if sputnik is in a ship or not before you can shoot.
 			if (shoot) s.Shoot(elapsedTime);
 
+			if(useSpecialHeld) {
+				if(s is CircloidShip) {
+					if (!creatingBlackHole) {
+						m_playerBlackHoles = BlackHole.CreatePair(m_env, specialPosition);
+						creatingBlackHole = true;
+					}
+					if(creatingBlackHole && !((BlackHole)m_playerBlackHoles.First.Entity).fullyFormed) {
+						m_playerBlackHoles.First.Entity.Position = specialPosition;
+					}
+
+					// This code will execute if you succeed in creating the black hole.	
+					if(((BlackHole)m_playerBlackHoles.First.Entity).fullyFormed) {
+						if (previousBlackHoles != null) previousBlackHoles.Destroy();
+						previousBlackHoles = m_playerBlackHoles;
+						creatingBlackHole = false;
+					}
+				}
+			} else {
+				if(creatingBlackHole) {
+					m_playerBlackHoles.Destroy();
+				}
+				creatingBlackHole = false;
+			}
+
 			// Will spawn a blackhole when we first pressdown our right mouse button.
 			// if a blackhole has already been spawned this way, then the other one will be removed.
-			if(useSpecialPressed) { // See useSpecialHeld for moving the blackhole.
-				if(s is CircloidShip) {
-					if (m_playerBlackHoles != null) m_playerBlackHoles.Destroy();
-					m_playerBlackHoles = BlackHole.CreatePair(m_env, specialPosition);
-				} else if(s is TriangulusShip) {
-					
+			if(useSpecialPressed) {
+				if(s is TriangulusShip) {
 					// if we are tractoring something right now, then we arent allowed to tractor anything else
 					// we can shoot now.
 					if (itemBeingTractored == null) {
@@ -259,10 +299,10 @@ namespace Sputnik
 						if(collided is Tractorable) {
 							((Tractorable)collided).Tractored(s); // Disable ship
 							itemBeingTractored = (Tractorable) collided;
+							m_tractorSound = Sound.PlayCue("tractor_beam");
 						}
 					} else {
-						itemBeingTractored.TractorReleased();
-						itemBeingTractored = null;
+						CancelTractorBeam();
 					}
 				} else if(s is SquaretopiaShip) {
 					ForceField ff = new ForceField(m_env, s.shooter.Position, specialDirection, controlled);

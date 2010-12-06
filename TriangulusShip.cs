@@ -92,6 +92,7 @@ namespace Sputnik
 		{
 			++m_frozenCount;
 			if (m_frozenCount == 1) ai.GotFrozen(s);
+			CollisionBody.AngularVelocity = 0.0f;
 		}
 
 		public void Unfreeze()
@@ -106,6 +107,9 @@ namespace Sputnik
 			IsTractored = true;
 			m_fling = false;
 			ai.GotTractored(shipTractoring);
+
+			// Give a random amount of angular impulse for cool unstable rotating!
+			CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
 		}
 
 		public void TractorReleased() {

@@ -53,10 +53,20 @@ namespace Sputnik
 		}
 
 		private Texture2D[] m_textures = new Texture2D[21];
-
 		private float timeElapsed;
-
 		private static int s_uniqueId = 1;
+		SpawnPoint wormHole;
+		private bool animate;
+		private bool beginDestruction;
+		private int currentTexture = 12; // So that it will start from blackhole 11
+		private float blackholeTimer;
+		private bool goBackwards;
+		private float timeForAnimation = 2.0f;
+		private int numberOfFrames = 20;
+		public bool fullyFormed;
+		private float timeForFrame;
+		private float timeSinceLastFrame;
+		private int currentFrame;
 
 		public static Pair CreatePair(GameEnvironment env, Vector2 pos) {
 			SpawnPoint sp = new SpawnPoint(env.SpawnController, "blackhole", pos);
@@ -79,10 +89,6 @@ namespace Sputnik
 			sp.Spawn();
 			return new Pair(env, sp, wormHole);
 		}
-
-		SpawnPoint wormHole;
-		private bool animate;
-		private bool beginDestruction;
 
 		public BlackHole(GameEnvironment e, SpawnPoint sp)
 				: base(e, sp) {
@@ -109,6 +115,8 @@ namespace Sputnik
 
 			if(!animate) Texture = m_textures[m_textures.Length-1]; 
 			else Texture = m_textures[0];
+
+			timeForFrame = 1/(timeForAnimation * numberOfFrames);
 
 			Registration = new Vector2(Texture.Width, Texture.Height) * 0.5f;
 			Zindex = 0.4f;
@@ -140,18 +148,14 @@ namespace Sputnik
 			base.Dispose();
 		}
 
-		private int currentTexture = 12; // So that it will start from blackhole 11
-		private float blackholeTimer;
-		private bool goBackwards;
-		private float timeForAnimation = 2.0f;
-		private int numberOfFrames = 20;
-
 		public override void Update(float elapsedTime)
 		{
 			Rotation -= .02f;
 			if (!animate || timeElapsed > timeForAnimation)
 			{
 				Texture = m_textures[currentTexture];
+
+				fullyFormed = true;
 
 				if(blackholeTimer > 0.1) {
 					if(goBackwards) {
@@ -176,19 +180,33 @@ namespace Sputnik
 				}
 
 				Environment.BlackHoleEffect.Trigger(Position);
-			} else {
-				if (animate) Texture = m_textures[(int)(timeElapsed / timeForAnimation * numberOfFrames)];
-			}
-
-			if(beginDestruction) {
-				if (timeElapsed > timeForAnimation)
-				{
-					Dispose();
-				} else {
-					Texture = m_textures[m_textures.Length - 1 - (int)(timeElapsed * numberOfFrames / timeForAnimation)];
+			} else { // if we are still forming our blackhole
+				if(!beginDestruction) {
+					if(timeSinceLastFrame > timeForFrame) {
+						if(currentFrame < m_textures.Length - 1) {
+							currentFrame++;
+						}
+						timeSinceLastFrame = 0.0f;
+					}
+					if (animate) Texture = m_textures[currentFrame];
 				}
 			}
 
+			if(beginDestruction) {
+				if (currentFrame == 0) {
+					Dispose();
+				} else {
+					if(timeSinceLastFrame > timeForFrame) {
+						if(currentFrame > 0) {
+							currentFrame--;
+						}
+						timeSinceLastFrame = 0.0f;
+					}
+					Texture = m_textures[currentFrame];
+				}
+			}
+
+			timeSinceLastFrame += elapsedTime;
 			blackholeTimer += elapsedTime;
 			timeElapsed += elapsedTime;
 			base.Update(elapsedTime);
