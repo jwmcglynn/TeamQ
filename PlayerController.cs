@@ -201,7 +201,7 @@ namespace Sputnik
 				specialPosition = Angle.Vector(s.DesiredRotation) * k_aimRadius + s.Position;
 				specialDirection = s.DesiredRotation;
 
-				m_env.HUD.Rotation = aimDirection;
+				m_env.HUD.Cursor.Rotation = aimDirection + MathHelper.PiOver2;
 				m_env.HUD.Cursor.Position = Angle.Vector(aimDirection) * k_aimRadius / 3.0f + m_env.Camera.WorldToScreen(s.Position);
 
 				// Detach.
