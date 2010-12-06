@@ -53,7 +53,6 @@ namespace Sputnik
 			if (entB == owner) return false;
 
 			if (entB is TakesDamage) {
-				if (owner is Ship && ((Ship) owner).ai is PlayerController) return true; // Sputnik can kill allies.
 				if (((TakesDamage) owner).IsAllied((TakesDamage) entB)) return false;
 			}
 
