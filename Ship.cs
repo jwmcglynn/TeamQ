@@ -335,14 +335,7 @@ namespace Sputnik
 			}
 			else if (s is Boss)  //Im a ship and my target is a boss
 			{
-				if (((Ship)s).ai.IsDisabled())
-				{
-					return false;  //No mercy for the weak
-				}
-				else
-				{
-					return !IsFriendly(); //Only friendly people hate boss
-				}
+				return !IsFriendly(); //Only friendly people hate boss
 			}
 			else
 			{
