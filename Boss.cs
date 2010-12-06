@@ -31,6 +31,8 @@ namespace Sputnik
 		private float timeElapsed;
 		private bool finishedDeathSequence;
 		private float timeBeforeDestruction = 4.0f;
+		private float explosionSoundTimer = 0.25f; // will determine after how much time we should activate our sound
+		private float elapsedTimeSound;
 
 		public Boss(GameEnvironment env) : base(env)
 		{
@@ -98,10 +100,17 @@ namespace Sputnik
 						// Pretty explosions
 						Vector2 pos = new Vector2(RandomUtil.NextFloat(Position.X - Texture.Width/4, Position.X + Texture.Width/4), 
 												  RandomUtil.NextFloat(Position.Y - Texture.Height/4, Position.Y + Texture.Height/4));
-						Environment.ExplosionEffect.Trigger(pos); // Do not want position, need random.
+						Environment.ExplosionEffect.Trigger(pos); 
+
+						if (elapsedTimeSound > explosionSoundTimer) { // play sound only after X amount of time.
+							Sound.PlayCue("explosion", this);
+							elapsedTimeSound = 0.0f;
+						}
+						
 						Rotation += 0.1f;
 					}
 				}
+				elapsedTimeSound += elapsedTime;
 				timeElapsed += elapsedTime; // TimeElapsed will be a check to see if our death sequence has finished.
 			}
 
