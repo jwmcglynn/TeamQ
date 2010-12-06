@@ -17,6 +17,7 @@ namespace Sputnik
 		private GameEnvironment env;  //Game Environment reference
 		private Vector2 hitBodyPosition;  //Position of the body hit by a raycast
 		public GameEntity target { get; private set; }//Current target of attention
+		private List<GameEntity> targetList;  //List of things to shoot
 		private GameEntity lookingFor; //Entity that I can't see but I'm looking for
 		private enum State {Allied, Neutral, Alert, Hostile, Confused, Disabled} //All possible states
 		private State currentState,nextState; // Used to control AI's FSM
@@ -61,6 +62,7 @@ namespace Sputnik
 			oldPosition = new Vector2(-1000, 1000);//I hope this is improbable
 			timeSinceSawTarget = 0;
 			timeSinceAnsweredDistressCall = 0;
+			targetList = new List<GameEntity>();
 		}
 
 		/// <summary>
@@ -264,7 +266,7 @@ namespace Sputnik
 			}
 			else
 			{
-				if (timeSinceLastStateChange > 1) //I spin for 1 second now
+				if (timeSinceLastStateChange > 2) //I spin for 2 second now
 				{
 					changeToNeutral();
 				}
@@ -295,20 +297,28 @@ namespace Sputnik
 		/// </summary>
 		private void Allied(float elapsedTime)
 		{
-			GamePadState gamepad = GamePad.GetState(PlayerIndex.One);
-			if (gamepad.IsConnected)
+			if (targetList.Count() > 0)
 			{
-				const float k_aimRadius = 250.0f;
-				Vector2 invertY = new Vector2(1.0f, -1.0f);
-				float gamePadDirection = Angle.Direction(Vector2.Zero, gamepad.ThumbSticks.Right * k_aimRadius * invertY);
-				currentShip.shooter.Rotation = gamePadDirection;
+				float targetDirection = Angle.Direction(currentShip.Position, targetList.First().Position);
+				currentShip.shooter.Rotation = targetDirection;
 			}
 			else
 			{
-				MouseState mouse = Mouse.GetState();
-				Vector2 mousePosition = env.Camera.ScreenToWorld(new Vector2(mouse.X, mouse.Y));
-				float mouseDirection = (Angle.Direction(currentShip.Position, mousePosition));
-				currentShip.shooter.Rotation = mouseDirection;
+				GamePadState gamepad = GamePad.GetState(PlayerIndex.One);
+				if (gamepad.IsConnected)
+				{
+					const float k_aimRadius = 250.0f;
+					Vector2 invertY = new Vector2(1.0f, -1.0f);
+					float gamePadDirection = Angle.Direction(currentShip.Position, gamepad.ThumbSticks.Right * k_aimRadius * invertY);
+					currentShip.shooter.Rotation = gamePadDirection;
+				}
+				else
+				{
+					MouseState mouse = Mouse.GetState();
+					Vector2 mousePosition = env.Camera.ScreenToWorld(new Vector2(mouse.X, mouse.Y));
+					float mouseDirection = (Angle.Direction(currentShip.Position, mousePosition));
+					currentShip.shooter.Rotation = mouseDirection;
+				}
 			}
 			if (CanSee(currentShip, target))
 			{
@@ -335,9 +345,9 @@ namespace Sputnik
 				currentShip.DesiredVelocity = Angle.Vector(wantedDirection) * currentShip.maxSpeed / 2;
 				currentShip.DesiredRotation = wantedDirection;
 			}
-			//Shoot if my target shoots
-			//Casting makes me sad, as long as ships dont follow boss, this works
-			if (((Ship)target).isShooting)
+			if(targetList.Count > 0)
+				currentShip.Shoot(elapsedTime);
+			else if (((Ship)target).isShooting)
 				currentShip.Shoot(elapsedTime);
 			//Is my target dead
 			if (((TakesDamage)target).IsDead())
@@ -350,6 +360,10 @@ namespace Sputnik
 			}
 			else if (timeSinceSawTarget > 30)  //I can't see my target, go look for him
 				changeToConfused(target,true);
+			if (targetList.Count > 0 && ((TakesDamage)targetList.First()).IsDead())
+			{
+				targetList.RemoveAt(0);
+			}
 		}
 
 		/// <summary>
@@ -526,8 +540,13 @@ namespace Sputnik
 		/// </summary>
 		public void DistressCall(Ship s, GameEntity f)
 		{
+			if(currentState == State.Allied)
+			{
+				targetList.Add(f);
+			}
+				
 			//Don't answer distress calls too often or if you are a circloid ship and the shooter is a boss
-			if (timeSinceAnsweredDistressCall > 5 && !(currentShip is CircloidShip && f is SaphereBoss))
+			else if (timeSinceAnsweredDistressCall > 5 && !(currentShip is CircloidShip && f is SaphereBoss))
 			{
 				timeSinceAnsweredDistressCall = 0;
 				if (currentState == State.Neutral && !s.IsAllied((TakesDamage)f)) //Only non busy ships (neutral) answer
@@ -535,10 +554,12 @@ namespace Sputnik
 					if (CanSee(currentShip, s))//If i can see sputniks ship, go help him 
 					{
 						changeToAllied(s);
+						targetList.Add(f);
 					}
 					else  //If I can't see Sputnik's ship, go look for it.
 					{
 						changeToConfused(s, true);
+						targetList.Add(f);
 					}
 				}
 			}
@@ -597,6 +618,7 @@ namespace Sputnik
 			answeringDistressCall = false;
 			timeSinceLastStateChange = 0;
 			timeSinceChangedTargets = 0;
+			targetList.Clear();
 		}
 
 		/// <summary>
@@ -617,6 +639,7 @@ namespace Sputnik
 			answeringDistressCall = false;
 			timeSinceLastStateChange = 0;
 			timeSinceChangedTargets = 0;
+			targetList.Clear();
 		}
 
 		/// <summary>
@@ -633,6 +656,7 @@ namespace Sputnik
 			answeringDistressCall = false;
 			timeSinceLastStateChange = 0;
 			timeSinceChangedTargets = 0;
+			targetList.Clear();
 		}
 
 		/// <summary>
@@ -665,6 +689,7 @@ namespace Sputnik
 			answeringDistressCall = false;
 			timeSinceLastStateChange = 0;
 			timeSinceChangedTargets = 0;
+			targetList.Clear();
 		}
 
 		/// <summary>
