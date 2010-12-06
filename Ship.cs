@@ -178,6 +178,12 @@ namespace Sputnik
 			sp.SputnikAttach(this);
 		}
 
+		public float HealthPercent {
+			get {
+				return (float) health / MaxHealth;
+			}
+		}
+
 		public virtual void Detach()
 		{
 			if (attachedShip == null) return;

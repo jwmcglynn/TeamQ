@@ -71,6 +71,7 @@ namespace Sputnik {
 		internal List<TriangulusShip> triangles = new List<TriangulusShip>();
 		internal List<CircloidShip> circles = new List<CircloidShip>();
 		internal SputnikShip sputnik = null;
+		internal Boss Boss = null;
 
 		// HUD.
 		public Menus.HUD HUD;
@@ -133,7 +134,7 @@ namespace Sputnik {
 			CollisionWorld.AddController(shipAvoid);
 
 			// HUD.
-			HUD = new Menus.HUD(ctrl);
+			HUD = new Menus.HUD(this);
 
 			// Farseer freaks out unless we call Update here when changing Environments.  FIXME: Why?
 			Update(0.0f);
