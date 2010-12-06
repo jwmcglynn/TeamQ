@@ -315,7 +315,7 @@ namespace Sputnik
 				currentShip.DesiredRotation = wantedDirection;
 			}
 
-			while (targetList.Count > 0 && (((TakesDamage)targetList.First()).IsDead() || ((TakesDamage)targetList.First()).IsFriendly()))
+			while (targetList.Count > 0 && (((TakesDamage)targetList.First()).IsDead() || ((TakesDamage)targetList.First()).IsFriendly() || !CanShoot(currentShip,targetList.First())))
 			{
 				targetList.RemoveAt(0);
 			}
@@ -426,6 +426,31 @@ namespace Sputnik
 			{
 				return false;
 			}
+		}
+
+		/// <summary>
+		/// Preliminary Vision, given starting GameEntity s and GameEntity Ship f, can s shoot to f 
+		/// </summary>
+		private bool CanShoot(GameEntity s, GameEntity f)
+		{
+			//TODO For some reason this case happens, evidently something is going wrong somewhere
+			if (s == null || f == null)
+			{
+				return false;
+			}
+			//TODO Im not quite sure why, but sometimes ships try to see null collisionbodys
+			if (s.CollisionBody == null || f.CollisionBody == null)
+			{
+				return false;
+			}
+			if (s.CollisionBody.Position.Equals(f.CollisionBody.Position))
+			{
+				// If we are touching, we can shoot each other
+				return true;
+			}
+			rayCastTarget = f;
+			env.CollisionWorld.RayCast(RayCastHit, s.CollisionBody.Position, f.CollisionBody.Position);
+			return (hitBodyPosition.Equals(f.CollisionBody.Position));
 		}
 
 		/// <summary>
