@@ -289,10 +289,11 @@ namespace Sputnik
 					if (itemBeingTractored == null) {
 						List<Entity> list = VisionHelper.FindAll(m_env, s.Position, specialDirection, MathHelper.ToRadians(20.0f), 500.0f);
 						IOrderedEnumerable<Entity> sortedList = list.OrderBy(ent => Vector2.DistanceSquared(s.Position, ent.Position)); 
-
+						SquaretopiaShip ship = null;
 						Entity collided = sortedList.FirstOrDefault(ent =>
 						{
 							if (ent is TakesDamage && ((TakesDamage) ent).IsFriendly()) return false;
+							if(ent is SquaretopiaShip) ship = (SquaretopiaShip)ent;
 							return (ent is Tractorable);
 						});
 
@@ -300,6 +301,9 @@ namespace Sputnik
 							((Tractorable)collided).Tractored(s); // Disable ship
 							itemBeingTractored = (Tractorable) collided;
 							m_tractorSound = Sound.PlayCue("tractor_beam");
+						}
+						if(ship != null) {
+							ship.TakeHit(0);
 						}
 					} else {
 						CancelTractorBeam();
