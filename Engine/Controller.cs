@@ -36,6 +36,13 @@ namespace Sputnik {
 			Content.RootDirectory = "Content";
 			Graphics.SynchronizeWithVerticalRetrace = true;
 
+			Graphics.IsFullScreen = true;
+			m_fullscreen = true;
+
+			// Set backbuffer size to screen size.
+			Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+			Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+
 			IsFixedTimeStep = false;
 
 			OldKeyboard.m_state = Keyboard.GetState();
@@ -101,12 +108,6 @@ namespace Sputnik {
 		/// </summary>
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime) {
-			// Allows the game to exit.
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
-					|| Keyboard.GetState().IsKeyDown(Keys.Escape)) {
-				Exit();
-			}
-
 			// Try changing environment.
 			if (m_nextEnv != null) {
 				m_env.Dispose();

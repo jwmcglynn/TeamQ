@@ -57,8 +57,9 @@ namespace Sputnik.Menus {
 
 			// Cursor.
 			Cursor = new Widget(this);
-			Cursor.LoadTexture(contentManager, "crosshair");
+			Cursor.LoadTexture(contentManager, "bullet_arrow");
 			Cursor.Registration = new Vector2(Cursor.Texture.Width, Cursor.Texture.Height) * 0.5f;
+			Cursor.Scale = 0.2f;
 			AddChild(Cursor);
 
 			// Arrow pointing towards boss.

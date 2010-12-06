@@ -137,6 +137,7 @@
     <Compile Include="ForceField.cs" />
     <Compile Include="Freezable.cs" />
     <Compile Include="Menus\HUD.cs" />
+    <Compile Include="Menus\LevelEndHUD.cs" />
     <Compile Include="Menus\MainMenu.cs" />
     <Compile Include="Menus\Menu.cs" />
     <Compile Include="Menus\TextWidget.cs" />

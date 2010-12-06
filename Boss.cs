@@ -93,6 +93,7 @@ namespace Sputnik
 				if(finishedDeathSequence) {
 					Dispose();
 					// Bring up win screen
+					Environment.LevelDone = true;
 				} else {
 					if(timeElapsed > timeBeforeDestruction) {
 						finishedDeathSequence = true;

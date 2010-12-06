@@ -165,7 +165,7 @@ namespace Sputnik
 				aimDirection = Angle.Direction(Vector2.Zero, mousePos);
 				specialDirection = aimDirection;
 
-				m_env.HUD.Rotation = specialDirection;
+				m_env.HUD.Cursor.Rotation = specialDirection + MathHelper.PiOver2;
 				m_env.HUD.Cursor.Position = mousePos / 3.0f + m_env.Camera.WorldToScreen(s.Position);
 				m_env.HUD.Cursor.Visible = true;
 

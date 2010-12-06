@@ -76,11 +76,18 @@ namespace Sputnik {
 
 		// HUD.
 		public Menus.HUD HUD;
+		public Menus.LevelEndHUD LevelEndHUD;
+		public float LevelTimeSpent = 0.0f;
+		public bool LevelDone = false;
+		
+		// Difficulty.
 		public bool isFrostMode = false;
 
 		public GameEnvironment(Controller ctrl)
 				: base(ctrl) {
-			
+
+			Sound.StopAll(true);
+
 			CollisionWorld = new Physics.Dynamics.World(Vector2.Zero);
 			Controller.Window.ClientSizeChanged += WindowSizeChanged;
 			Camera = new Camera2D(this);
@@ -295,7 +302,43 @@ namespace Sputnik {
 		/// </summary>
 		/// <param name="elapsedTime">Time since last Update() call.</param>
 		public override void Update(float elapsedTime) {
+			// Toggle debug view.
+			if (Keyboard.GetState().IsKeyDown(Keys.F1) && !OldKeyboard.GetState().IsKeyDown(Keys.F1)) {
+				if (m_debugView != null) m_debugView = null;
+				else m_debugView = new Physics.DebugViewXNA(CollisionWorld);
+			}
+
+			// Level win hacks.
+			if (Keyboard.GetState().IsKeyDown(Keys.F12) && !OldKeyboard.GetState().IsKeyDown(Keys.F12)) {
+				LevelDone = true;
+			}
+
+			// Frost mode.
+			if (Keyboard.GetState().IsKeyDown(Keys.F4) && !OldKeyboard.GetState().IsKeyDown(Keys.F4)) {
+				this.isFrostMode = !this.isFrostMode;
+			}
+
+			if (LevelDone) {
+				if (LevelEndHUD == null) {
+					LevelEndHUD = new Menus.LevelEndHUD(this);
+				}
+
+				LevelEndHUD.Update(elapsedTime);
+				return;
+			}
+
+			// Debug Menu = F10.
+			if (Keyboard.GetState().IsKeyDown(Keys.F10) && !OldKeyboard.GetState().IsKeyDown(Keys.F10)) {
+				Controller.ChangeEnvironment(new Menus.DebugMenu(Controller));
+			}
+
+			// Back to main menu.
+			if (Keyboard.GetState().IsKeyDown(Keys.Escape) && !OldKeyboard.GetState().IsKeyDown(Keys.Escape)) {
+				Controller.ChangeEnvironment(new Menus.MainMenu(Controller));
+			}
+
 			m_updateAccum += elapsedTime;
+			LevelTimeSpent += elapsedTime;
 
 			// Update physics.
 			const float k_physicsStep = 1.0f / 60.0f;
@@ -314,23 +357,6 @@ namespace Sputnik {
 				// Particles.
 				foreach (var effect in EffectsAboveShip) effect.Update(k_physicsStep);
 				foreach (var effect in EffectsBelowShip) effect.Update(k_physicsStep);
-			}
-
-			// Toggle debug view.
-			if (Keyboard.GetState().IsKeyDown(Keys.F1) && !OldKeyboard.GetState().IsKeyDown(Keys.F1)) {
-				if (m_debugView != null) m_debugView = null;
-				else m_debugView = new Physics.DebugViewXNA(CollisionWorld);
-			}
-
-			// Debug Menu = F10.
-			if (Keyboard.GetState().IsKeyDown(Keys.F10) && !OldKeyboard.GetState().IsKeyDown(Keys.F10)) {
-				Controller.ChangeEnvironment(new Menus.DebugMenu(Controller));
-			}
-
-			// Frost mode.
-			if (Keyboard.GetState().IsKeyDown(Keys.F4) && !OldKeyboard.GetState().IsKeyDown(Keys.F4))
-			{
-				this.isFrostMode = !this.isFrostMode;
 			}
 		}
 
@@ -370,6 +396,9 @@ namespace Sputnik {
 
 			// Draw HUD.
 			HUD.Draw();
+
+			// Draw level end HUD.
+			if (LevelEndHUD != null) LevelEndHUD.Draw();
 		}
 
 		/// <summary>

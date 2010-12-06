@@ -43,6 +43,14 @@ namespace Sputnik {
 			}
 		}
 
+		public static void StopAll(bool immediate = false) {
+			AudioCategory c = m_audioEngine.GetCategory("Default");
+			c.Stop(immediate ? AudioStopOptions.Immediate : AudioStopOptions.AsAuthored);
+
+			c = m_audioEngine.GetCategory("Music");
+			c.Stop(immediate ? AudioStopOptions.Immediate : AudioStopOptions.AsAuthored);
+		}
+
 		/// <summary>
 		/// Play a sound.
 		/// </summary>
