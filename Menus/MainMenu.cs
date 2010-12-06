@@ -7,6 +7,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Sputnik.Menus {
 	class MainMenu : Menu {
+		private Widget m_background;
+		private Widget m_logo;
+		private Widget m_logoText;
+
 		private class TextButton : TextWidget {
 			public TextButton(Menu menu, string text)
 					: base(menu, "font", text) {
@@ -37,6 +41,33 @@ namespace Sputnik.Menus {
 
 			Controller.IsMouseVisible = true;
 
+			// Background.
+			m_background = new Widget(this);
+			m_background.LoadTexture(contentManager, "space-desktop");
+			m_background.PositionPercent = new Vector2(0.5f, 0.5f);
+			m_background.Zindex = 1.0f;
+			m_background.Registration = new Vector2(m_background.Texture.Width, m_background.Texture.Height) * 0.5f;
+			AddChild(m_background);
+
+			// Logo.
+			m_logo = new Widget(this);
+			m_logo.LoadTexture(contentManager, "logo_sputnik");
+			m_logo.PositionPercent = new Vector2(0.5f, 0.3f);
+			m_logo.Position = new Vector2(-75.0f, 0.0f);
+			m_logo.Zindex = 0.8f;
+			m_logo.Registration = new Vector2(m_logo.Texture.Width, m_logo.Texture.Height) * 0.5f;
+			AddChild(m_logo);
+
+			// Logo text.
+			m_logoText = new Widget(this);
+			m_logoText.LoadTexture(contentManager, "logo");
+			m_logoText.PositionPercent = new Vector2(0.5f, 0.3f);
+			m_logoText.Position = new Vector2(-75.0f, 25.0f);
+			m_logoText.Zindex = 0.7f;
+			m_logoText.Registration = new Vector2(m_logo.Texture.Width, m_logo.Texture.Height) * 0.5f;
+			AddChild(m_logoText);
+
+
 			TextWidget title = new TextWidget(this, "font", "Sputnik's Great Adventure");
 			title.PositionPercent = new Vector2(0.5f, 0.3f);
 			AddChild(title);
@@ -62,6 +93,15 @@ namespace Sputnik.Menus {
 				Controller.Exit();
 			};
 			AddChild(button);
+		}
+
+		public override void Update(float elapsedTime) {
+			float scale = Math.Max(ScreenSize.X / m_background.Texture.Width, ScreenSize.Y / m_background.Texture.Height) * 1.5f;
+			m_background.Scale = scale;
+			m_logo.Scale = scale;
+			m_logoText.Scale = scale;
+
+			base.Update(elapsedTime);
 		}
 
 		public override void Dispose() {

@@ -84,7 +84,7 @@ namespace Sputnik {
 			FarseerPhysics.DebugViewXNA.LoadContent(GraphicsDevice, Content);
 
 			// Create first environment.
-			m_env = new Level1Environment(this);
+			m_env = new Menus.MainMenu(this);
 		}
 
 		/// <summary>
@@ -119,6 +119,14 @@ namespace Sputnik {
 
 			m_env.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
 			base.Update(gameTime);
+
+			// Toggle fullscreen toggle with Alt+Enter.
+			if ((Keyboard.GetState().IsKeyDown(Keys.LeftAlt) || Keyboard.GetState().IsKeyDown(Keys.RightAlt))
+					&& Keyboard.GetState().IsKeyDown(Keys.Enter) && !(
+						(OldKeyboard.GetState().IsKeyDown(Keys.LeftAlt) || OldKeyboard.GetState().IsKeyDown(Keys.RightAlt))
+							&& OldKeyboard.GetState().IsKeyDown(Keys.Enter))) {
+				IsFullscreen = !IsFullscreen;
+			}
 
 			// Get the keyboard state for the next pass.
 			OldKeyboard.m_state = Keyboard.GetState();
