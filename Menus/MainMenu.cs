@@ -26,7 +26,7 @@ namespace Sputnik.Menus {
 			public ImageButton(Menu menu, string normal, string over)
 					: base(menu) {
 
-				m_normal = menu.contentManager.Load<Texture2D>(normal);
+				Texture = m_normal = menu.contentManager.Load<Texture2D>(normal);
 				m_over = menu.contentManager.Load<Texture2D>(over);
 
 				OnMouseOver += () => { Texture = m_over; };
@@ -34,6 +34,16 @@ namespace Sputnik.Menus {
 				OnMouseDown += () => { Texture = m_over; VertexColor = Color.Gray; };
 				OnMouseUp += () => { Texture = m_normal; };
 			}
+		}
+
+		private void CreateButton(Widget widget) {
+			widget.Registration = new Vector2(widget.Texture.Width * 0.5f, widget.Texture.Height * 0.5f);
+
+			int width = (int) Math.Round((double) widget.Texture.Width);
+			int height = (int) Math.Round((double) widget.Texture.Height);
+			widget.CreateButton(new Rectangle((int) Math.Round(-widget.Registration.X), (int) Math.Round(-widget.Registration.Y), width, height));
+
+			widget.Zindex = 0.5f;
 		}
 
 		public MainMenu(Controller ctrl)
@@ -63,36 +73,45 @@ namespace Sputnik.Menus {
 			m_logoText.LoadTexture(contentManager, "logo");
 			m_logoText.PositionPercent = new Vector2(0.5f, 0.3f);
 			m_logoText.Position = new Vector2(-75.0f, 25.0f);
-			m_logoText.Zindex = 0.7f;
 			m_logoText.Registration = new Vector2(m_logo.Texture.Width, m_logo.Texture.Height) * 0.5f;
+			m_logoText.Zindex = 0.7f;
 			AddChild(m_logoText);
 
-
-			TextWidget title = new TextWidget(this, "font", "Sputnik's Great Adventure");
-			title.PositionPercent = new Vector2(0.5f, 0.3f);
-			AddChild(title);
-
+			////
+			Vector2 k_buttonPos = new Vector2(0.5f, 0.5f);
+			const float k_buttonSpacing = 60.0f;
 			float ypos = 50.0f;
 
-			TextButton button;
-			button = new TextButton(this, "Start Level 1");
-			button.PositionPercent = title.PositionPercent;
-			button.Position = new Vector2(0.0f, ypos);
-			button.CreateButton(new Rectangle(-50, -16, 100, 32));
-			button.OnActivate += () => {
+			ImageButton startLevel = new ImageButton(this, "main_start_level", "main_start_level1");
+			startLevel.PositionPercent = k_buttonPos;
+			startLevel.Position = new Vector2(0.0f, ypos);
+			CreateButton(startLevel);
+			startLevel.OnActivate += () => {
 				Controller.ChangeEnvironment(new Level1Environment(Controller));
 			};
-			AddChild(button);
+			AddChild(startLevel);
 
-			ypos += 50.0f;
-			button = new TextButton(this, "Quit");
-			button.PositionPercent = title.PositionPercent;
-			button.Position = new Vector2(0.0f, ypos);
-			button.CreateButton(new Rectangle(-50, -16, 100, 32));
-			button.OnActivate += () => {
+			ypos += k_buttonSpacing;
+
+			ImageButton credits = new ImageButton(this, "main_credits", "main_credits1");
+			credits.PositionPercent = k_buttonPos;
+			credits.Position = new Vector2(0.0f, ypos);
+			CreateButton(credits);
+			credits.OnActivate += () => {
+				// TODO.
+			};
+			AddChild(credits);
+
+			ypos += k_buttonSpacing;
+
+			ImageButton quit = new ImageButton(this, "main_quit", "main_quit1");
+			quit.PositionPercent = k_buttonPos;
+			quit.Position = new Vector2(0.0f, ypos);
+			CreateButton(quit);
+			quit.OnActivate += () => {
 				Controller.Exit();
 			};
-			AddChild(button);
+			AddChild(quit);
 		}
 
 		public override void Update(float elapsedTime) {
