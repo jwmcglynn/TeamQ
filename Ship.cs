@@ -297,28 +297,38 @@ namespace Sputnik
 
 		//Tells if this is allied to s
 		public bool IsAllied(TakesDamage s) {
-			if (this == s) return true;
-			if (this is CircloidShip && s is SaphereBoss) return true;
-
-			// If both are allied.
-			if (IsFriendly() && s.IsFriendly()) return true;
-
-			if (GetType() != s.GetType()) return false;
-
-			// At this point both are not part of player's clique.
-
-			if (s is Ship) {
-				Ship ship = (Ship) s;
-
-				// They're attacking, not our friend!
-				if (ship.ai is AIController) {
-					if (((AIController) ship.ai).target == this) return false;
-				}
-
-				return !ship.sputnikDetached || ship.timeSinceDetached >= 3.0f; //Allied if Sputnik detached and 3 seconds passed
+			if (this == s)
+			{
+				return true; //I like myself
 			}
-
-			return false;
+			else if (this == Environment.sputnik.controlled) //Im sputnik
+			{
+				return s.IsFriendly(); //Sputnik only likes his friendly buddies
+			}
+			else if (s == Environment.sputnik.controlled) //The target is sputnik
+			{
+				return IsFriendly(); //Nobody but allied ships like sputnik
+			}
+			else if (s is Ship) //Im a ship, and I better have the AI controlling me
+			{
+				if (ai is AIController && ((AIController)ai).target == s) //You are my target
+				{
+					if (((Ship)s).sputnikDetached) //We forgive you if sputnik did bad things to you
+						return ((Ship)s).timeSinceDetached >= 3.0f;
+					else
+						return false;  //Otherwise we don't like you
+				}
+				else
+					return true;  //You aren't my target, you are okay
+			}
+			else if (s is Boss)
+			{
+				return !IsFriendly(); //Only friendly people hate boss
+			}
+			else
+			{
+				return false;  //If its not a ship or a boss, we don't like it
+			}
 		}
 	}
 }
