@@ -52,6 +52,9 @@ namespace Sputnik
 		bool sputnikDetached;
 		float timeSinceDetached;
 
+		private int dmgWhileTractored = 10;
+		private float m_lastCollideTime = 0.0f;
+
 		public Ship(GameEnvironment env, Vector2 pos)
 			: base(env)
 		{
@@ -83,6 +86,8 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
+			m_lastCollideTime -= elapsedTime;
+
 			if (timeSinceDetached > 3)
 			{
 				sputnikDetached = false;
@@ -226,6 +231,15 @@ namespace Sputnik
 				FarseerPhysics.Collision.WorldManifold manifold;
 				contact.GetWorldManifold(out manifold);
 				if (ai != null) ai.HitWall(manifold.Points[0] * GameEnvironment.k_invPhysicsScale);
+			}
+
+			if (this is Tractorable && m_lastCollideTime <= 0.0f)
+			{
+				if (((Tractorable)this).IsTractored && (ActualVelocity - entB.ActualVelocity).Length() > 700.0f){
+					this.TakeHit(dmgWhileTractored);
+					m_lastCollideTime = 0.5f;
+					Sound.PlayCue("crash", this);
+				}
 			}
 
 			base.OnCollide(entB, contact);

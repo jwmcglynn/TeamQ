@@ -164,13 +164,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Sputnik_Old.png">
-      <Name>Sputnik_Old</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="saphere.png">
       <Name>saphere</Name>
       <Importer>TextureImporter</Importer>
@@ -401,21 +394,6 @@
     </Compile>
     <Compile Include="saphere_hurt.png">
       <Name>saphere_hurt</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="sputnik_circloid.png">
-      <Name>sputnik_circloid</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="sputnik_squaretopia.png">
-      <Name>sputnik_squaretopia</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="sputnik_triangulus.png">
-      <Name>sputnik_triangulus</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

@@ -147,7 +147,6 @@ namespace Sputnik
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
 		{
 			if(IsTractored && m_lastCollideTime <= 0.0f) {
-				Console.WriteLine((ActualVelocity - entB.ActualVelocity).Length());
 				if(entB is TakesDamage && (ActualVelocity - entB.ActualVelocity).Length() > 700.0f) /*&& if contact force is strong*/ {
 					((TakesDamage)entB).TakeHit(tractoredDmg);
 					m_lastCollideTime = 0.5f;
