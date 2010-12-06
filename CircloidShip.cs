@@ -102,8 +102,11 @@ namespace Sputnik
 		{
 			m_fling = true;
 			m_flingTime = 1.0f;
-			CollisionBody.LinearDamping = 0.0f;
-			CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
+			if (CollisionBody != null)
+			{
+				CollisionBody.LinearDamping = 0.0f;
+				CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
+			}
 		}
 		
 		public void UpdateTractor(Vector2 targetPosition) {
