@@ -520,7 +520,7 @@ namespace Sputnik
 					}
 					else
 					{
-						if (timeSinceChangedTargets > 10 || s == currentShip) //Dont get confused too often, unless its me shot
+						if (timeSinceChangedTargets > 10 || (s == currentShip && timeSinceChangedTargets > 5)) //Dont get confused too often, unless its me shot
 						{
 							changeToConfused(f, false);
 						}
