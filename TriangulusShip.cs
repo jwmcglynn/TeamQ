@@ -72,8 +72,8 @@ namespace Sputnik
 			if (!IsTractored && DesiredVelocity.LengthSquared() > (maxSpeed / 6) * (maxSpeed / 6)) {
 				Matrix rotMatrix = Matrix.CreateRotationZ(Rotation);
 
-				Environment.ThrusterEffect.Trigger(Position + Vector2.Transform(new Vector2(-45.0f, -10.0f), rotMatrix));
-				Environment.ThrusterEffect.Trigger(Position + Vector2.Transform(new Vector2(-45.0f, 10.0f), rotMatrix));
+				ThrusterEffect().Trigger(Position + Vector2.Transform(new Vector2(-45.0f, -10.0f), rotMatrix));
+				ThrusterEffect().Trigger(Position + Vector2.Transform(new Vector2(-45.0f, 10.0f), rotMatrix));
 			}
 
 			base.Update(elapsedTime);

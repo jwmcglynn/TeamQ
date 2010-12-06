@@ -134,6 +134,8 @@ namespace Sputnik.Menus {
 		}
 
 		public override void Update(float elapsedTime) {
+			ShipHealth.VertexColor = Environment.isFrostMode ? Color.HotPink : Color.Green;
+
 			BossDirection.Rotation = Angle.Direction(Environment.Camera.ScreenToWorld(BossDirection.AbsolutePosition), Environment.Boss.Position) + MathHelper.PiOver2;
 			BossHealth.FillPercent = Environment.Boss.HealthPercent;
 

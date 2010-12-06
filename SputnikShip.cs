@@ -22,6 +22,9 @@ namespace Sputnik
 		private float m_respawnImmunity = 5.0f;
 		private bool m_flashVisibility = true;
 
+		private Texture2D m_awesomeSputnik;
+		private Texture2D m_frostSputnik;
+
 		float [] deathWarning = {0.1f, 0.2f, 0.3f, 0.4f, 0.6f, 0.8f, 1.1f, 1.5f};
 
 		public float TimerPercent {
@@ -45,7 +48,10 @@ namespace Sputnik
 			
 			this.maxSpeed = 800;
 
-			LoadTexture(env.contentManager, "Sputnik");
+			m_awesomeSputnik = env.contentManager.Load<Texture2D>("Sputnik");
+			m_frostSputnik = env.contentManager.Load<Texture2D>("girl_sputnik");
+			Texture = (env.isFrostMode) ? m_frostSputnik : m_awesomeSputnik;
+
 			Registration = new Vector2(70.0f, 33.0f);
 
 			SputnikCreateCollision();
@@ -78,8 +84,9 @@ namespace Sputnik
 			CollisionBody.LinearDamping = 8.0f; // This value causes a small amount of slowing before stop which looks nice.
 		}
 
-		public override void Update(float elapsedTime)
-		{
+		public override void Update(float elapsedTime) {
+			Texture = (Environment.isFrostMode) ? m_frostSputnik : m_awesomeSputnik;
+
 			if ((controlled == null || controlled.health == 0) && attached)
 			{
 				Detach();
@@ -115,7 +122,7 @@ namespace Sputnik
 
 				if (DesiredVelocity.LengthSquared() > (maxSpeed / 4) * (maxSpeed / 4))
 				{
-					Environment.ThrusterEffect.Trigger(Position + Angle.Vector(Rotation + MathHelper.Pi) * 20.0f);
+					ThrusterEffect().Trigger(Position + Angle.Vector(Rotation + MathHelper.Pi) * 20.0f);
 				}
 			}
 			if (attached) {

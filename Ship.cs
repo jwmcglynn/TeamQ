@@ -79,6 +79,11 @@ namespace Sputnik
 			m_isDead = false;
 		}
 
+		protected ParticleEffect ThrusterEffect() {
+			if (isSputnik() && Environment.isFrostMode) return Environment.FrostThrusterEffect;
+			else return Environment.ThrusterEffect;
+		}
+
 		public void ResetZIndex()
 		{
 			Zindex = 0.5f + MathHelper.Clamp((float)k_zindexOffset / 100000.0f, 0.0f, 0.5f);

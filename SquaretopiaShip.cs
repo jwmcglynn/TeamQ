@@ -79,8 +79,8 @@ namespace Sputnik
 			if (DesiredVelocity.LengthSquared() > (maxSpeed / 6) * (maxSpeed / 6)) {
 				Matrix rotMatrix = Matrix.CreateRotationZ(Rotation);
 
-				Environment.ThrusterEffect.Trigger(Position + Vector2.Transform(new Vector2(-75.0f, -30.0f), rotMatrix));
-				Environment.ThrusterEffect.Trigger(Position + Vector2.Transform(new Vector2(-75.0f, 30.0f), rotMatrix));
+				ThrusterEffect().Trigger(Position + Vector2.Transform(new Vector2(-75.0f, -30.0f), rotMatrix));
+				ThrusterEffect().Trigger(Position + Vector2.Transform(new Vector2(-75.0f, 30.0f), rotMatrix));
 			}
 
 			// Update shield alpha/position.

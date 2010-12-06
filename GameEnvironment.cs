@@ -38,6 +38,7 @@ namespace Sputnik {
 		public SpriteBatchRenderer ParticleRenderer;
 		public ParticleEffect ExplosionEffect;
 		public ParticleEffect ThrusterEffect;
+		public ParticleEffect FrostThrusterEffect;
 		public ParticleEffect AttachEffect;
 		public ParticleEffect BlackHoleEffect;
 		public ParticleEffect AlertEffect;
@@ -94,12 +95,14 @@ namespace Sputnik {
 
 			ExplosionEffect = contentManager.Load<ParticleEffect>("ExplosionEffect");
 			ThrusterEffect = contentManager.Load<ParticleEffect>("ThrusterEffect");
+			FrostThrusterEffect = contentManager.Load<ParticleEffect>("FrostThrusterEffect");
 			AttachEffect = contentManager.Load<ParticleEffect>("AttachEffect");
 			BlackHoleEffect = contentManager.Load<ParticleEffect>("BlackHoleEffect");
 			AlertEffect = contentManager.Load<ParticleEffect>("AlertEffect");
 			TractorBeamEffect = contentManager.Load<ParticleEffect>("TractorBeamEffect");
 
 			EffectsBelowShip.Add(ThrusterEffect);
+			EffectsBelowShip.Add(FrostThrusterEffect);
 			EffectsBelowShip.Add(TractorBeamEffect);
 
 			EffectsAboveShip.Add(ExplosionEffect);
