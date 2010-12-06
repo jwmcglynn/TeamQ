@@ -38,8 +38,7 @@ namespace Sputnik
 
 		/// <summary>
 		///  Creates a new AI with given spawnpoint and given environment
-		///  Currrently sets start and finsih for patrol to top left and bottom right of spawnpoint
-		///  Initial state is Neutral and going towards start;
+		///  Initial state is Neutral
 		/// </summary>
 		public AIController(SpawnPoint sp, GameEnvironment e)
 		{
