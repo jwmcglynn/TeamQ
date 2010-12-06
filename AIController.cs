@@ -526,7 +526,8 @@ namespace Sputnik
 		/// </summary>
 		public void DistressCall(Ship s, GameEntity f)
 		{
-			if (timeSinceAnsweredDistressCall > 5)
+			//Don't answer distress calls too often or if you are a circloid ship and the shooter is a boss
+			if (timeSinceAnsweredDistressCall > 5 && !(currentShip is CircloidShip && f is SaphereBoss))
 			{
 				timeSinceAnsweredDistressCall = 0;
 				if (currentState == State.Neutral && !s.IsAllied((TakesDamage)f)) //Only non busy ships (neutral) answer
