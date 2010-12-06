@@ -315,7 +315,7 @@ namespace Sputnik
 				currentShip.DesiredRotation = wantedDirection;
 			}
 
-			while (targetList.Count > 0 && ((TakesDamage)targetList.First()).IsDead())
+			while (targetList.Count > 0 && (((TakesDamage)targetList.First()).IsDead() || ((TakesDamage)targetList.First()).IsFriendly()))
 			{
 				targetList.RemoveAt(0);
 			}
@@ -544,7 +544,7 @@ namespace Sputnik
 		{
 			if(currentState == State.Allied)
 			{
-				targetList.Add(f);
+				targetList.Insert(0, f);
 			}
 				
 			//Don't answer distress calls too often or if you are a circloid ship and the shooter is a boss
@@ -556,12 +556,12 @@ namespace Sputnik
 					if (CanSee(currentShip, s))//If i can see sputniks ship, go help him 
 					{
 						changeToAllied(s);
-						targetList.Add(f);
+						targetList.Insert(0, f);
 					}
 					else  //If I can't see Sputnik's ship, go look for it.
 					{
 						changeToConfused(s, true);
-						targetList.Add(f);
+						targetList.Insert(0, f);
 					}
 				}
 			}
