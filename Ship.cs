@@ -311,10 +311,6 @@ namespace Sputnik
 			{
 				return s.IsFriendly(); //Sputnik only likes his friendly buddies
 			}
-			else if (s == Environment.sputnik.controlled) //The target is sputnik
-			{	//This case is needed since allied ships have sputnik as their target
-				return IsFriendly(); //Nobody but allied ships like sputnik
-			}
 			else if (s is Ship) //Im a ship, and I better have the AI controlling me and my target is a ship
 			{
 				if (((Ship)s).ai.IsDisabled())
@@ -323,6 +319,10 @@ namespace Sputnik
 				}
 				else if (!(ai is AIController))
 					return false;  //This case is strange, I'm actually not sure when this happens, but I don't like it
+				else if (ai.IsAlliedWithPlayer()) //Means Im allied with player
+				{
+					return s.IsFriendly();
+				}
 				else if (((AIController)ai).target == s) //You are my target
 				{
 					if (((Ship)s).sputnikDetached) //We forgive you if sputnik did bad things to you
