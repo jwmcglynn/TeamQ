@@ -54,6 +54,7 @@ namespace Sputnik
 
 		private int dmgWhileTractored = 10;
 		private float m_lastCollideTime = 0.0f;
+		private float timeBetweenCollisions = 1.0f;
 
 		public Ship(GameEnvironment env, Vector2 pos)
 			: base(env)
@@ -237,7 +238,7 @@ namespace Sputnik
 			{
 				if (((Tractorable)this).IsTractored && (ActualVelocity - entB.ActualVelocity).Length() > 700.0f){
 					this.TakeHit(dmgWhileTractored);
-					m_lastCollideTime = 0.5f;
+					m_lastCollideTime = timeBetweenCollisions;
 					Sound.PlayCue("crash", this);
 				}
 			}
