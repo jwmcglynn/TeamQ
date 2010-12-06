@@ -22,6 +22,8 @@ namespace Sputnik
 		private float m_respawnImmunity = 5.0f;
 		private bool m_flashVisibility = true;
 
+		float [] deathWarning = {0.1f, 0.2f, 0.3f, 0.4f, 0.6f, 0.8f, 1.1f, 1.5f};
+
 		public float TimerPercent {
 			get {
 				return timer / TotalTime;
@@ -55,6 +57,8 @@ namespace Sputnik
 			const float k_immuneTime = 3.0f;
 			m_respawnImmunity = k_immuneTime;
 
+
+
 			SpawnPoint.RespawnCooldown = 0.0f;
 			SpawnPoint.AllowRespawn = true;
 			SpawnPoint.HasBeenOffscreen = true;
@@ -87,21 +91,27 @@ namespace Sputnik
 
 				// Beep every second while invulnerable.
 				if (Math.Floor(last) != Math.Floor(m_respawnImmunity)) {
-					Sound.PlayCue("invulnerable_beep");
+					Sound.PlayCue("invulnerable_beep", this);
 				}
 			}
 
 			// Thruster particle.
 			if (!attached)
 			{
-
 				if (!this.Environment.isFrostMode && m_respawnImmunity <= 0.0f)
 				{
+					float previousTimer = timer;
 					timer -= elapsedTime;
+
+					foreach (float warning in deathWarning) {
+						if (previousTimer > warning && timer < warning) {
+							Sound.PlayCue("time_warning");
+						}
+					}
+
 					if (timer < 0)
 						InstaKill();
 				}
-
 
 				if (DesiredVelocity.LengthSquared() > (maxSpeed / 4) * (maxSpeed / 4))
 				{
