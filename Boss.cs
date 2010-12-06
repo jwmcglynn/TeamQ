@@ -82,7 +82,7 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
-			if (useSpecial)
+			if (useSpecial && shootTarget != null)
 				ShootSpecial(shootTarget.Position);
 			ai.Update(elapsedTime);
 
