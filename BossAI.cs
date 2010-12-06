@@ -25,6 +25,10 @@ namespace Sputnik
 
 		public void Update(float elapsedTime)
 		{
+			if(boss.m_isDead) {
+				return;
+			}
+
 			if (this.index >= points.Length)
 				index = 0;
 

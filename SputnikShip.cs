@@ -22,6 +22,18 @@ namespace Sputnik
 		private float m_respawnImmunity = 5.0f;
 		private bool m_flashVisibility = true;
 
+		public float TimerPercent {
+			get {
+				return timer / TotalTime;
+			}
+		}
+
+		public bool IsInvulnerable {
+			get {
+				return Environment.isFrostMode || m_respawnImmunity > 0.0f;
+			}
+		}
+
 		public SputnikShip(GameEnvironment env, SpawnPoint sp)
 				: base(env, sp) {
 					
@@ -143,6 +155,10 @@ namespace Sputnik
 		public ShipController GetAI()
 		{
 			return this.ai;
+		}
+
+		public override void Attach(SputnikShip sp) {
+			// Do nothing.
 		}
 
 		public void SputnikAttach(Ship target) {

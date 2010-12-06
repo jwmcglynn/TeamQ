@@ -107,6 +107,7 @@ namespace Sputnik {
 		public virtual void OnCull() {
 			// Currently does nothing.  Update SpawnPoint.
 			SpawnPoint.Reset();
+			SpawnPoint = null;
 		}
 	}
 }

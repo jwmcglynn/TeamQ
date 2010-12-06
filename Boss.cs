@@ -26,8 +26,13 @@ namespace Sputnik
 		Fixture takesDamage, sensor;
 		protected GameEntity shootTarget;
 		public GameEntity ShootTarget { get { return shootTarget; } }
-		bool m_isDead = false;
+		public bool m_isDead = false;
 		protected bool isUnhappy = false;
+		private float timeElapsed;
+		private bool finishedDeathSequence;
+		private float timeBeforeDestruction = 4.0f;
+		private float explosionSoundTimer = 0.25f; // will determine after how much time we should activate our sound
+		private float elapsedTimeSound;
 
 		public Boss(GameEnvironment env) : base(env)
 		{
@@ -42,6 +47,8 @@ namespace Sputnik
 
 		protected virtual void initialize()
 		{
+			Environment.Boss = this;
+
 			this.bm1 = new BulletEmitter(Environment, this, BulletEmitter.BulletStrength.Medium);
 			this.bm2 = new BulletEmitter(Environment, this, BulletEmitter.BulletStrength.Medium);
 			this.bm3 = new BulletEmitter(Environment, this, BulletEmitter.BulletStrength.Medium);
@@ -82,6 +89,31 @@ namespace Sputnik
 
 		public override void Update(float elapsedTime)
 		{
+			if(m_isDead) {
+				if(finishedDeathSequence) {
+					Dispose();
+					// Bring up win screen
+				} else {
+					if(timeElapsed > timeBeforeDestruction) {
+						finishedDeathSequence = true;
+					} else {
+						// Pretty explosions
+						Vector2 pos = new Vector2(RandomUtil.NextFloat(Position.X - Texture.Width/4, Position.X + Texture.Width/4), 
+												  RandomUtil.NextFloat(Position.Y - Texture.Height/4, Position.Y + Texture.Height/4));
+						Environment.ExplosionEffect.Trigger(pos); 
+
+						if (elapsedTimeSound > explosionSoundTimer) { // play sound only after X amount of time.
+							Sound.PlayCue("explosion", this);
+							elapsedTimeSound = 0.0f;
+						}
+						
+						Rotation += 0.1f;
+					}
+				}
+				elapsedTimeSound += elapsedTime;
+				timeElapsed += elapsedTime; // TimeElapsed will be a check to see if our death sequence has finished.
+			}
+
 			if (useSpecial && shootTarget != null)
 				ShootSpecial(shootTarget.Position);
 			ai.Update(elapsedTime);
@@ -103,6 +135,12 @@ namespace Sputnik
 			get
 			{
 				return this.isShooting;
+			}
+		}
+
+		public float HealthPercent {
+			get {
+				return (float) health / MaxHP;
 			}
 		}
 
@@ -180,10 +218,9 @@ namespace Sputnik
 			this.health -= damage;
 			if (this.health < 1) {
 				SpawnPoint.AllowRespawn = false;
-				// TODO: Cool death sequence?
-				// TODO: End game screen.
-				OnNextUpdate += () => Dispose();
 				m_isDead = true;
+				CollisionBody.LinearVelocity = Vector2.Zero;
+				DesiredVelocity = Vector2.Zero;
 			}
 		}
 	}
