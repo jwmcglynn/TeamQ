@@ -245,22 +245,15 @@ namespace Sputnik {
 				else m_debugView = new Physics.DebugViewXNA(CollisionWorld);
 			}
 
-			// Main Menu = F2.
-			if (Keyboard.GetState().IsKeyDown(Keys.F2) && !OldKeyboard.GetState().IsKeyDown(Keys.F2)) {
+			// Debug Menu = F10.
+			if (Keyboard.GetState().IsKeyDown(Keys.F10) && !OldKeyboard.GetState().IsKeyDown(Keys.F10)) {
 				Controller.ChangeEnvironment(new Menus.DebugMenu(Controller));
 			}
 
+			// Frost mode.
 			if (Keyboard.GetState().IsKeyDown(Keys.F4) && !OldKeyboard.GetState().IsKeyDown(Keys.F4))
 			{
 				this.isFrostMode = !this.isFrostMode;
-			}
-
-			// Fullscreen toggle with Alt+Enter.
-			if ((Keyboard.GetState().IsKeyDown(Keys.LeftAlt) || Keyboard.GetState().IsKeyDown(Keys.RightAlt))
-					&& Keyboard.GetState().IsKeyDown(Keys.Enter) && !(
-						(OldKeyboard.GetState().IsKeyDown(Keys.LeftAlt) || OldKeyboard.GetState().IsKeyDown(Keys.RightAlt))
-							&& OldKeyboard.GetState().IsKeyDown(Keys.Enter))) {
-				Controller.IsFullscreen = !Controller.IsFullscreen;
 			}
 		}
 

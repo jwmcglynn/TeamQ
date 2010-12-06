@@ -8,9 +8,9 @@ Source code is available on http://github.com/jwmcglynn/TeamQ
 The following keys activate debug features:
 
 F1 - Toggle Collision Drawing
-F2 - Go to Debug Menu
 F3 - Toggle Mouse Capture
 F4 - Toggle Frost Mode (tm) Difficulty Settings
+F10 - Go to Debug Menu
 
 -------------------------------------------------------------------------------
     CONTROLS
@@ -30,8 +30,8 @@ For Xbox Controller:
 	Left Analog Stick - Move sputnik.
 	Right Analog Stick - Shoot in direction.
 	
-	B Button: Detach from ship.
-	Bumpers: Use special ability.
+	B Button - Detach from ship.
+	Bumpers - Use special ability.
 	
 -------------------------------------------------------------------------------
     GAMEPLAY

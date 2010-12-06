@@ -94,6 +94,8 @@ namespace Sputnik
 			m_fling = false;
 			ai.GotTractored(shipTractoring);
 
+			if (CollisionBody == null) return;
+
 			// Give a random amount of angular impulse for cool unstable rotating!
 			CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
 		}
@@ -102,11 +104,10 @@ namespace Sputnik
 		{
 			m_fling = true;
 			m_flingTime = 1.0f;
-			if (CollisionBody != null)
-			{
-				CollisionBody.LinearDamping = 0.0f;
-				CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
-			}
+
+			if (CollisionBody != null) return;
+			CollisionBody.LinearDamping = 0.0f;
+			CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
 		}
 		
 		public void UpdateTractor(Vector2 targetPosition) {

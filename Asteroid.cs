@@ -98,6 +98,8 @@ namespace Sputnik
 			m_fling = true;
 			m_flingTime = 1.0f;
 
+			if (CollisionBody == null) return;
+
 			CollisionBody.LinearDamping = 0.0f;
 			CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
 		}
