@@ -44,7 +44,7 @@ namespace Sputnik.Menus {
 			Vector2 mousePos = new Vector2(mouse.X, mouse.Y);
 			bool mousePressed = (mouse.LeftButton == ButtonState.Pressed);
 
-			List<Widget> collidingButtons = Buttons.FindAll(b => b.Collides(mousePos));
+			List<Widget> collidingButtons = Buttons.FindAll(b => b.Visible && b.Collides(mousePos));
 			Widget button = null;
 			if (collidingButtons.Count > 0) button = collidingButtons.OrderByDescending(b => b.Zindex).First();
 
