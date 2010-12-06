@@ -112,7 +112,12 @@ namespace Sputnik
 		}
 
 		public bool IsAllied(TakesDamage s) {
-			return (s != shootTarget);
+			if (s == this)
+				return true; //I like myself
+			else if (s is Ship)
+				return !((Ship)s).IsFriendly(); //I only hate sputnik and his friends
+			else
+				return false; //If ur not a ship or me, I dont like you
 		}
 
 		public void Shoot(float elapsedTime)

@@ -312,7 +312,7 @@ namespace Sputnik
 			else if (s is Ship) //Im a ship, and I better have the AI controlling me and my target is a ship
 			{
 				if (!(ai is AIController))
-					throw new Exception("non player ship controlled not controlled by AI");
+					return false;  //This case is strange, I'm actually not sure when this happens, but I don't like it
 				else if (((AIController)ai).target == s) //You are my target
 				{
 					if (((Ship)s).sputnikDetached) //We forgive you if sputnik did bad things to you
