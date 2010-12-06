@@ -113,7 +113,6 @@ namespace Sputnik
 		}
 
 		public void TractorReleased() {
-			m_tractored = false;
 			m_fling = true;
 			m_flingTime = 1.0f;
 

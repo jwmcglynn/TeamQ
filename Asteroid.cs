@@ -20,6 +20,7 @@ namespace Sputnik
 		private int tractoredDmg = 10;
 		private float m_lastCollideTime = 0.0f;
 		private int asteroidHealth = 30;
+		private float timeBetweenCollisions = 1.0f;
 
 		Ship tractoringShip;
 
@@ -109,7 +110,6 @@ namespace Sputnik
 		public void TractorReleased() {
 			m_fling = true;
 			m_flingTime = 1.0f;
-			m_tractored = false;
 
 			if (CollisionBody == null) return;
 
@@ -147,14 +147,25 @@ namespace Sputnik
 		public override void OnCollide(Entity entB, FarseerPhysics.Dynamics.Contacts.Contact contact)
 		{
 			if(IsTractored && m_lastCollideTime <= 0.0f) {
-				if(entB is TakesDamage && (ActualVelocity - entB.ActualVelocity).Length() > 700.0f) /*&& if contact force is strong*/ {
-					((TakesDamage)entB).TakeHit(tractoredDmg);
-					m_lastCollideTime = 0.5f;
-					Sound.PlayCue("crash", this);
-					asteroidHealth -= tractoredDmg;
+				if((ActualVelocity - entB.ActualVelocity).Length() > 700.0f) {
+					if (entB is TakesDamage)
+					{
+						((TakesDamage)entB).TakeHit(tractoredDmg);
+						asteroidHealth -= tractoredDmg;
 
-					if(asteroidHealth <= 0) InstaKill();
+						m_lastCollideTime = timeBetweenCollisions;
+						Sound.PlayCue("crash", this);
+
+					}
+					else if (IsTractored && (ActualVelocity - entB.ActualVelocity).Length() > 700.0f)
+					{
+						asteroidHealth -= tractoredDmg;
+
+						m_lastCollideTime = timeBetweenCollisions;
+						Sound.PlayCue("crash", this);
+					}
 				}
+				if (asteroidHealth <= 0) InstaKill();
 			}
 
 			base.OnCollide(entB, contact);
