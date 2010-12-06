@@ -145,6 +145,10 @@ namespace Sputnik
 			return this.ai;
 		}
 
+		public override void Attach(SputnikShip sp) {
+			// Do nothing.
+		}
+
 		public void SputnikAttach(Ship target) {
 			DestroyCollisionBody();
 

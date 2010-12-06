@@ -45,6 +45,8 @@ namespace Sputnik
 
 		protected virtual void initialize()
 		{
+			Environment.Boss = this;
+
 			this.bm1 = new BulletEmitter(Environment, this, BulletEmitter.BulletStrength.Medium);
 			this.bm2 = new BulletEmitter(Environment, this, BulletEmitter.BulletStrength.Medium);
 			this.bm3 = new BulletEmitter(Environment, this, BulletEmitter.BulletStrength.Medium);
@@ -124,6 +126,12 @@ namespace Sputnik
 			get
 			{
 				return this.isShooting;
+			}
+		}
+
+		public float HealthPercent {
+			get {
+				return (float) health / MaxHP;
 			}
 		}
 
