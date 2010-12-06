@@ -308,11 +308,6 @@ namespace Sputnik {
 				else m_debugView = new Physics.DebugViewXNA(CollisionWorld);
 			}
 
-			// Level win hacks.
-			if (Keyboard.GetState().IsKeyDown(Keys.F12) && !OldKeyboard.GetState().IsKeyDown(Keys.F12)) {
-				LevelDone = true;
-			}
-
 			// Frost mode.
 			if (Keyboard.GetState().IsKeyDown(Keys.F4) && !OldKeyboard.GetState().IsKeyDown(Keys.F4)) {
 				this.isFrostMode = !this.isFrostMode;
