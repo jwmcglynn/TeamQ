@@ -113,8 +113,10 @@ namespace Sputnik
 		}
 
 		public void TractorReleased() {
+			m_tractored = false;
 			m_fling = true;
 			m_flingTime = 1.0f;
+
 			if (CollisionBody == null) return;
 			CollisionBody.LinearDamping = 0.0f;
 			CollisionBody.ApplyAngularImpulse(CollisionBody.Mass * RandomUtil.NextFloat(-5.0f, 5.0f));
@@ -134,8 +136,12 @@ namespace Sputnik
 			return base.ShouldCull();
 		}
 
+		public override void Dispose() {
+			m_tractored = false;
+			base.Dispose();
+		}
+
 		public override void OnCull() {
-			IsTractored = false;
 			Environment.triangles.Remove(this);
 			base.OnCull();
 		}
