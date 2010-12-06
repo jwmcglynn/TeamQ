@@ -193,6 +193,8 @@ namespace Sputnik {
 			Vector2 tileHalfSize = new Vector2(m_map.TileWidth, m_map.TileHeight) / 2;
 			Vector2 tileSize = new Vector2(m_map.TileWidth, m_map.TileHeight);
 
+			bool[,] levelCollision = new bool[m_map.Width, m_map.Height];
+
 			foreach (Tiled.Layer layer in m_map.Layers.Values) {
 				for (int x = 0; x < layer.Width; ++x)
 				for (int y = 0; y < layer.Height; ++y) {
@@ -203,10 +205,82 @@ namespace Sputnik {
 					int col = tileId - row * 15;
 					if (row >= 11 || col >= 15) continue;
 
-					if (collision[row, col] != 0) {
-						// Create collision.
-						AddCollisionRectangle(tileHalfSize, new Vector2(tileSize.X * x, tileSize.Y * y) + tileHalfSize);
+					levelCollision[x, y] = (collision[row, col] != 0);
+				}
+			}
+
+			// Go through collision and try to create large horizontal collision shapes.
+			for (int y = 0; y < m_map.Height; ++y) {
+				int firstX = 0;
+				bool hasCollision = false;
+
+				for (int x = 0; x < m_map.Width; ++x) {
+					if (levelCollision[x, y]) {
+						if (hasCollision) continue;
+						else {
+							hasCollision = true;
+							firstX = x;
+						}
+					} else {
+						if (hasCollision) {
+							hasCollision = false;
+							int tilesWide = x - firstX;
+							if (tilesWide == 1) continue;
+
+							for (int i = firstX; i <= x; ++i) levelCollision[i, y] = false;
+
+							AddCollisionRectangle(
+								tileHalfSize * new Vector2(tilesWide, 1.0f)
+								, new Vector2(tileSize.X * (x - (float) tilesWide / 2), tileSize.Y * (y + 0.5f))
+							);
+						}
 					}
+				}
+
+				// Create final collision.
+				if (hasCollision) {
+					for (int i = firstX; i < m_map.Width; ++i) levelCollision[i, y] = false;
+
+					int tilesWide = m_map.Width - firstX;
+					AddCollisionRectangle(
+						tileHalfSize * new Vector2(tilesWide, 1.0f)
+						, new Vector2(tileSize.X * (m_map.Width - (float) tilesWide / 2), tileSize.Y * (y + 0.5f))
+					);
+				}
+			}
+
+			// Go through collision and try to create large vertical collision shapes.
+			for (int x = 0; x < m_map.Width; ++x) {
+				int firstY = 0;
+				bool hasCollision = false;
+
+				for (int y = 0; y < m_map.Height; ++y) {
+					if (levelCollision[x, y]) {
+						if (hasCollision) continue;
+						else {
+							hasCollision = true;
+							firstY = y;
+						}
+					} else {
+						if (hasCollision) {
+							hasCollision = false;
+							int tilesTall = y - firstY;
+
+							AddCollisionRectangle(
+								tileHalfSize * new Vector2(1.0f, tilesTall)
+								, new Vector2(tileSize.X * (x + 0.5f), tileSize.Y * (y - (float) tilesTall / 2))
+							);
+						}
+					}
+				}
+
+				// Create final collision.
+				if (hasCollision) {
+					int tilesTall = m_map.Height - firstY;
+					AddCollisionRectangle(
+						tileHalfSize * new Vector2(1.0f, tilesTall)
+						, new Vector2(tileSize.X * (x + 0.5f), tileSize.Y * (m_map.Height - (float) tilesTall / 2))
+					);
 				}
 			}
 
