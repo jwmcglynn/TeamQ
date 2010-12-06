@@ -178,7 +178,7 @@ namespace Sputnik
 			sp.SputnikAttach(this);
 		}
 
-		public float HealthPercent {
+		public virtual float HealthPercent {
 			get {
 				return (float) health / MaxHealth;
 			}

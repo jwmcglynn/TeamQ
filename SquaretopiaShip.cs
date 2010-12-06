@@ -14,7 +14,14 @@ namespace Sputnik
 		public Entity shield;
 		private float passiveShield;
 		private bool destroyShield = false;
-		
+
+		public override float HealthPercent {
+			get {
+				return passiveShield > 0.0f ? 1.0f + passiveShield / 20.0f : (float) health / MaxHealth;
+			}
+		}
+
+
 		public SquaretopiaShip(GameEnvironment env, Vector2 pos, SpawnPoint sp)
 			: base(env, pos)
 		{
