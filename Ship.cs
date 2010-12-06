@@ -312,7 +312,7 @@ namespace Sputnik
 				return s.IsFriendly(); //Sputnik only likes his friendly buddies
 			}
 			else if (s == Environment.sputnik.controlled) //The target is sputnik
-			{
+			{	//This case is needed since allied ships have sputnik as their target
 				return IsFriendly(); //Nobody but allied ships like sputnik
 			}
 			else if (s is Ship) //Im a ship, and I better have the AI controlling me and my target is a ship
@@ -335,14 +335,7 @@ namespace Sputnik
 			}
 			else if (s is Boss)  //Im a ship and my target is a boss
 			{
-				if (((Ship)s).ai.IsDisabled())
-				{
-					return false;  //No mercy for the weak
-				}
-				else
-				{
-					return !IsFriendly(); //Only friendly people hate boss
-				}
+				return !IsFriendly(); //Only friendly people hate boss
 			}
 			else
 			{
