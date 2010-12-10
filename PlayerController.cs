@@ -292,7 +292,7 @@ namespace Sputnik
 					// if we are tractoring something right now, then we arent allowed to tractor anything else
 					// we can shoot now.
 					if (itemBeingTractored == null) {
-						List<Entity> list = VisionHelper.FindAll(m_env, s.Position, specialDirection, MathHelper.ToRadians(20.0f), 500.0f);
+						List<Entity> list = VisionHelper.FindAll(m_env, s.Position, specialDirection, MathHelper.ToRadians(120.0f), 500.0f);
 						IOrderedEnumerable<Entity> sortedList = list.OrderBy(ent => Vector2.DistanceSquared(s.Position, ent.Position)); 
 						SquaretopiaShip ship = null;
 						Entity collided = sortedList.FirstOrDefault(ent =>

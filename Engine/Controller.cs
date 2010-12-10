@@ -43,7 +43,7 @@ namespace Sputnik {
 			Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
 			Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
 
-			IsFixedTimeStep = false;
+			IsFixedTimeStep = true;
 
 			OldKeyboard.m_state = Keyboard.GetState();
 		}
@@ -101,6 +101,13 @@ namespace Sputnik {
 		protected override void UnloadContent() {
 			// TODO: Unload any non ContentManager content here
 		}
+		
+		public void UpdateControls() {
+			// Get the keyboard state for the next pass.
+			OldKeyboard.m_state = Keyboard.GetState();
+			OldGamePad.m_state = GamePad.GetState(PlayerIndex.One);
+			OldMouse.m_state = Mouse.GetState();
+		}
 
 		/// <summary>
 		/// Allows the game to run logic such as updating the world,
@@ -118,13 +125,6 @@ namespace Sputnik {
 			// Game loop.
 			Sound.Update();
 
-			KeyboardState oldKb = Keyboard.GetState();
-			GamePadState oldGp = GamePad.GetState(PlayerIndex.One);
-			MouseState oldMouse = Mouse.GetState();
-
-			m_env.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
-			base.Update(gameTime);
-
 			// Toggle fullscreen toggle with Alt+Enter.
 			if ((Keyboard.GetState().IsKeyDown(Keys.LeftAlt) || Keyboard.GetState().IsKeyDown(Keys.RightAlt))
 					&& Keyboard.GetState().IsKeyDown(Keys.Enter) && !(
@@ -133,10 +133,10 @@ namespace Sputnik {
 				IsFullscreen = !IsFullscreen;
 			}
 
-			// Get the keyboard state for the next pass.
-			OldKeyboard.m_state = oldKb;
-			OldGamePad.m_state = oldGp;
-			OldMouse.m_state = oldMouse;
+			m_env.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
+			base.Update(gameTime);
+
+			UpdateControls();
 
 			// FPS counter.
 			m_frameCounter++;

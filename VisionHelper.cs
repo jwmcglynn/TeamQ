@@ -22,8 +22,8 @@ namespace Sputnik {
 
 		private static FarseerPhysics.Collision.AABB VisionAABB(Vector2 position, float theta, float spread, float maxDistance) {
 			// Triangle extent.
-			Vector2 ext1 = (position + Angle.Vector(theta - spread) * maxDistance) * GameEnvironment.k_physicsScale;
-			Vector2 ext2 = (position + Angle.Vector(theta + spread) * maxDistance) * GameEnvironment.k_physicsScale;
+			Vector2 ext1 = (position + Angle.Vector(theta - spread) * -maxDistance) * GameEnvironment.k_physicsScale;
+			Vector2 ext2 = (position + Angle.Vector(theta + spread) * -maxDistance) * GameEnvironment.k_physicsScale;
 
 			Vector2 min = Vector2.Min(ext1, ext2);
 			Vector2 max = Vector2.Max(ext1, ext2);

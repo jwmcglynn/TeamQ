@@ -332,26 +332,22 @@ namespace Sputnik {
 				Controller.ChangeEnvironment(new Menus.MainMenu(Controller));
 			}
 
-			m_updateAccum += elapsedTime;
 			LevelTimeSpent += elapsedTime;
+		
+			if (elapsedTime > 0.0f) {
+				// Update physics.
+				CollisionWorld.Step(elapsedTime);
 
-			// Update physics.
-			const float k_physicsStep = 1.0f / 60.0f;
-			while (m_updateAccum > k_physicsStep) {
-				m_updateAccum -= k_physicsStep;
-
-				CollisionWorld.Step(k_physicsStep);
-
-				if (SpawnController != null) SpawnController.Update(k_physicsStep);
+				if (SpawnController != null) SpawnController.Update(elapsedTime);
 
 				// Update entities.
-				base.Update(k_physicsStep);
-				Camera.Update(k_physicsStep);
-				HUD.Update(k_physicsStep);
+				base.Update(elapsedTime);
+				Camera.Update(elapsedTime);
+				HUD.Update(elapsedTime);
 
 				// Particles.
-				foreach (var effect in EffectsAboveShip) effect.Update(k_physicsStep);
-				foreach (var effect in EffectsBelowShip) effect.Update(k_physicsStep);
+				foreach (var effect in EffectsAboveShip) effect.Update(elapsedTime);
+				foreach (var effect in EffectsBelowShip) effect.Update(elapsedTime);
 			}
 		}
 

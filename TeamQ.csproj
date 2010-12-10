@@ -71,10 +71,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>81D3EBC6B40DE7B9ADABB7F5F14412001778F9F5</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>578C0879B1A924C7235E9ACDDF605A532474571A</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>TeamQ_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>TeamQ_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -243,6 +243,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\app.manifest" />
+    <None Include="TeamQ_1_TemporaryKey.pfx" />
     <None Include="TeamQ_TemporaryKey.pfx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
